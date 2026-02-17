@@ -1,0 +1,79 @@
+[1mdiff --git a/resources/views/layouts/app.blade.php b/resources/views/layouts/app.blade.php[m
+[1mindex 20d1de9..7a6c90a 100644[m
+[1m--- a/resources/views/layouts/app.blade.php[m
+[1m+++ b/resources/views/layouts/app.blade.php[m
+[36m@@ -962,13 +962,13 @@[m
+                             href="{{ route('services.index') }}">{{ __('messages.services') }}</a>[m
+                     </li>[m
+                     <!-- @auth[m
+[31m-                                                                        <li class="nav-item">[m
+[31m-                                                                            <a class="nav-link {{ request()->routeIs('services.my-services') ? 'active' : '' }}" href="{{ route('services.my-services') }}">{{ __('messages.my_services') }}</a>[m
+[31m-                                                                        </li>[m
+[31m-                                                                        @if (Auth::user()->isProvider())[m
+[31m-    <li class="nav-item">[m
+[31m-                                                                                <a class="nav-link {{ request()->routeIs('service-offers.my-offers') ? 'active' : '' }}" href="{{ route('service-offers.my-offers') }}">{{ __('messages.my_offers') }}</a>[m
+[32m+[m[32m                                                                            <li class="nav-item">[m
+[32m+[m[32m                                                                                <a class="nav-link {{ request()->routeIs('services.my-services') ? 'active' : '' }}" href="{{ route('services.my-services') }}">{{ __('messages.my_services') }}</a>[m
+                                                                             </li>[m
+[32m+[m[32m                                                                            @if (Auth::user()->isProvider())[m
+[32m+[m[32m    <li class="nav-item">[m
+[32m+[m[32m                                                                                    <a class="nav-link {{ request()->routeIs('service-offers.my-offers') ? 'active' : '' }}" href="{{ route('service-offers.my-offers') }}">{{ __('messages.my_offers') }}</a>[m
+[32m+[m[32m                                                                                </li>[m
+     @endif[m
+                 @endauth -->[m
+                     <li class="nav-item">[m
+[36m@@ -1858,11 +1858,6 @@[m [mfunction toggleMenu() {[m
+             @endif[m
+         @else[m
+             const menuItems = [{[m
+[31m-                    icon: 'fas fa-sign-in-alt',[m
+[31m-                    text:  '{{ __('messages.login') }}',[m
+[31m-                    href: '{{ route('login') }}'[m
+[31m-                },[m
+[31m-                {[m
+                     icon: 'fas fa-user-plus',[m
+                     text: '{{ __('messages.create_account') }} ',[m
+                     href: '{{ route('register') }}'[m
+[36m@@ -1914,23 +1909,23 @@[m [mfunction toggleMenu() {[m
+                                 <span>اللغة / Language</span>[m
+                             </div>[m
+                             ${languageItems.map(item => `[m
+[31m-                                                                            <a href="${item.href}" class="footer-menu-item ${item.isActive ? 'active' : ''}">[m
+[31m-                                                                                <i class="${item.icon}"></i>[m
+[31m-                                                                                <span>${item.text}</span>[m
+[31m-                                                                                ${item.isActive ? '<i class="fas fa-check text-success"></i>' : ''}[m
+[31m-                                                                            </a>[m
+[31m-                                                                        `).join('')}[m
+[32m+[m[32m                                                                                <a href="${item.href}" class="footer-menu-item ${item.isActive ? 'active' : ''}">[m
+[32m+[m[32m                                                                                    <i class="${item.icon}"></i>[m
+[32m+[m[32m                                                                                    <span>${item.text}</span>[m
+[32m+[m[32m                                                                                    ${item.isActive ? '<i class="fas fa-check text-success"></i>' : ''}[m
+[32m+[m[32m                                                                                </a>[m
+[32m+[m[32m                                                                            `).join('')}[m
+                         </div>[m
+ [m
+                         <hr class="footer-menu-divider">[m
+ [m
+                         <!-- Main Menu Items -->[m
+                         ${menuItems.map(item => `[m
+[31m-                                                                        <a href="${item.href}" class="footer-menu-item">[m
+[31m-                                                                            <i class="${item.icon}"></i>[m
+[31m-                                                                            <span>${item.text}</span>[m
+[31m-                                                                        </a>[m
+[31m-                                                                    `).join('')}[m
+[32m+[m[32m                                                                            <a href="${item.href}" class="footer-menu-item">[m
+[32m+[m[32m                                                                                <i class="${item.icon}"></i>[m
+[32m+[m[32m                                                                                <span>${item.text}</span>[m
+[32m+[m[32m                                                                            </a>[m
+[32m+[m[32m                                                                        `).join('')}[m
+ [m
+                         @auth[m
+                          @if (Auth::user()->is_admin)[m
+[36m@@ -2173,6 +2168,7 @@[m [mfunction closeMenu() {[m
+                 document.body.style.overflow = '';[m
+             }[m
+         }[m
+[32m+[m
+         function handleProtectedLink(event, href) {[m
+             @guest[m
+             event.preventDefault();[m

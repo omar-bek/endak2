@@ -1,0 +1,40 @@
+<IfModule mod_rewrite.c>
+    <IfModule mod_negotiation.c>
+        Options -MultiViews -Indexes
+    </IfModule>
+
+    RewriteEngine On
+
+    # Handle Authorization Header
+    RewriteCond %{HTTP:Authorization} .
+    RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
+
+    # Allow API routes without trailing slash redirect
+    RewriteCond %{REQUEST_URI} ^/api/
+    RewriteRule ^ - [L]
+
+    # Redirect Trailing Slashes If Not A Folder (skip for API routes)...
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteCond %{REQUEST_URI} !^/api/
+    RewriteCond %{REQUEST_URI} (.+)/$
+    RewriteRule ^ %1 [L,R=301]
+
+    # Send Requests To Front Controller...
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteRule ^ index.php [L]
+</IfModule>
+
+# Security Headers for API
+<IfModule mod_headers.c>
+    # Allow API access from any origin (adjust as needed)
+    <FilesMatch "index\.php$">
+        Header set Access-Control-Allow-Origin "*"
+        Header set Access-Control-Allow-Methods "GET, POST, PUT, DELETE, OPTIONS, PATCH"
+        Header set Access-Control-Allow-Headers "Content-Type, Authorization, X-Requested-With, Accept"
+        Header set Access-Control-Max-Age "3600"
+    </FilesMatch>
+</IfModule>
+
+# Prevent directory listing
+Options -Indexes

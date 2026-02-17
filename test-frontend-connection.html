@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>اختبار الإشعارات Realtime</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .status {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+        }
+
+        .success {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .info {
+            background: #d1ecf1;
+            color: #0c5460;
+        }
+
+        .warning {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        button {
+            padding: 10px 20px;
+            margin: 5px;
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #0056b3;
+        }
+
+        #notifications {
+            margin-top: 20px;
+        }
+
+        .notification {
+            padding: 15px;
+            margin: 10px 0;
+            background: #f8f9fa;
+            border-left: 4px solid #007bff;
+            border-radius: 4px;
+        }
+
+        input {
+            padding: 8px;
+            margin: 5px;
+            width: 200px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>🔔 اختبار الإشعارات Realtime</h1>
+
+        <div id="status"></div>
+
+        <div>
+            <h3>الإعدادات:</h3>
+            <input type="number" id="userId" placeholder="User ID" value="1">
+            <input type="text" id="apiToken" placeholder="API Token" value="">
+            <button onclick="saveSettings()">حفظ الإعدادات</button>
+        </div>
+
+        <div style="margin-top: 20px;">
+            <button onclick="connect()">اتصال بـ Pusher</button>
+            <button onclick="subscribe()">الاشتراك في الإشعارات</button>
+            <button onclick="testNotification()">اختبار إشعار</button>
+            <button onclick="disconnect()">قطع الاتصال</button>
+        </div>
+
+        <div id="connectionInfo" style="margin-top: 20px;"></div>
+
+        <div id="notifications">
+            <h3>الإشعارات المستلمة:</h3>
+            <div id="notificationsList"></div>
+        </div>
+    </div>
+
+    <!-- Laravel Echo و Pusher -->
+    <script src="https://js.pusher.com/8.2.0/pusher.min.js"></script>
+    <script>
+        // إعدادات Pusher
+        const PUSHER_KEY = 'e91ff80f1a87987e5a08';
+        const PUSHER_CLUSTER = 'eu';
+        const AUTH_ENDPOINT = '/api/broadcasting/auth';
+
+        let pusher = null;
+        let channel = null;
+        let userId = null;
+        let apiToken = null;
+
+        function updateStatus(message, type = 'info') {
+            const statusDiv = document.getElementById('status');
+            statusDiv.innerHTML = `<div class="status ${type}">${message}</div>`;
+            console.log(`[${type.toUpperCase()}] ${message}`);
+        }
+
+        function updateConnectionInfo() {
+            const infoDiv = document.getElementById('connectionInfo');
+            if (!pusher) {
+                infoDiv.innerHTML = '<div class="status error">غير متصل</div>';
+                return;
+            }
+
+            const state = pusher.connection.state;
+            const isSubscribed = channel && channel.subscribed;
+
+            infoDiv.innerHTML = `
+                <div class="status ${state === 'connected' ? 'success' : 'error'}">
+                    <strong>حالة الاتصال:</strong> ${state}
+                </div>
+                <div class="status ${isSubscribed ? 'success' : 'warning'}">
+                    <strong>Channel:</strong> ${channel ? `private-user.${userId}` : 'غير مشترك'}
+                    ${isSubscribed ? '(مشترك)' : '(غير مشترك)'}
+                </div>
+            `;
+        }
+
+        function saveSettings() {
+            userId = document.getElementById('userId').value;
+            apiToken = document.getElementById('apiToken').value;
+
+            if (apiToken) {
+                localStorage.setItem('api_token', apiToken);
+            } else {
+                apiToken = localStorage.getItem('api_token');
+            }
+
+            if (!userId || !apiToken) {
+                updateStatus('⚠️ يرجى إدخال User ID و API Token', 'warning');
+                return;
+            }
+
+            updateStatus(`✅ تم حفظ الإعدادات: User ID = ${userId}`, 'success');
+        }
+
+        function connect() {
+            userId = document.getElementById('userId').value || localStorage.getItem('user_id') || '1';
+            apiToken = document.getElementById('apiToken').value || localStorage.getItem('api_token');
+
+            if (!apiToken) {
+                updateStatus('❌ API Token مطلوب!', 'error');
+                return;
+            }
+
+            updateStatus('🔄 جاري الاتصال بـ Pusher...', 'info');
+            console.log('Connecting to Pusher with:', {
+                key: PUSHER_KEY.substring(0, 10) + '...',
+                cluster: PUSHER_CLUSTER,
+                authEndpoint: AUTH_ENDPOINT,
+                tokenPreview: apiToken.substring(0, 10) + '...'
+            });
+
+            // إنشاء Pusher instance
+            pusher = new Pusher(PUSHER_KEY, {
+                cluster: PUSHER_CLUSTER,
+                forceTLS: true,
+                encrypted: true,
+                authEndpoint: AUTH_ENDPOINT,
+                auth: {
+                    headers: {
+                        'Authorization': 'Bearer ' + apiToken,
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
+                    }
+                },
+                enabledTransports: ['ws', 'wss']
+            });
+
+            // Event listeners
+            pusher.connection.bind('connected', () => {
+                updateStatus('✅ تم الاتصال بـ Pusher بنجاح!', 'success');
+                updateConnectionInfo();
+            });
+
+            pusher.connection.bind('disconnected', () => {
+                updateStatus('❌ تم قطع الاتصال من Pusher', 'error');
+                updateConnectionInfo();
+            });
+
+            pusher.connection.bind('error', (err) => {
+                updateStatus(`❌ خطأ في الاتصال: ${err.error ? err.error.message : JSON.stringify(err)}`, 'error');
+                console.error('Pusher connection error:', err);
+            });
+
+            pusher.connection.bind('state_change', (states) => {
+                console.log('Connection state changed:', states.previous, '->', states.current);
+                updateConnectionInfo();
+            });
+        }
+
+        function subscribe() {
+            if (!pusher) {
+                updateStatus('❌ يجب الاتصال بـ Pusher أولاً!', 'error');
+                return;
+            }
+
+            userId = document.getElementById('userId').value || userId || '1';
+
+            if (!userId) {
+                updateStatus('❌ User ID مطلوب!', 'error');
+                return;
+            }
+
+            // قطع الاشتراك السابق إن وجد
+            if (channel) {
+                pusher.unsubscribe(`private-user.${userId}`);
+            }
+
+            updateStatus(`🔄 جاري الاشتراك في channel: private-user.${userId}...`, 'info');
+
+            // الاشتراك في private channel
+            channel = pusher.subscribe(`private-user.${userId}`);
+
+            // Event listeners للـ channel
+            channel.bind('pusher:subscription_succeeded', () => {
+                updateStatus(`✅ تم الاشتراك في channel بنجاح: private-user.${userId}`, 'success');
+                updateConnectionInfo();
+                console.log('✅ Subscription succeeded for channel:', `private-user.${userId}`);
+            });
+
+            channel.bind('pusher:subscription_error', (status) => {
+                let errorMessage = `❌ فشل الاشتراك في channel: ${JSON.stringify(status)}`;
+
+                console.error('Subscription error details:', {
+                    status: status,
+                    statusCode: status?.status || status,
+                    channel: `private-user.${userId}`,
+                    userId: userId,
+                    tokenPreview: apiToken ? apiToken.substring(0, 10) + '...' : 'NOT SET'
+                });
+
+                if (status === 403 || (typeof status === 'object' && status.status === 403)) {
+                    errorMessage += '<br><br><strong>🔍 المشكلة:</strong> Channel Authorization فاشل (403 Forbidden)<br>';
+                    errorMessage += '<strong>✅ الحل:</strong><br>';
+                    errorMessage += '1. تأكد من أن User ID صحيح (يجب أن يكون نفس المستخدم المسجل دخوله)<br>';
+                    errorMessage += '2. تأكد من أن API Token صحيح ومطابق للمستخدم<br>';
+                    errorMessage += '3. تحقق من Logs: storage/logs/laravel.log<br>';
+                    errorMessage += '4. ابحث عن: "Broadcasting channel authorization"<br><br>';
+                    errorMessage += '<strong>💡 نصيحة:</strong> استخدم نفس User ID من API response بعد تسجيل الدخول';
+                } else if (status === 401 || (typeof status === 'object' && status.status === 401)) {
+                    errorMessage += '<br><br><strong>🔍 المشكلة:</strong> Authentication فاشل (401 Unauthorized)<br>';
+                    errorMessage += '<strong>✅ الحل:</strong> تحقق من API Token في localStorage';
+                } else if (typeof status === 'object' && status.error) {
+                    errorMessage += '<br><br><strong>🔍 الخطأ:</strong> ' + status.error;
+                }
+
+                updateStatus(errorMessage, 'error');
+            });
+
+            // الاستماع لحدث notification.sent
+            channel.bind('notification.sent', (data) => {
+                updateStatus(`✅ إشعار جديد مستلم!`, 'success');
+                console.log('إشعار جديد:', data);
+
+                // عرض الإشعار
+                const notificationsList = document.getElementById('notificationsList');
+                const notificationDiv = document.createElement('div');
+                notificationDiv.className = 'notification';
+                notificationDiv.innerHTML = `
+                    <strong>${data.title}</strong><br>
+                    <small>${data.message}</small><br>
+                    <small style="color: #666;">${new Date(data.created_at).toLocaleString('ar-SA')}</small>
+                `;
+                notificationsList.insertBefore(notificationDiv, notificationsList.firstChild);
+
+                // إشعار المتصفح
+                if ('Notification' in window && Notification.permission === 'granted') {
+                    new Notification(data.title, {
+                        body: data.message,
+                        icon: '/images/logo.png'
+                    });
+                }
+            });
+        }
+
+        function testNotification() {
+            if (!channel || !channel.subscribed) {
+                updateStatus('❌ يجب الاشتراك في channel أولاً!', 'error');
+                return;
+            }
+
+            updateStatus('🔄 جاري إرسال إشعار تجريبي...', 'info');
+
+            // إرسال request لإنشاء إشعار
+            fetch('/api/v1/notifications/test', {
+                method: 'POST',
+                headers: {
+                    'Authorization': 'Bearer ' + (apiToken || localStorage.getItem('api_token')),
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify({
+                    user_id: userId,
+                    type: 'system',
+                    title: 'اختبار من Frontend',
+                    message: 'هذا إشعار تجريبي'
+                })
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        updateStatus('✅ تم إرسال الإشعار! انتظر قليلاً...', 'success');
+                    } else {
+                        updateStatus(`❌ فشل إرسال الإشعار: ${data.message}`, 'error');
+                    }
+                })
+                .catch(error => {
+                    updateStatus(`❌ خطأ: ${error.message}`, 'error');
+                    console.error('Error:', error);
+                });
+        }
+
+        function disconnect() {
+            if (channel) {
+                pusher.unsubscribe(`private-user.${userId}`);
+                channel = null;
+            }
+
+            if (pusher) {
+                pusher.disconnect();
+                pusher = null;
+            }
+
+            updateStatus('🔌 تم قطع الاتصال', 'info');
+            updateConnectionInfo();
+        }
+
+        // طلب إذن الإشعارات عند تحميل الصفحة
+        if ('Notification' in window && Notification.permission === 'default') {
+            Notification.requestPermission();
+        }
+
+        // تحميل الإعدادات المحفوظة
+        window.addEventListener('load', () => {
+            const savedUserId = localStorage.getItem('user_id');
+            const savedApiToken = localStorage.getItem('api_token');
+
+            if (savedUserId) {
+                document.getElementById('userId').value = savedUserId;
+            }
+
+            if (savedApiToken) {
+                document.getElementById('apiToken').value = savedApiToken;
+            }
+
+            updateStatus('📋 جاهز للاختبار. أدخل User ID و API Token ثم اضغط "اتصال"', 'info');
+        });
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,2 @@
+AC[0-9]\{32\}==>REMOVED_SECRET
+[0-9A-Za-z]\{32\}==>REMOVED_SECRET
