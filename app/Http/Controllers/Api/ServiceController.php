@@ -717,12 +717,45 @@ class ServiceController extends BaseApiController
      */
     private function findFieldByKey(Collection $fields, string $fieldKey): ?CategoryField
     {
-        return $fields->first(
-            fn($field) =>
-            $field->name === $fieldKey
+        // تطبيع المفتاح للبحث
+        $normalizedKey = $this->normalizeFieldKey($fieldKey);
+
+        return $fields->first(function ($field) use ($fieldKey, $normalizedKey) {
+            // البحث المطابق المباشر
+            if (
+                $field->name === $fieldKey
                 || $field->name_ar === $fieldKey
                 || $field->name_en === $fieldKey
-        );
+            ) {
+                return true;
+            }
+
+            // البحث مع تطبيع الحقول
+            $normalizedName = $this->normalizeFieldKey($field->name);
+            $normalizedNameEn = $this->normalizeFieldKey($field->name_en ?? '');
+            $normalizedNameAr = $this->normalizeFieldKey($field->name_ar ?? '');
+
+            return $normalizedKey === $normalizedName
+                || $normalizedKey === $normalizedNameEn
+                || $normalizedKey === $normalizedNameAr;
+        });
+    }
+
+    /**
+     * تطبيع مفتاح الحقل للبحث (تحويل إلى snake_case)
+     */
+    private function normalizeFieldKey(string $key): string
+    {
+        // تحويل المسافات إلى underscores
+        $key = str_replace(' ', '_', $key);
+
+        // تحويل إلى lowercase
+        $key = strtolower($key);
+
+        // إزالة أي أحرف خاصة إضافية
+        $key = preg_replace('/[^a-z0-9_]/', '', $key);
+
+        return $key;
     }
 
     /**
@@ -730,10 +763,34 @@ class ServiceController extends BaseApiController
      */
     private function getFieldValue(array $customFields, CategoryField $field)
     {
-        return $customFields[$field->name]
-            ?? $customFields[$field->name_ar]
-            ?? $customFields[$field->name_en]
-            ?? null;
+        // البحث المباشر أولاً
+        if (isset($customFields[$field->name])) {
+            return $customFields[$field->name];
+        }
+        if (isset($customFields[$field->name_ar])) {
+            return $customFields[$field->name_ar];
+        }
+        if (isset($customFields[$field->name_en])) {
+            return $customFields[$field->name_en];
+        }
+
+        // البحث مع تطبيع المفاتيح
+        $normalizedName = $this->normalizeFieldKey($field->name);
+        $normalizedNameEn = $this->normalizeFieldKey($field->name_en ?? '');
+        $normalizedNameAr = $this->normalizeFieldKey($field->name_ar ?? '');
+
+        foreach ($customFields as $key => $value) {
+            $normalizedKey = $this->normalizeFieldKey($key);
+            if (
+                $normalizedKey === $normalizedName
+                || $normalizedKey === $normalizedNameEn
+                || $normalizedKey === $normalizedNameAr
+            ) {
+                return $value;
+            }
+        }
+
+        return null;
     }
 
     /**
