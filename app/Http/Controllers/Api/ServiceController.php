@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Models\Category;
 use App\Models\CategoryField;
 use App\Models\City;
+use App\Models\Notification;
 use App\Models\Service;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
@@ -276,7 +277,15 @@ class ServiceController extends BaseApiController
                 ]);
             }
 
-            return $this->success($service->fresh(), 'تم إنشاء الخدمة بنجاح', 201);
+            // تحميل العلاقات قبل إرجاع الاستجابة
+            $service->load([
+                'category:id,name,name_en,slug',
+                'subCategory:id,name_ar,name_en',
+                'city:id,name_ar,name_en',
+                'user:id,name,avatar',
+            ]);
+
+            return $this->success($service, 'تم إنشاء الخدمة بنجاح', 201);
         }, 'حدث خطأ أثناء إنشاء الخدمة');
     }
 
