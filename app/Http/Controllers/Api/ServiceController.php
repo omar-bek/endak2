@@ -548,9 +548,29 @@ class ServiceController extends BaseApiController
 
         $filteredFields = [];
         foreach ($customFields as $fieldKey => $fieldValue) {
+            if (empty($fieldKey)) {
+                continue;
+            }
+
             $field = $this->findFieldByKey($allFields, $fieldKey);
             if ($field) {
-                $filteredFields[$field->name] = $fieldValue;
+                // استخدام name_en محول إلى snake_case للتخزين (أو name إذا كان name_en غير موجود)
+                $storageKey = !empty($field->name_en)
+                    ? $this->normalizeFieldKey($field->name_en)
+                    : $field->name;
+
+                // التأكد من أن storageKey ليس فارغاً
+                if (!empty($storageKey)) {
+                    $filteredFields[$storageKey] = $fieldValue;
+                } else {
+                    Log::warning('Empty storage key for field', [
+                        'field_key' => $fieldKey,
+                        'field_id' => $field->id,
+                        'field_name' => $field->name,
+                        'field_name_en' => $field->name_en,
+                        'category_id' => $categoryId,
+                    ]);
+                }
             } else {
                 Log::warning('Filtered out unknown field', [
                     'field_key' => $fieldKey,
@@ -746,13 +766,17 @@ class ServiceController extends BaseApiController
      */
     private function normalizeFieldKey(string $key): string
     {
+        if (empty($key)) {
+            return '';
+        }
+
         // تحويل المسافات إلى underscores
         $key = str_replace(' ', '_', $key);
 
         // تحويل إلى lowercase
         $key = strtolower($key);
 
-        // إزالة أي أحرف خاصة إضافية
+        // إزالة أي أحرف خاصة إضافية (نحتفظ بالأحرف والأرقام والـ underscores فقط)
         $key = preg_replace('/[^a-z0-9_]/', '', $key);
 
         return $key;
