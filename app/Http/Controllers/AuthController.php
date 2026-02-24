@@ -119,8 +119,16 @@ class AuthController extends Controller
                 'terms_accepted_at' => now(),
             ]);
 
-            // Send email verification notification
-            event(new Registered($user));
+            // Send email verification notification (wrap in try-catch to prevent registration failure if email fails)
+            try {
+                event(new Registered($user));
+            } catch (Exception $emailException) {
+                // Log email error but don't fail registration
+                Log::warning('Email verification failed during registration', [
+                    'user_id' => $user->id,
+                    'error' => $emailException->getMessage()
+                ]);
+            }
 
             // Login user temporarily to show verification notice
             Auth::login($user);
