@@ -5,7 +5,7 @@
             <div class="modal-content">
 
                 <div class="modal-header bg-primary text-white">
-                    <h5 class="modal-title">إتمام الملف الشخصي</h5>
+                    <h5 class="modal-title">{{ __('messages.complete_profile') ?? 'إتمام الملف الشخصي' }}</h5>
                 </div>
 
                 <div class="modal-body">
@@ -13,20 +13,21 @@
                         @csrf
 
                         <div class="mb-3">
-                            <label class="form-label">اختر نوع الحساب</label>
+                            <label class="form-label">{{ __('messages.select_account_type') }}</label>
                             <select name="user_type" id="user_type" class="form-control">
-                                <option value="" disabled selected>اختر نوع الحساب</option>
-                                <option value="customer">مستخدم عادي</option>
-                                <option value="provider">مزود خدمة</option>
+                                <option value="" disabled selected>{{ __('messages.select_account_type') }}
+                                </option>
+                                <option value="customer">{{ __('messages.user_regular') }}</option>
+                                <option value="provider">{{ __('messages.user_provider') }}</option>
                             </select>
                             <div class="invalid-feedback" id="user_type_error"></div>
                         </div>
 
                         <div class="form-check mb-3">
                             <input type="checkbox" class="form-check-input" id="terms_check" name="terms">
-                            <label class="form-check-label">أوافق على
-                                <a href="#" data-bs-toggle="modal" data-bs-target="#termsModal">الشروط
-                                    والأحكام</a>
+                            <label class="form-check-label">{{ __('messages.terms_accept') }}
+                                <a href="#" class="text-primary" data-bs-toggle="modal"
+                                    data-bs-target="#termsModal">{{ __('messages.terms_conditions') ?? 'الشروط والأحكام' }}</a>
                             </label>
                             <div class="invalid-feedback" id="terms_error"></div>
                         </div>
@@ -34,7 +35,8 @@
                 </div>
 
                 <div class="modal-footer">
-                    <button id="submitUserType" class="btn btn-primary w-100">إتمام الملف الشخصي</button>
+                    <button id="submitUserType"
+                        class="btn btn-primary w-100">{{ __('messages.complete_profile') ?? 'إتمام الملف الشخصي' }}</button>
                 </div>
             </div>
         </div>
@@ -44,15 +46,49 @@
     {{-- Modal الشروط --}}
     <div class="modal fade" id="termsModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-lg modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header bg-primary text-white">
-                    <h5 class="modal-title">الشروط والأحكام</h5>
+            <div class="modal-content border-0 shadow-lg">
+                <div class="modal-header" style="background: linear-gradient(135deg, #2f5c69, #3c7d8b); color: #fff;">
+                    <h5 class="modal-title">{{ __('messages.terms_title') }}</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                        aria-label="Close"></button>
                 </div>
-                <div class="modal-body">
-                    <p>ضع هنا نص الشروط الخاصة بك...</p>
+                <div class="modal-body p-4" style="max-height: 70vh; overflow-y: auto; background-color: #f9fbfc;">
+                    <h6 class="fw-bold mb-2 text-primary">{{ __('messages.terms_welcome') }}</h6>
+                    <p class="text-muted mb-4">{{ __('messages.terms_intro') }}</p>
+
+                    <h6 class="fw-bold">{{ __('messages.terms_1_title') }}</h6>
+                    <p class="text-muted">{{ __('messages.terms_1_text') }}</p>
+
+                    <h6 class="fw-bold mt-4">{{ __('messages.terms_2_title') }}</h6>
+                    <p class="text-muted">{{ __('messages.terms_2_text') }}</p>
+
+                    <h6 class="fw-bold mt-4">{{ __('messages.terms_3_title') }}</h6>
+                    <p class="text-muted">{{ __('messages.terms_3_text') }}</p>
+
+                    <h6 class="fw-bold mt-4">{{ __('messages.terms_4_title') }}</h6>
+                    <p class="text-muted">{{ __('messages.terms_4_text') }}</p>
+
+                    <h6 class="fw-bold mt-4">{{ __('messages.terms_5_title') }}</h6>
+                    <p class="text-muted">{{ __('messages.terms_5_text') }}</p>
+
+                    <h6 class="fw-bold mt-4">{{ __('messages.terms_6_title') }}</h6>
+                    <p class="text-muted">{{ __('messages.terms_6_text') }}</p>
+
+                    <h6 class="fw-bold mt-4">{{ __('messages.terms_7_title') }}</h6>
+                    <p class="text-muted">{{ __('messages.terms_7_text') }}</p>
+
+                    <h6 class="fw-bold mt-4">{{ __('messages.terms_8_title') }}</h6>
+                    <p class="text-muted">{{ __('messages.terms_8_text') }}</p>
+
+                    <h6 class="fw-bold mt-4">{{ __('messages.terms_9_title') }}</h6>
+                    <p class="text-muted">{{ __('messages.terms_9_text') }}</p>
+
+                    <p class="fw-semibold mt-4 text-center text-primary">{{ __('messages.terms_agree') }}</p>
                 </div>
-                <div class="modal-footer">
-                    <button class="btn btn-primary" data-bs-dismiss="modal">موافق</button>
+                <div class="modal-footer border-0 d-flex justify-content-center" style="background: #f9fbfc;">
+                    <button type="button" class="btn text-white px-4"
+                        style="background: linear-gradient(135deg, #2f5c69, #3c7d8b);"
+                        data-bs-dismiss="modal">{{ __('messages.terms_modal_close') }}</button>
                 </div>
             </div>
         </div>
@@ -62,8 +98,19 @@
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             var modalEl = document.getElementById('userTypeModal');
-            var userTypeModal = new bootstrap.Modal(modalEl);
-            userTypeModal.show();
+            if (modalEl) {
+                var userTypeModal = new bootstrap.Modal(modalEl, {
+                    backdrop: 'static',
+                    keyboard: false
+                });
+                // إظهار المودال تلقائياً
+                userTypeModal.show();
+
+                // منع إغلاق المودال بالنقر خارجيه
+                modalEl.addEventListener('hide.bs.modal', function(event) {
+                    // يمكن إضافة منطق هنا لمنع الإغلاق إذا لزم الأمر
+                });
+            }
 
             document.getElementById('submitUserType').addEventListener('click', async function() {
                 var userType = document.getElementById('user_type').value;
@@ -73,18 +120,26 @@
                 document.getElementById('terms_error').textContent = '';
 
                 if (!userType) {
-                    document.getElementById('user_type_error').textContent = 'يجب اختيار نوع الحساب';
+                    document.getElementById('user_type_error').textContent =
+                        '{{ __('messages.user_type.required') ?? 'يجب اختيار نوع الحساب' }}';
+                    document.getElementById('user_type').classList.add('is-invalid');
                     return;
+                } else {
+                    document.getElementById('user_type').classList.remove('is-invalid');
                 }
 
                 if (!termsChecked) {
-                    document.getElementById('terms_error').textContent = 'يجب الموافقة على الشروط';
+                    document.getElementById('terms_error').textContent =
+                        '{{ __('messages.terms.required') ?? 'يجب الموافقة على الشروط والأحكام' }}';
+                    document.getElementById('terms_check').classList.add('is-invalid');
                     return;
+                } else {
+                    document.getElementById('terms_check').classList.remove('is-invalid');
                 }
 
                 var btn = this;
                 btn.disabled = true;
-                btn.textContent = 'جاري الحفظ...';
+                btn.textContent = '{{ __('messages.loading') ?? 'جاري الحفظ...' }}';
 
                 var csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute(
                     'content');
@@ -148,7 +203,8 @@
                             alert('حدث خطأ في الخادم. يرجى المحاولة مرة أخرى.');
                         }
                         btn.disabled = false;
-                        btn.textContent = 'إتمام الملف الشخصي';
+                        btn.textContent =
+                            '{{ __('messages.complete_profile') ?? 'إتمام الملف الشخصي' }}';
                         return;
                     }
 
@@ -158,7 +214,8 @@
                         console.error('Non-JSON response received:', text.substring(0, 500));
                         alert('حدث خطأ: الاستجابة غير صحيحة. يرجى المحاولة مرة أخرى.');
                         btn.disabled = false;
-                        btn.textContent = 'إتمام الملف الشخصي';
+                        btn.textContent =
+                            '{{ __('messages.complete_profile') ?? 'إتمام الملف الشخصي' }}';
                         return;
                     }
 
@@ -171,14 +228,15 @@
                     } else {
                         alert(data.message || 'حدث خطأ');
                         btn.disabled = false;
-                        btn.textContent = 'إتمام الملف الشخصي';
+                        btn.textContent =
+                            '{{ __('messages.complete_profile') ?? 'إتمام الملف الشخصي' }}';
                     }
 
                 } catch (err) {
                     console.error('Fetch error:', err);
                     alert('حدث خطأ في الاتصال: ' + (err.message || 'يرجى التحقق من اتصالك بالإنترنت'));
                     btn.disabled = false;
-                    btn.textContent = 'إتمام الملف الشخصي';
+                    btn.textContent = '{{ __('messages.complete_profile') ?? 'إتمام الملف الشخصي' }}';
                 }
             });
         });

@@ -246,6 +246,7 @@ return [
 'or' => 'OR',
 'login_with_facebook' => 'Login with Facebook',
 'login_with_google' => 'Login with Google',
+'register_with_google' => 'Register with Google',
 
 
 

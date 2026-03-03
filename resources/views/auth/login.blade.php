@@ -23,6 +23,18 @@
                     </a>
                 </div>
 
+                <!-- Social Login Buttons -->
+                <div class="social-login-section mb-4">
+                    <a href="{{ route('auth.google') }}" class="btn btn-social btn-google w-100 mb-3">
+                        <i class="fab fa-google me-2"></i>
+                        {{ __('messages.login_with_google') }}
+                    </a>
+
+                    <div class="divider mb-3">
+                        <span class="divider-text">{{ __('messages.or') }}</span>
+                    </div>
+                </div>
+
                 <form method="POST" action="{{ route('login') }}">
                     @csrf
                     <div class="mb-3 position-relative">
@@ -53,23 +65,6 @@
                     <button type="submit" class="btn btn-login w-100 mb-3">
                         <i class="fas fa-sign-in-alt me-2"></i>{{ __('messages.login') }}
                     </button>
-
-                    <!-- Social Login Buttons -->
-                    <div class="social-login-section">
-                        <div class="divider mb-3">
-                            <span class="divider-text">{{ __('messages.or') }}</span>
-                        </div>
-
-                        {{--  <a href="{{ route('auth.facebook') }}" class="btn btn-social btn-facebook w-100 mb-2">
-                            <i class="fab fa-facebook-f me-2"></i>
-                            {{ __('messages.login_with_facebook') }}
-                        </a>  --}}
-
-                        <a href="{{ route('auth.google') }}" class="btn btn-social btn-google w-100">
-                            <i class="fab fa-google me-2"></i>
-                            {{ __('messages.login_with_google') }}
-                        </a>
-                    </div>
                 </form>
             </div>
         </div>
@@ -182,7 +177,8 @@
 
         /* Social Login Buttons */
         .social-login-section {
-            margin-top: 1.5rem;
+            margin-top: 0;
+            margin-bottom: 1.5rem;
         }
 
         .divider {

@@ -234,6 +234,7 @@ return [
     'or' => 'أو',
     'login_with_facebook' => 'تسجيل الدخول عبر فيسبوك',
     'login_with_google' => 'تسجيل الدخول عبر جوجل',
+    'register_with_google' => 'التسجيل بجوجل',
 
 
     'register_welcome' => 'مرحبًا بك في Endak!',

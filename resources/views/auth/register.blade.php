@@ -8,9 +8,10 @@
             <div class="side-panel right-panel">
                 <div class="content text-center">
                     <i class="fas fa-user-plus fa-3x text-warning mb-3"></i>
-<h2>{{ __('messages.register_welcome') }}</h2>
-<p>{{ __('messages.already_have_account') }}</p>
-<button class="btn btn-outline-light mt-3 switch-btn" id="switchToLogin">{{ __('messages.login') }}</button>
+                    <h2>{{ __('messages.register_welcome') }}</h2>
+                    <p>{{ __('messages.already_have_account') }}</p>
+                    <button class="btn btn-outline-light mt-3 switch-btn"
+                        id="switchToLogin">{{ __('messages.login') }}</button>
                 </div>
             </div>
 
@@ -22,12 +23,24 @@
                     </a>
                 </div>
 
+                <!-- Social Login Buttons -->
+                <div class="social-login-section mb-4">
+                    <a href="{{ route('auth.google') }}" class="btn btn-social btn-google w-100 mb-3">
+                        <i class="fab fa-google me-2"></i>
+                        {{ __('messages.register_with_google') ?? 'التسجيل بجوجل' }}
+                    </a>
+
+                    <div class="divider mb-3">
+                        <span class="divider-text">{{ __('messages.or') ?? 'أو' }}</span>
+                    </div>
+                </div>
+
                 <form method="POST" action="{{ route('register') }}">
                     @csrf
                     <div class="mb-3 position-relative">
                         <i class="fas fa-user input-icon text-secondary"></i>
                         <input type="text" class="form-control @error('name') is-invalid @enderror" name="name"
-                            placeholder="{{ __('messages.full_name') }}"  value="{{ old('name') }}" required>
+                            placeholder="{{ __('messages.full_name') }}" value="{{ old('name') }}" required>
                         @error('name')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
@@ -45,8 +58,7 @@
                     <div class="mb-3 position-relative">
                         <i class="fas fa-mobile-alt input-icon text-secondary"></i>
                         <input type="tel" class="form-control @error('phone') is-invalid @enderror" name="phone"
-                            placeholder="{{ __('messages.phone') }}" value="{{ old('phone') }}"
-                            required>
+                            placeholder="{{ __('messages.phone') }}" value="{{ old('phone') }}" required>
                         <small class="form-text text-muted ms-2">
                             <i class="fas fa-info-circle me-1"></i>
                             {{ __('messages.phone_note') }}
@@ -69,10 +81,12 @@
                         <i class="fas fa-users input-icon text-secondary"></i>
                         <select class="form-control @error('user_type') is-invalid @enderror" name="user_type" required>
                             <option value="" disabled selected> {{ __('messages.select_account_type') }} </option>
-                            <option value="customer" {{ old('user_type') == 'customer' ? 'selected' : '' }}>{{ __('messages.user_regular') }} 
-                                </option>
-                            <option value="provider" {{ old('user_type') == 'provider' ? 'selected' : '' }}> {{ __('messages.user_provider') }}
-                                </option>
+                            <option value="customer" {{ old('user_type') == 'customer' ? 'selected' : '' }}>
+                                {{ __('messages.user_regular') }}
+                            </option>
+                            <option value="provider" {{ old('user_type') == 'provider' ? 'selected' : '' }}>
+                                {{ __('messages.user_provider') }}
+                            </option>
                         </select>
                         @error('user_type')
                             <div class="invalid-feedback">{{ $message }}</div>
@@ -83,8 +97,8 @@
                         <input class="form-check-input @error('terms') is-invalid @enderror" type="checkbox" id="terms"
                             name="terms" value="1" required>
                         <label class="form-check-label" for="terms">
-                              <a href="#" class=" text-primary" data-bs-toggle="modal"
-                                data-bs-target="#termsModal">   {{ __('messages.terms_accept') }}</a>
+                            <a href="#" class=" text-primary" data-bs-toggle="modal" data-bs-target="#termsModal">
+                                {{ __('messages.terms_accept') }}</a>
                         </label>
                         @error('terms')
                             <div class="invalid-feedback">{{ $message }}</div>
@@ -97,43 +111,45 @@
                             <div class="modal-content border-0 shadow-lg">
                                 <div class="modal-header"
                                     style="background: linear-gradient(135deg, #2f5c69, #3c7d8b); color: #fff;">
-                                    <h5 class="modal-title" id="termsModalLabel">  {{ __('messages.terms_title') }} </h5>
+                                    <h5 class="modal-title" id="termsModalLabel"> {{ __('messages.terms_title') }} </h5>
                                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
                                         aria-label="Close"></button>
                                 </div>
-                               <div class="modal-body p-4" style="max-height: 70vh; overflow-y: auto; background-color: #f9fbfc;">
-    <h6 class="fw-bold mb-2 text-primary">{{ __('messages.terms_welcome') }}</h6>
-    <p class="text-muted mb-4">{{ __('messages.terms_intro') }}</p>
+                                <div class="modal-body p-4"
+                                    style="max-height: 70vh; overflow-y: auto; background-color: #f9fbfc;">
+                                    <h6 class="fw-bold mb-2 text-primary">{{ __('messages.terms_welcome') }}</h6>
+                                    <p class="text-muted mb-4">{{ __('messages.terms_intro') }}</p>
 
-    <h6 class="fw-bold">{{ __('messages.terms_1_title') }}</h6>
-    <p class="text-muted">{{ __('messages.terms_1_text') }}</p>
+                                    <h6 class="fw-bold">{{ __('messages.terms_1_title') }}</h6>
+                                    <p class="text-muted">{{ __('messages.terms_1_text') }}</p>
 
-    <h6 class="fw-bold mt-4">{{ __('messages.terms_2_title') }}</h6>
-    <p class="text-muted">{{ __('messages.terms_2_text') }}</p>
+                                    <h6 class="fw-bold mt-4">{{ __('messages.terms_2_title') }}</h6>
+                                    <p class="text-muted">{{ __('messages.terms_2_text') }}</p>
 
-    <h6 class="fw-bold mt-4">{{ __('messages.terms_3_title') }}</h6>
-    <p class="text-muted">{{ __('messages.terms_3_text') }}</p>
+                                    <h6 class="fw-bold mt-4">{{ __('messages.terms_3_title') }}</h6>
+                                    <p class="text-muted">{{ __('messages.terms_3_text') }}</p>
 
-    <h6 class="fw-bold mt-4">{{ __('messages.terms_4_title') }}</h6>
-    <p class="text-muted">{{ __('messages.terms_4_text') }}</p>
+                                    <h6 class="fw-bold mt-4">{{ __('messages.terms_4_title') }}</h6>
+                                    <p class="text-muted">{{ __('messages.terms_4_text') }}</p>
 
-    <h6 class="fw-bold mt-4">{{ __('messages.terms_5_title') }}</h6>
-    <p class="text-muted">{{ __('messages.terms_5_text') }}</p>
+                                    <h6 class="fw-bold mt-4">{{ __('messages.terms_5_title') }}</h6>
+                                    <p class="text-muted">{{ __('messages.terms_5_text') }}</p>
 
-    <h6 class="fw-bold mt-4">{{ __('messages.terms_6_title') }}</h6>
-    <p class="text-muted">{{ __('messages.terms_6_text') }}</p>
+                                    <h6 class="fw-bold mt-4">{{ __('messages.terms_6_title') }}</h6>
+                                    <p class="text-muted">{{ __('messages.terms_6_text') }}</p>
 
-    <h6 class="fw-bold mt-4">{{ __('messages.terms_7_title') }}</h6>
-    <p class="text-muted">{{ __('messages.terms_7_text') }}</p>
+                                    <h6 class="fw-bold mt-4">{{ __('messages.terms_7_title') }}</h6>
+                                    <p class="text-muted">{{ __('messages.terms_7_text') }}</p>
 
-    <h6 class="fw-bold mt-4">{{ __('messages.terms_8_title') }}</h6>
-    <p class="text-muted">{{ __('messages.terms_8_text') }}</p>
+                                    <h6 class="fw-bold mt-4">{{ __('messages.terms_8_title') }}</h6>
+                                    <p class="text-muted">{{ __('messages.terms_8_text') }}</p>
 
-    <h6 class="fw-bold mt-4">{{ __('messages.terms_9_title') }}</h6>
-    <p class="text-muted">{{ __('messages.terms_9_text') }}</p>
+                                    <h6 class="fw-bold mt-4">{{ __('messages.terms_9_title') }}</h6>
+                                    <p class="text-muted">{{ __('messages.terms_9_text') }}</p>
 
-    <p class="fw-semibold mt-4 text-center text-primary">{{ __('messages.terms_agree') }}</p>
-</div>
+                                    <p class="fw-semibold mt-4 text-center text-primary">{{ __('messages.terms_agree') }}
+                                    </p>
+                                </div>
 
                                 <div class="modal-footer border-0 d-flex justify-content-center"
                                     style="background: #f9fbfc;">
@@ -146,7 +162,7 @@
                     </div>
 
                     <button type="submit" class="btn btn-login w-100">
-                        <i class="fas fa-user-plus me-2"></i>{{ __('messages.create_account') }} 
+                        <i class="fas fa-user-plus me-2"></i>{{ __('messages.create_account') }}
                     </button>
                 </form>
             </div>
@@ -259,6 +275,70 @@
         .btn-login:hover {
             transform: translateY(-3px);
             background: #f3a446;
+        }
+
+        /* Social Login Buttons */
+        .social-login-section {
+            margin-top: 0;
+        }
+
+        .divider {
+            text-align: center;
+            position: relative;
+            margin: 1.5rem 0;
+        }
+
+        .divider::before,
+        .divider::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            width: 45%;
+            height: 1px;
+            background: #ddd;
+        }
+
+        .divider::before {
+            right: 0;
+        }
+
+        .divider::after {
+            left: 0;
+        }
+
+        .divider-text {
+            background: #fff;
+            padding: 0 1rem;
+            color: #999;
+            font-size: 0.9rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .btn-social {
+            border-radius: 10px;
+            padding: 0.75rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            border: 1px solid #ddd;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+        }
+
+        .btn-google {
+            background: #fff;
+            color: #4285f4;
+            border-color: #ddd;
+        }
+
+        .btn-google:hover {
+            background: #f8f9fa;
+            border-color: #4285f4;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(66, 133, 244, 0.2);
+            color: #4285f4;
         }
 
         @keyframes slideInRight {
