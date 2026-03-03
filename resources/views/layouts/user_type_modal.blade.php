@@ -5,7 +5,7 @@
             <div class="modal-content">
 
                 <div class="modal-header bg-primary text-white">
-                    <h5 class="modal-title">{{ __('messages.complete_profile') ?? 'إتمام الملف الشخصي' }}</h5>
+                    <h5 class="modal-title">{{ __('messages.complete_profile') }}</h5>
                 </div>
 
                 <div class="modal-body">
@@ -27,7 +27,7 @@
                             <input type="checkbox" class="form-check-input" id="terms_check" name="terms">
                             <label class="form-check-label">{{ __('messages.terms_accept') }}
                                 <a href="#" class="text-primary" data-bs-toggle="modal"
-                                    data-bs-target="#termsModal">{{ __('messages.terms_conditions') ?? 'الشروط والأحكام' }}</a>
+                                    data-bs-target="#termsModal">{{ __('messages.terms_conditions') }}</a>
                             </label>
                             <div class="invalid-feedback" id="terms_error"></div>
                         </div>
@@ -36,7 +36,7 @@
 
                 <div class="modal-footer">
                     <button id="submitUserType"
-                        class="btn btn-primary w-100">{{ __('messages.complete_profile') ?? 'إتمام الملف الشخصي' }}</button>
+                        class="btn btn-primary w-100">{{ __('messages.complete_profile') }}</button>
                 </div>
             </div>
         </div>
@@ -121,7 +121,7 @@
 
                 if (!userType) {
                     document.getElementById('user_type_error').textContent =
-                        '{{ __('messages.user_type.required') ?? 'يجب اختيار نوع الحساب' }}';
+                        '{{ __('messages.user_type_required') }}';
                     document.getElementById('user_type').classList.add('is-invalid');
                     return;
                 } else {
@@ -130,7 +130,7 @@
 
                 if (!termsChecked) {
                     document.getElementById('terms_error').textContent =
-                        '{{ __('messages.terms.required') ?? 'يجب الموافقة على الشروط والأحكام' }}';
+                        '{{ __('messages.terms_required') }}';
                     document.getElementById('terms_check').classList.add('is-invalid');
                     return;
                 } else {
@@ -139,7 +139,7 @@
 
                 var btn = this;
                 btn.disabled = true;
-                btn.textContent = '{{ __('messages.loading') ?? 'جاري الحفظ...' }}';
+                btn.textContent = '{{ __('messages.loading') }}';
 
                 var csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute(
                     'content');
@@ -170,7 +170,7 @@
                     if (!res.ok) {
                         // Handle CSRF error (419)
                         if (res.status === 419) {
-                            alert('انتهت الجلسة. جاري إعادة تحميل الصفحة...');
+                            alert('{{ __('messages.session_expired') }}');
                             window.location.reload();
                             return;
                         }
@@ -192,19 +192,18 @@
                                         .terms[0];
                                     document.getElementById('terms_check').classList.add('is-invalid');
                                 }
-                                alert(errorData.message || 'التحقق من البيانات فشل');
+                                alert(errorData.message || '{{ __('messages.validation_failed') }}');
                             } else {
-                                alert(errorData?.message || 'حدث خطأ في الخادم');
+                                alert(errorData?.message || '{{ __('messages.server_error') }}');
                             }
                         } else {
                             // Not JSON - might be HTML error page
                             var text = await res.text().catch(() => '');
                             console.error('Non-JSON error response:', text.substring(0, 500));
-                            alert('حدث خطأ في الخادم. يرجى المحاولة مرة أخرى.');
+                            alert('{{ __('messages.server_error_try_again') }}');
                         }
                         btn.disabled = false;
-                        btn.textContent =
-                            '{{ __('messages.complete_profile') ?? 'إتمام الملف الشخصي' }}';
+                        btn.textContent = '{{ __('messages.complete_profile') }}';
                         return;
                     }
 
@@ -212,10 +211,9 @@
                     if (!contentType || !contentType.includes('application/json')) {
                         var text = await res.text().catch(() => '');
                         console.error('Non-JSON response received:', text.substring(0, 500));
-                        alert('حدث خطأ: الاستجابة غير صحيحة. يرجى المحاولة مرة أخرى.');
+                        alert('{{ __('messages.invalid_response') }}');
                         btn.disabled = false;
-                        btn.textContent =
-                            '{{ __('messages.complete_profile') ?? 'إتمام الملف الشخصي' }}';
+                        btn.textContent = '{{ __('messages.complete_profile') }}';
                         return;
                     }
 
@@ -223,20 +221,20 @@
 
                     if (data.success) {
                         userTypeModal.hide();
-                        alert(data.message || 'تم تحديث نوع الحساب بنجاح');
+                        alert(data.message || '{{ __('messages.profile_updated_success') }}');
                         setTimeout(() => location.reload(), 700);
                     } else {
-                        alert(data.message || 'حدث خطأ');
+                        alert(data.message || '{{ __('messages.error_occurred') }}');
                         btn.disabled = false;
-                        btn.textContent =
-                            '{{ __('messages.complete_profile') ?? 'إتمام الملف الشخصي' }}';
+                        btn.textContent = '{{ __('messages.complete_profile') }}';
                     }
 
                 } catch (err) {
                     console.error('Fetch error:', err);
-                    alert('حدث خطأ في الاتصال: ' + (err.message || 'يرجى التحقق من اتصالك بالإنترنت'));
+                    alert('{{ __('messages.connection_error') }}: ' + (err.message ||
+                        '{{ __('messages.check_internet') }}'));
                     btn.disabled = false;
-                    btn.textContent = '{{ __('messages.complete_profile') ?? 'إتمام الملف الشخصي' }}';
+                    btn.textContent = '{{ __('messages.complete_profile') }}';
                 }
             });
         });

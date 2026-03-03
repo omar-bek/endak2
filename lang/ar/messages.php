@@ -235,6 +235,18 @@ return [
     'login_with_facebook' => 'تسجيل الدخول عبر فيسبوك',
     'login_with_google' => 'تسجيل الدخول عبر جوجل',
     'register_with_google' => 'التسجيل بجوجل',
+    'complete_profile' => 'إتمام الملف الشخصي',
+    'session_expired' => 'انتهت الجلسة. جاري إعادة تحميل الصفحة...',
+    'validation_failed' => 'التحقق من البيانات فشل',
+    'server_error' => 'حدث خطأ في الخادم',
+    'server_error_try_again' => 'حدث خطأ في الخادم. يرجى المحاولة مرة أخرى.',
+    'invalid_response' => 'حدث خطأ: الاستجابة غير صحيحة. يرجى المحاولة مرة أخرى.',
+    'profile_updated_success' => 'تم تحديث نوع الحساب بنجاح',
+    'error_occurred' => 'حدث خطأ',
+    'connection_error' => 'حدث خطأ في الاتصال',
+    'check_internet' => 'يرجى التحقق من اتصالك بالإنترنت',
+    'user_type_required' => 'يجب اختيار نوع الحساب',
+    'terms_required' => 'يجب الموافقة على الشروط والأحكام',
 
 
     'register_welcome' => 'مرحبًا بك في Endak!',

@@ -247,6 +247,19 @@ return [
 'login_with_facebook' => 'Login with Facebook',
 'login_with_google' => 'Login with Google',
 'register_with_google' => 'Register with Google',
+'complete_profile' => 'Complete Profile',
+'session_expired' => 'Session expired. Reloading page...',
+'validation_failed' => 'Validation failed',
+'server_error' => 'Server error occurred',
+'server_error_try_again' => 'Server error occurred. Please try again.',
+'invalid_response' => 'Error: Invalid response. Please try again.',
+'profile_updated_success' => 'Account type updated successfully',
+'error_occurred' => 'An error occurred',
+'connection_error' => 'Connection error',
+'check_internet' => 'Please check your internet connection',
+'user_type_required' => 'You must select an account type',
+'terms_required' => 'You must agree to the terms and conditions',
+'register_with_google' => 'Register with Google',
 
 
 
