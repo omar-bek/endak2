@@ -1255,6 +1255,31 @@
                         <a href="#" class="social-icon"><i class="fab fa-instagram"></i></a>
                         <a href="#" class="social-icon"><i class="fab fa-linkedin-in"></i></a>
                     </div>
+
+                    @php
+                        $providerAppEnabled = \App\Models\SystemSetting::get('provider_app_enabled', false);
+                        $clientAppEnabled = \App\Models\SystemSetting::get('client_app_enabled', false);
+                        $providerAppLink = \App\Models\SystemSetting::get('provider_app_link', '');
+                        $clientAppLink = \App\Models\SystemSetting::get('client_app_link', '');
+                    @endphp
+
+                    @if ($providerAppEnabled || $clientAppEnabled)
+                        <h5 class="footer-title mt-4">{{ __('messages.download_app') }}</h5>
+                        <div class="app-links mt-3">
+                            @if ($providerAppEnabled && $providerAppLink)
+                                <a href="{{ $providerAppLink }}" target="_blank" class="app-link-btn mb-2">
+                                    <i class="fas fa-user-tie"></i>
+                                    <span>{{ __('messages.provider_app') }}</span>
+                                </a>
+                            @endif
+                            @if ($clientAppEnabled && $clientAppLink)
+                                <a href="{{ $clientAppLink }}" target="_blank" class="app-link-btn">
+                                    <i class="fas fa-user"></i>
+                                    <span>{{ __('messages.client_app') }}</span>
+                                </a>
+                            @endif
+                        </div>
+                    @endif
                 </div>
             </div>
 
@@ -1362,6 +1387,36 @@
             transform: translateY(-3px);
         }
 
+        /* App download links */
+        .app-links {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .app-link-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 18px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            color: #e9f2f4;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+
+        .app-link-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            color: #f3a446;
+            transform: translateY(-2px);
+        }
+
+        .app-link-btn i {
+            font-size: 1.2rem;
+        }
 
         /* Copy text */
         .footer-copy {

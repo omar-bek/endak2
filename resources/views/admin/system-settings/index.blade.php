@@ -194,6 +194,75 @@
                 </div>
             </div>
 
+            <!-- إعدادات روابط التطبيقات -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-mobile-alt"></i> روابط التطبيقات
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <form method="POST" action="{{ route('admin.system-settings.update-app-links') }}">
+                        @csrf
+                        @method('PUT')
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="provider_app_link" class="form-label">
+                                        <i class="fas fa-user-tie text-primary me-1"></i>رابط تطبيق مزود الخدمة
+                                    </label>
+                                    <input type="url" class="form-control" id="provider_app_link"
+                                        name="provider_app_link"
+                                        value="{{ \App\Models\SystemSetting::get('provider_app_link', '') }}"
+                                        placeholder="https://play.google.com/store/apps/...">
+                                    <small class="form-text text-muted">رابط تحميل تطبيق مزود الخدمة (Google Play / App Store)</small>
+                                </div>
+                                <div class="mb-3">
+                                    <div class="form-check">
+                                        <input type="checkbox" class="form-check-input" id="provider_app_enabled"
+                                            name="provider_app_enabled" value="1"
+                                            {{ \App\Models\SystemSetting::get('provider_app_enabled', false) ? 'checked' : '' }}>
+                                        <label class="form-check-label" for="provider_app_enabled">
+                                            تفعيل رابط تطبيق المزود في الفوتر
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="client_app_link" class="form-label">
+                                        <i class="fas fa-user text-success me-1"></i>رابط تطبيق العميل
+                                    </label>
+                                    <input type="url" class="form-control" id="client_app_link"
+                                        name="client_app_link"
+                                        value="{{ \App\Models\SystemSetting::get('client_app_link', '') }}"
+                                        placeholder="https://play.google.com/store/apps/...">
+                                    <small class="form-text text-muted">رابط تحميل تطبيق العميل (Google Play / App Store)</small>
+                                </div>
+                                <div class="mb-3">
+                                    <div class="form-check">
+                                        <input type="checkbox" class="form-check-input" id="client_app_enabled"
+                                            name="client_app_enabled" value="1"
+                                            {{ \App\Models\SystemSetting::get('client_app_enabled', false) ? 'checked' : '' }}>
+                                        <label class="form-check-label" for="client_app_enabled">
+                                            تفعيل رابط تطبيق العميل في الفوتر
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="text-center">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save"></i> حفظ روابط التطبيقات
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
             <!-- إعدادات مزود الخدمة -->
             <div class="card mb-4">
                 <div class="card-header">

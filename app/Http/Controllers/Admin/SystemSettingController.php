@@ -105,6 +105,25 @@ if ($request->hasFile('logo_upload')) {
     }
 
     /**
+     * تحديث روابط التطبيقات
+     */
+    public function updateAppLinks(Request $request)
+    {
+        $request->validate([
+            'provider_app_link' => 'nullable|url|max:500',
+            'client_app_link' => 'nullable|url|max:500',
+        ]);
+
+        SystemSetting::set('provider_app_link', $request->input('provider_app_link', ''), 'string', 'apps', 'رابط تطبيق مزود الخدمة');
+        SystemSetting::set('client_app_link', $request->input('client_app_link', ''), 'string', 'apps', 'رابط تطبيق العميل');
+        SystemSetting::set('provider_app_enabled', $request->has('provider_app_enabled'), 'boolean', 'apps', 'تفعيل رابط تطبيق المزود');
+        SystemSetting::set('client_app_enabled', $request->has('client_app_enabled'), 'boolean', 'apps', 'تفعيل رابط تطبيق العميل');
+
+        return redirect()->route('admin.system-settings.index')
+            ->with('success', 'تم تحديث روابط التطبيقات بنجاح');
+    }
+
+    /**
      * تحديث إعدادات مزود الخدمة
      */
     public function updateProviderSettings(Request $request)

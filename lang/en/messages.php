@@ -110,6 +110,9 @@ return [
     'contact_info' => 'Contact Information',
     'follow_us' => 'Follow Us',
     'all_rights_reserved' => 'All Rights Reserved',
+    'download_app' => 'Download App',
+    'provider_app' => 'Provider App',
+    'client_app' => 'Client App',
 
     // Categories
     'category' => 'Category',

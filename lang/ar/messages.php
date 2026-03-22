@@ -98,6 +98,9 @@ return [
     'contact_info' => 'معلومات التواصل',
     'follow_us' => 'تابعنا',
     'all_rights_reserved' => 'جميع الحقوق محفوظة',
+    'download_app' => 'حمّل التطبيق',
+    'provider_app' => 'تطبيق مزود الخدمة',
+    'client_app' => 'تطبيق العميل',
 
     // Categories
     'category' => 'القسم',
