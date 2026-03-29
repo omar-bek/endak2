@@ -58,7 +58,7 @@
                                 <div>
                                     <strong>{{ $field->name_ar }}</strong>
                                     <br>
-                                    <small class="text-muted">{{ $field->name_en }} ({{ $field->name }})</small>
+                                    <small class="text-muted">{{ $field->name_en }} ({{ $field->name_ar ?: $field->name }})</small>
                                 </div>
                             </td>
                             <td>
