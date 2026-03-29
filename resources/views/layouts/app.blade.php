@@ -1259,24 +1259,64 @@
                     @php
                         $providerAppEnabled = \App\Models\SystemSetting::get('provider_app_enabled', false);
                         $clientAppEnabled = \App\Models\SystemSetting::get('client_app_enabled', false);
-                        $providerAppLink = \App\Models\SystemSetting::get('provider_app_link', '');
-                        $clientAppLink = \App\Models\SystemSetting::get('client_app_link', '');
+                        $providerGooglePlay = \App\Models\SystemSetting::get('provider_app_google_play', '');
+                        $providerAppStore = \App\Models\SystemSetting::get('provider_app_appstore', '');
+                        $clientGooglePlay = \App\Models\SystemSetting::get('client_app_google_play', '');
+                        $clientAppStore = \App\Models\SystemSetting::get('client_app_appstore', '');
                     @endphp
 
                     @if ($providerAppEnabled || $clientAppEnabled)
                         <h5 class="footer-title mt-4">{{ __('messages.download_app') }}</h5>
                         <div class="app-links mt-3">
-                            @if ($providerAppEnabled && $providerAppLink)
-                                <a href="{{ $providerAppLink }}" target="_blank" class="app-link-btn mb-2">
-                                    <i class="fas fa-user-tie"></i>
-                                    <span>{{ __('messages.provider_app') }}</span>
-                                </a>
+                            @if ($providerAppEnabled && ($providerGooglePlay || $providerAppStore))
+                                <div class="app-section mb-3">
+                                    <span class="app-section-label">{{ __('messages.provider_app') }}</span>
+                                    <div class="store-buttons">
+                                        @if ($providerGooglePlay)
+                                            <a href="{{ $providerGooglePlay }}" target="_blank" class="store-btn google-play-btn">
+                                                <i class="fab fa-google-play"></i>
+                                                <div class="store-btn-text">
+                                                    <small>GET IT ON</small>
+                                                    <span>Google Play</span>
+                                                </div>
+                                            </a>
+                                        @endif
+                                        @if ($providerAppStore)
+                                            <a href="{{ $providerAppStore }}" target="_blank" class="store-btn appstore-btn">
+                                                <i class="fab fa-apple"></i>
+                                                <div class="store-btn-text">
+                                                    <small>Download on the</small>
+                                                    <span>App Store</span>
+                                                </div>
+                                            </a>
+                                        @endif
+                                    </div>
+                                </div>
                             @endif
-                            @if ($clientAppEnabled && $clientAppLink)
-                                <a href="{{ $clientAppLink }}" target="_blank" class="app-link-btn">
-                                    <i class="fas fa-user"></i>
-                                    <span>{{ __('messages.client_app') }}</span>
-                                </a>
+                            @if ($clientAppEnabled && ($clientGooglePlay || $clientAppStore))
+                                <div class="app-section">
+                                    <span class="app-section-label">{{ __('messages.client_app') }}</span>
+                                    <div class="store-buttons">
+                                        @if ($clientGooglePlay)
+                                            <a href="{{ $clientGooglePlay }}" target="_blank" class="store-btn google-play-btn">
+                                                <i class="fab fa-google-play"></i>
+                                                <div class="store-btn-text">
+                                                    <small>GET IT ON</small>
+                                                    <span>Google Play</span>
+                                                </div>
+                                            </a>
+                                        @endif
+                                        @if ($clientAppStore)
+                                            <a href="{{ $clientAppStore }}" target="_blank" class="store-btn appstore-btn">
+                                                <i class="fab fa-apple"></i>
+                                                <div class="store-btn-text">
+                                                    <small>Download on the</small>
+                                                    <span>App Store</span>
+                                                </div>
+                                            </a>
+                                        @endif
+                                    </div>
+                                </div>
                             @endif
                         </div>
                     @endif
@@ -1391,31 +1431,69 @@
         .app-links {
             display: flex;
             flex-direction: column;
+            gap: 12px;
+        }
+
+        .app-section-label {
+            display: block;
+            color: #b0c4c8;
+            font-size: 0.8rem;
+            margin-bottom: 6px;
+        }
+
+        .store-buttons {
+            display: flex;
+            flex-direction: row;
+            flex-wrap: wrap;
             gap: 8px;
         }
 
-        .app-link-btn {
+        .store-btn {
             display: inline-flex;
             align-items: center;
             gap: 10px;
-            padding: 10px 18px;
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 8px 14px;
+            background: #000;
+            border: 1px solid rgba(255, 255, 255, 0.25);
             border-radius: 8px;
-            color: #e9f2f4;
+            color: #fff;
             text-decoration: none;
-            font-size: 0.9rem;
             transition: all 0.3s ease;
+            max-width: 180px;
         }
 
-        .app-link-btn:hover {
-            background: rgba(255, 255, 255, 0.2);
-            color: #f3a446;
+        .store-btn:hover {
+            background: #222;
+            color: #fff;
             transform: translateY(-2px);
+            border-color: rgba(255, 255, 255, 0.5);
         }
 
-        .app-link-btn i {
-            font-size: 1.2rem;
+        .store-btn i {
+            font-size: 1.5rem;
+        }
+
+        .store-btn-text {
+            display: flex;
+            flex-direction: column;
+            line-height: 1.2;
+        }
+
+        .store-btn-text small {
+            font-size: 0.55rem;
+            letter-spacing: 0.5px;
+            opacity: 0.9;
+        }
+
+        .store-btn-text span {
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        @media (max-width: 400px) {
+            .store-buttons {
+                flex-direction: column;
+            }
         }
 
         /* Copy text */

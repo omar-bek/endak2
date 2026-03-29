@@ -231,6 +231,7 @@ Route::prefix('v1')->name('api.v1.')->group(function () {
 
     Route::middleware('api.token')->group(function () {
         Route::post('auth/logout', [ApiAuthController::class, 'logout']);
+        Route::delete('auth/account', [ApiAuthController::class, 'deleteAccount']);
         Route::get('auth/profile', [ApiAuthController::class, 'profile']);
         Route::post('auth/profile', [ApiAuthController::class, 'updateProfile']);
         Route::get('auth/complete-profile', [ApiAuthController::class, 'getCompleteProfile']);

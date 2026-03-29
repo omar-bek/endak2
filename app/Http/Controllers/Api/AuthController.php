@@ -259,6 +259,40 @@ class AuthController extends BaseApiController
         }, 'حدث خطأ أثناء تحديث الملف الشخصي');
     }
 
+    /**
+     * حذف الحساب
+     * DELETE /api/v1/auth/account
+     */
+    public function deleteAccount(Request $request)
+    {
+        return $this->executeApiWithTryCatch(function () use ($request) {
+            /** @var User $user */
+            $user = $request->user();
+            if (!$user) {
+                return $this->error([], 'المستخدم غير موجود', 404);
+            }
+
+            // حذف الصورة الشخصية من التخزين لمنع الملفات اليتيمة
+            if ($user->avatar && Storage::disk('public')->exists($user->avatar)) {
+                Storage::disk('public')->delete($user->avatar);
+            }
+
+            DB::beginTransaction();
+            try {
+                $user->clearApiToken();
+                $user->delete();
+                DB::commit();
+            } catch (Exception $ex) {
+                DB::rollBack();
+                throw $ex;
+            }
+
+            Log::info('API User account deleted', ['user_id' => $user->id]);
+
+            return $this->success(null, 'تم حذف الحساب بنجاح');
+        }, 'حدث خطأ أثناء حذف الحساب');
+    }
+
     // ==================== Profile Completion Methods ====================
 
     /**

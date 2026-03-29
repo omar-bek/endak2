@@ -110,12 +110,16 @@ if ($request->hasFile('logo_upload')) {
     public function updateAppLinks(Request $request)
     {
         $request->validate([
-            'provider_app_link' => 'nullable|url|max:500',
-            'client_app_link' => 'nullable|url|max:500',
+            'provider_app_google_play' => 'nullable|url|max:500',
+            'provider_app_appstore' => 'nullable|url|max:500',
+            'client_app_google_play' => 'nullable|url|max:500',
+            'client_app_appstore' => 'nullable|url|max:500',
         ]);
 
-        SystemSetting::set('provider_app_link', $request->input('provider_app_link', ''), 'string', 'apps', 'رابط تطبيق مزود الخدمة');
-        SystemSetting::set('client_app_link', $request->input('client_app_link', ''), 'string', 'apps', 'رابط تطبيق العميل');
+        SystemSetting::set('provider_app_google_play', $request->input('provider_app_google_play', ''), 'string', 'apps', 'رابط تطبيق مزود الخدمة - Google Play');
+        SystemSetting::set('provider_app_appstore', $request->input('provider_app_appstore', ''), 'string', 'apps', 'رابط تطبيق مزود الخدمة - App Store');
+        SystemSetting::set('client_app_google_play', $request->input('client_app_google_play', ''), 'string', 'apps', 'رابط تطبيق العميل - Google Play');
+        SystemSetting::set('client_app_appstore', $request->input('client_app_appstore', ''), 'string', 'apps', 'رابط تطبيق العميل - App Store');
         SystemSetting::set('provider_app_enabled', $request->has('provider_app_enabled'), 'boolean', 'apps', 'تفعيل رابط تطبيق المزود');
         SystemSetting::set('client_app_enabled', $request->has('client_app_enabled'), 'boolean', 'apps', 'تفعيل رابط تطبيق العميل');
 

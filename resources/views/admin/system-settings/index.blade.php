@@ -206,51 +206,77 @@
                         @csrf
                         @method('PUT')
 
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="mb-3">
-                                    <label for="provider_app_link" class="form-label">
-                                        <i class="fas fa-user-tie text-primary me-1"></i>رابط تطبيق مزود الخدمة
-                                    </label>
-                                    <input type="url" class="form-control" id="provider_app_link"
-                                        name="provider_app_link"
-                                        value="{{ \App\Models\SystemSetting::get('provider_app_link', '') }}"
-                                        placeholder="https://play.google.com/store/apps/...">
-                                    <small class="form-text text-muted">رابط تحميل تطبيق مزود الخدمة (Google Play / App Store)</small>
-                                </div>
-                                <div class="mb-3">
-                                    <div class="form-check">
-                                        <input type="checkbox" class="form-check-input" id="provider_app_enabled"
-                                            name="provider_app_enabled" value="1"
-                                            {{ \App\Models\SystemSetting::get('provider_app_enabled', false) ? 'checked' : '' }}>
-                                        <label class="form-check-label" for="provider_app_enabled">
-                                            تفعيل رابط تطبيق المزود في الفوتر
+                        <!-- تطبيق مزود الخدمة -->
+                        <div class="border rounded p-3 mb-4">
+                            <h6 class="mb-3"><i class="fas fa-user-tie text-primary me-1"></i> تطبيق مزود الخدمة</h6>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="provider_app_google_play" class="form-label">
+                                            <i class="fab fa-google-play text-success me-1"></i>رابط Google Play
                                         </label>
+                                        <input type="url" class="form-control" id="provider_app_google_play"
+                                            name="provider_app_google_play"
+                                            value="{{ \App\Models\SystemSetting::get('provider_app_google_play', '') }}"
+                                            placeholder="https://play.google.com/store/apps/details?id=...">
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="provider_app_appstore" class="form-label">
+                                            <i class="fab fa-apple text-dark me-1"></i>رابط App Store
+                                        </label>
+                                        <input type="url" class="form-control" id="provider_app_appstore"
+                                            name="provider_app_appstore"
+                                            value="{{ \App\Models\SystemSetting::get('provider_app_appstore', '') }}"
+                                            placeholder="https://apps.apple.com/app/...">
                                     </div>
                                 </div>
                             </div>
+                            <div class="form-check">
+                                <input type="checkbox" class="form-check-input" id="provider_app_enabled"
+                                    name="provider_app_enabled" value="1"
+                                    {{ \App\Models\SystemSetting::get('provider_app_enabled', false) ? 'checked' : '' }}>
+                                <label class="form-check-label" for="provider_app_enabled">
+                                    تفعيل روابط تطبيق المزود في الفوتر
+                                </label>
+                            </div>
+                        </div>
 
-                            <div class="col-md-6">
-                                <div class="mb-3">
-                                    <label for="client_app_link" class="form-label">
-                                        <i class="fas fa-user text-success me-1"></i>رابط تطبيق العميل
-                                    </label>
-                                    <input type="url" class="form-control" id="client_app_link"
-                                        name="client_app_link"
-                                        value="{{ \App\Models\SystemSetting::get('client_app_link', '') }}"
-                                        placeholder="https://play.google.com/store/apps/...">
-                                    <small class="form-text text-muted">رابط تحميل تطبيق العميل (Google Play / App Store)</small>
-                                </div>
-                                <div class="mb-3">
-                                    <div class="form-check">
-                                        <input type="checkbox" class="form-check-input" id="client_app_enabled"
-                                            name="client_app_enabled" value="1"
-                                            {{ \App\Models\SystemSetting::get('client_app_enabled', false) ? 'checked' : '' }}>
-                                        <label class="form-check-label" for="client_app_enabled">
-                                            تفعيل رابط تطبيق العميل في الفوتر
+                        <!-- تطبيق العميل -->
+                        <div class="border rounded p-3 mb-4">
+                            <h6 class="mb-3"><i class="fas fa-user text-success me-1"></i> تطبيق العميل</h6>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="client_app_google_play" class="form-label">
+                                            <i class="fab fa-google-play text-success me-1"></i>رابط Google Play
                                         </label>
+                                        <input type="url" class="form-control" id="client_app_google_play"
+                                            name="client_app_google_play"
+                                            value="{{ \App\Models\SystemSetting::get('client_app_google_play', '') }}"
+                                            placeholder="https://play.google.com/store/apps/details?id=...">
                                     </div>
                                 </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="client_app_appstore" class="form-label">
+                                            <i class="fab fa-apple text-dark me-1"></i>رابط App Store
+                                        </label>
+                                        <input type="url" class="form-control" id="client_app_appstore"
+                                            name="client_app_appstore"
+                                            value="{{ \App\Models\SystemSetting::get('client_app_appstore', '') }}"
+                                            placeholder="https://apps.apple.com/app/...">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-check">
+                                <input type="checkbox" class="form-check-input" id="client_app_enabled"
+                                    name="client_app_enabled" value="1"
+                                    {{ \App\Models\SystemSetting::get('client_app_enabled', false) ? 'checked' : '' }}>
+                                <label class="form-check-label" for="client_app_enabled">
+                                    تفعيل روابط تطبيق العميل في الفوتر
+                                </label>
                             </div>
                         </div>
 
