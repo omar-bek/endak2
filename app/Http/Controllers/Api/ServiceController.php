@@ -432,18 +432,16 @@ class ServiceController extends BaseApiController
             return [];
         }
 
-        $categoryFields = CategoryField::where('category_id', $service->category_id)
-            ->get()
-            ->keyBy('name');
+        $categoryFields = CategoryField::where('category_id', $service->category_id)->get();
 
         $detailed = [];
         foreach ($service->custom_fields as $key => $value) {
-            $field = $categoryFields->get($key);
+            $field = $this->findFieldByKey($categoryFields, (string) $key);
             $detailed[] = [
                 'key' => $key,
                 'name_ar' => $field->name_ar ?? $key,
                 'name_en' => $field->name_en ?? $key,
-                'type' => $field->type ?? 'text',
+                'type' => $field?->type ?? 'text',
                 'value' => $value,
             ];
         }
