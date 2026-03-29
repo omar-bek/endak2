@@ -59,7 +59,7 @@ class CategoryFieldController extends Controller
             'name_ar' => 'required|string|max:255',
             'name_en' => 'required|string|max:255',
             'name' => ['required', 'string', 'max:255', \Illuminate\Validation\Rule::unique('category_fields')->where('category_id', $category->id)],
-            'type' => 'required|in:title,text,number,select,checkbox,textarea,image,date,time',
+            'type' => 'required|in:title,text,number,select,checkbox,textarea,image,video,date,time',
             'value' => 'nullable',
             'options' => 'nullable|array',
             'input_group' => 'nullable|string|max:255',
@@ -118,7 +118,7 @@ class CategoryFieldController extends Controller
             'name_ar' => 'required|string|max:255',
             'name_en' => 'required|string|max:255',
             'name' => ['required', 'string', 'max:255', \Illuminate\Validation\Rule::unique('category_fields')->where('category_id', $category->id)->ignore($field->id)],
-            'type' => 'required|in:title,text,number,select,checkbox,textarea,image,date,time',
+            'type' => 'required|in:title,text,number,select,checkbox,textarea,image,video,date,time',
             'value' => 'nullable',
             'options' => 'nullable|array',
             'input_group' => 'nullable|string|max:255',
@@ -151,8 +151,8 @@ class CategoryFieldController extends Controller
      */
     public function destroy(Category $category, CategoryField $field)
     {
-        // حذف الصورة إذا كان الحقل من نوع صورة
-        if ($field->isImageType() && $field->value) {
+        // حذف الصورة أو الفيديو إذا كان الحقل من نوع صورة أو فيديو
+        if (($field->isImageType() || $field->isVideoType()) && $field->value) {
             Storage::disk('public')->delete($field->value);
         }
 
@@ -184,6 +184,17 @@ class CategoryFieldController extends Controller
             case 'image':
                 if ($request->hasFile('value')) {
                     // حذف الصورة القديمة إذا كانت موجودة
+                    if ($field && $field->value) {
+                        Storage::disk('public')->delete($field->value);
+                    }
+
+                    return $request->file('value')->store('field-defaults', 'public');
+                }
+                return $field ? $field->value : null;
+
+            case 'video':
+                if ($request->hasFile('value')) {
+                    // حذف الفيديو القديم إذا كان موجود
                     if ($field && $field->value) {
                         Storage::disk('public')->delete($field->value);
                     }

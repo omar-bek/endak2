@@ -68,6 +68,7 @@ class CategoryField extends Model
             'checkbox' => 'تشيك بوكس',
             'textarea' => 'مربع نص',
             'image' => 'صورة',
+            'video' => 'فيديو',
             'date' => 'تاريخ',
             'time' => 'وقت',
         ];
@@ -84,6 +85,7 @@ class CategoryField extends Model
             'checkbox' => 'fas fa-check-square',
             'textarea' => 'fas fa-paragraph',
             'image' => 'fas fa-image',
+            'video' => 'fas fa-video',
             'date' => 'fas fa-calendar',
             'time' => 'fas fa-clock',
         ];
@@ -108,6 +110,12 @@ class CategoryField extends Model
     public function isImageType()
     {
         return $this->type === 'image';
+    }
+
+    // Check if field is video type
+    public function isVideoType()
+    {
+        return $this->type === 'video';
     }
 
     // Check if field is checkbox type

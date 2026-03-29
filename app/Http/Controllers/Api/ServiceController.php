@@ -209,7 +209,10 @@ class ServiceController extends BaseApiController
                 'offers.provider:id,name,avatar',
             ]);
 
-            return $this->success($service);
+            $data = $service->toArray();
+            $data['custom_fields_detailed'] = $this->getDetailedCustomFields($service);
+
+            return $this->success($data);
         }, 'حدث خطأ أثناء جلب الخدمة');
     }
 
@@ -411,11 +414,42 @@ class ServiceController extends BaseApiController
                 return $this->error(null, 'الخدمة غير موجودة أو لا تخصك', 404);
             }
 
-            return $this->success($service);
+            $data = $service->toArray();
+            $data['custom_fields_detailed'] = $this->getDetailedCustomFields($service);
+
+            return $this->success($data);
         }, 'حدث خطأ أثناء جلب الخدمة');
     }
 
     // ==================== Private Methods ====================
+
+    /**
+     * جلب الحقول المخصصة مع الأسماء العربية والإنجليزية
+     */
+    private function getDetailedCustomFields(Service $service): array
+    {
+        if (empty($service->custom_fields)) {
+            return [];
+        }
+
+        $categoryFields = CategoryField::where('category_id', $service->category_id)
+            ->get()
+            ->keyBy('name');
+
+        $detailed = [];
+        foreach ($service->custom_fields as $key => $value) {
+            $field = $categoryFields->get($key);
+            $detailed[] = [
+                'key' => $key,
+                'name_ar' => $field->name_ar ?? $key,
+                'name_en' => $field->name_en ?? $key,
+                'type' => $field->type ?? 'text',
+                'value' => $value,
+            ];
+        }
+
+        return $detailed;
+    }
 
     /**
      * التحقق من بيانات الخدمة الأساسية
