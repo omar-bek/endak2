@@ -309,8 +309,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Update field key when English name changes (only for new fields)
     nameEnInput.addEventListener('input', function() {
-        // Only auto-generate if this is a new field (not editing)
-        if (!nameInput.hasAttribute('readonly')) {
+        // Only auto-generate if this is a new field (readonly = auto-generated key)
+        if (nameInput.hasAttribute('readonly')) {
             const fieldKey = generateFieldKey(this.value);
             nameInput.value = fieldKey;
         }

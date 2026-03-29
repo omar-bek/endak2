@@ -58,7 +58,7 @@ class CategoryFieldController extends Controller
         $request->validate([
             'name_ar' => 'required|string|max:255',
             'name_en' => 'required|string|max:255',
-            'name' => 'required|string|max:255|unique:category_fields,category_id,' . $category->id . ',category_id',
+            'name' => ['required', 'string', 'max:255', \Illuminate\Validation\Rule::unique('category_fields')->where('category_id', $category->id)],
             'type' => 'required|in:title,text,number,select,checkbox,textarea,image,date,time',
             'value' => 'nullable',
             'options' => 'nullable|array',
@@ -70,16 +70,16 @@ class CategoryFieldController extends Controller
             'sub_category_id' => 'nullable|exists:sub_categories,id',
         ]);
 
+        $data = $request->all();
+        $data['category_id'] = $category->id;
+
         // إذا لم يتم تحديد الترتيب، اجعله آخر ترتيب + 1
-        if (!$request->has('sort_order') || $request->sort_order === null) {
+        if (!$request->filled('sort_order')) {
             $lastOrder = CategoryField::where('category_id', $category->id)
                                     ->where('sub_category_id', $request->sub_category_id)
                                     ->max('sort_order');
             $data['sort_order'] = ($lastOrder ?? 0) + 1;
         }
-
-        $data = $request->all();
-        $data['category_id'] = $category->id;
 
         // معالجة القيمة حسب نوع الحقل
         $data['value'] = $this->processFieldValue($request, $data['type']);
@@ -117,7 +117,7 @@ class CategoryFieldController extends Controller
         $request->validate([
             'name_ar' => 'required|string|max:255',
             'name_en' => 'required|string|max:255',
-            'name' => 'required|string|max:255|unique:category_fields,category_id,' . $category->id . ',category_id,name,' . $field->name,
+            'name' => ['required', 'string', 'max:255', \Illuminate\Validation\Rule::unique('category_fields')->where('category_id', $category->id)->ignore($field->id)],
             'type' => 'required|in:title,text,number,select,checkbox,textarea,image,date,time',
             'value' => 'nullable',
             'options' => 'nullable|array',
