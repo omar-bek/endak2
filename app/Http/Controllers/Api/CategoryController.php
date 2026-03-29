@@ -145,6 +145,7 @@ class CategoryController extends BaseApiController
                 }
                 $groupedFields[$group][] = [
                     'id' => $field->id,
+                    'name' => $field->name,
                     'name_ar' => $field->name_ar,
                     'name_en' => $field->name_en,
                     'type' => $field->type,
@@ -193,6 +194,7 @@ class CategoryController extends BaseApiController
                 'fields' => $fields->map(function ($field) {
                     return [
                         'id' => $field->id,
+                        'name' => $field->name,
                         'name_ar' => $field->name_ar,
                         'name_en' => $field->name_en,
                         'type' => $field->type,

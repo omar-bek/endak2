@@ -110,6 +110,7 @@ class CategoryFieldController extends BaseApiController
             return $this->success([
                 'field' => [
                     'id' => $fieldModel->id,
+                    'name' => $fieldModel->name,
                     'name_ar' => $fieldModel->name_ar,
                     'name_en' => $fieldModel->name_en,
                     'type' => $fieldModel->type,
@@ -170,6 +171,7 @@ class CategoryFieldController extends BaseApiController
                 }
                 $grouped[$group][] = [
                     'id' => $field->id,
+                    'name' => $field->name,
                     'name_ar' => $field->name_ar,
                     'name_en' => $field->name_en,
                     'type' => $field->type,
