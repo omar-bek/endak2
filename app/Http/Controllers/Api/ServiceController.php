@@ -211,6 +211,7 @@ class ServiceController extends BaseApiController
 
             $data = $service->toArray();
             $data['custom_fields_detailed'] = $this->getDetailedCustomFields($service);
+            $data['custom_fields_ar'] = $this->getCustomFieldsArabicKeyed($service);
 
             return $this->success($data);
         }, 'حدث خطأ أثناء جلب الخدمة');
@@ -416,6 +417,7 @@ class ServiceController extends BaseApiController
 
             $data = $service->toArray();
             $data['custom_fields_detailed'] = $this->getDetailedCustomFields($service);
+            $data['custom_fields_ar'] = $this->getCustomFieldsArabicKeyed($service);
 
             return $this->success($data);
         }, 'حدث خطأ أثناء جلب الخدمة');
@@ -436,7 +438,7 @@ class ServiceController extends BaseApiController
 
         $detailed = [];
         foreach ($service->custom_fields as $key => $value) {
-            $field = $this->findFieldByKey($categoryFields, (string) $key);
+            $field = $this->resolveCategoryFieldForStoredKey($categoryFields, (string) $key);
             $detailed[] = [
                 'key' => $key,
                 'name_ar' => $field->name_ar ?? $key,
@@ -595,10 +597,7 @@ class ServiceController extends BaseApiController
 
             $field = $this->findFieldByKey($allFields, $fieldKey);
             if ($field) {
-                // استخدام name_en محول إلى snake_case للتخزين (أو name إذا كان name_en غير موجود)
-                $storageKey = !empty($field->name_en)
-                    ? $this->normalizeFieldKey($field->name_en)
-                    : $field->name;
+                $storageKey = $this->getCategoryFieldStorageKey($field);
 
                 // التأكد من أن storageKey ليس فارغاً
                 if (!empty($storageKey)) {
@@ -800,6 +799,61 @@ class ServiceController extends BaseApiController
                 || $normalizedKey === $normalizedNameEn
                 || $normalizedKey === $normalizedNameAr;
         });
+    }
+
+    /**
+     * مفتاح التخزين في custom_fields (نفس منطق filterCustomFields)
+     */
+    private function getCategoryFieldStorageKey(CategoryField $field): string
+    {
+        if (!empty($field->name_en)) {
+            return $this->normalizeFieldKey($field->name_en);
+        }
+
+        return (string) $field->name;
+    }
+
+    /**
+     * مطابقة حقل القسم مع المفتاح المخزّن (slug من name_en أو name)
+     */
+    private function resolveCategoryFieldForStoredKey(Collection $fields, string $key): ?CategoryField
+    {
+        $field = $this->findFieldByKey($fields, $key);
+        if ($field) {
+            return $field;
+        }
+
+        foreach ($fields as $field) {
+            if ($this->getCategoryFieldStorageKey($field) === $key) {
+                return $field;
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * نفس قيم custom_fields مع مفاتيح عربية (للعرض؛ المفتاح الأصلي slug في custom_fields)
+     */
+    private function getCustomFieldsArabicKeyed(Service $service): array
+    {
+        if (empty($service->custom_fields)) {
+            return [];
+        }
+
+        $categoryFields = CategoryField::where('category_id', $service->category_id)->get();
+        $out = [];
+
+        foreach ($service->custom_fields as $key => $value) {
+            $field = $this->resolveCategoryFieldForStoredKey($categoryFields, (string) $key);
+            $arKey = $field?->name_ar ?? (string) $key;
+            if (array_key_exists($arKey, $out)) {
+                $arKey = $arKey.'#'.$key;
+            }
+            $out[$arKey] = $value;
+        }
+
+        return $out;
     }
 
     /**
