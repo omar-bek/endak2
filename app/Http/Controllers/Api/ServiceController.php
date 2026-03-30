@@ -597,7 +597,7 @@ class ServiceController extends BaseApiController
 
             $field = $this->findFieldByKey($allFields, $fieldKey);
             if ($field) {
-                $storageKey = $this->getCategoryFieldStorageKey($field);
+                $storageKey = $field->getCustomFieldsStorageKey();
 
                 // التأكد من أن storageKey ليس فارغاً
                 if (!empty($storageKey)) {
@@ -778,7 +778,7 @@ class ServiceController extends BaseApiController
     private function findFieldByKey(Collection $fields, string $fieldKey): ?CategoryField
     {
         // تطبيع المفتاح للبحث
-        $normalizedKey = $this->normalizeFieldKey($fieldKey);
+        $normalizedKey = CategoryField::normalizeFieldKeyForStorage($fieldKey);
 
         return $fields->first(function ($field) use ($fieldKey, $normalizedKey) {
             // البحث المطابق المباشر
@@ -791,26 +791,14 @@ class ServiceController extends BaseApiController
             }
 
             // البحث مع تطبيع الحقول
-            $normalizedName = $this->normalizeFieldKey($field->name);
-            $normalizedNameEn = $this->normalizeFieldKey($field->name_en ?? '');
-            $normalizedNameAr = $this->normalizeFieldKey($field->name_ar ?? '');
+            $normalizedName = CategoryField::normalizeFieldKeyForStorage($field->name);
+            $normalizedNameEn = CategoryField::normalizeFieldKeyForStorage($field->name_en ?? '');
+            $normalizedNameAr = CategoryField::normalizeFieldKeyForStorage($field->name_ar ?? '');
 
             return $normalizedKey === $normalizedName
                 || $normalizedKey === $normalizedNameEn
                 || $normalizedKey === $normalizedNameAr;
         });
-    }
-
-    /**
-     * مفتاح التخزين في custom_fields (نفس منطق filterCustomFields)
-     */
-    private function getCategoryFieldStorageKey(CategoryField $field): string
-    {
-        if (!empty($field->name_en)) {
-            return $this->normalizeFieldKey($field->name_en);
-        }
-
-        return (string) $field->name;
     }
 
     /**
@@ -824,7 +812,7 @@ class ServiceController extends BaseApiController
         }
 
         foreach ($fields as $field) {
-            if ($this->getCategoryFieldStorageKey($field) === $key) {
+            if ($field->getCustomFieldsStorageKey() === $key) {
                 return $field;
             }
         }
@@ -857,32 +845,16 @@ class ServiceController extends BaseApiController
     }
 
     /**
-     * تطبيع مفتاح الحقل للبحث (تحويل إلى snake_case)
-     */
-    private function normalizeFieldKey(string $key): string
-    {
-        if (empty($key)) {
-            return '';
-        }
-
-        // تحويل المسافات إلى underscores
-        $key = str_replace(' ', '_', $key);
-
-        // تحويل إلى lowercase
-        $key = strtolower($key);
-
-        // إزالة أي أحرف خاصة إضافية (نحتفظ بالأحرف والأرقام والـ underscores فقط)
-        $key = preg_replace('/[^a-z0-9_]/', '', $key);
-
-        return $key;
-    }
-
-    /**
      * الحصول على قيمة الحقل من custom_fields
      */
     private function getFieldValue(array $customFields, CategoryField $field)
     {
+        $storageKey = $field->getCustomFieldsStorageKey();
+
         // البحث المباشر أولاً
+        if (isset($customFields[$storageKey])) {
+            return $customFields[$storageKey];
+        }
         if (isset($customFields[$field->name])) {
             return $customFields[$field->name];
         }
@@ -894,12 +866,12 @@ class ServiceController extends BaseApiController
         }
 
         // البحث مع تطبيع المفاتيح
-        $normalizedName = $this->normalizeFieldKey($field->name);
-        $normalizedNameEn = $this->normalizeFieldKey($field->name_en ?? '');
-        $normalizedNameAr = $this->normalizeFieldKey($field->name_ar ?? '');
+        $normalizedName = CategoryField::normalizeFieldKeyForStorage($field->name);
+        $normalizedNameEn = CategoryField::normalizeFieldKeyForStorage($field->name_en ?? '');
+        $normalizedNameAr = CategoryField::normalizeFieldKeyForStorage($field->name_ar ?? '');
 
         foreach ($customFields as $key => $value) {
-            $normalizedKey = $this->normalizeFieldKey($key);
+            $normalizedKey = CategoryField::normalizeFieldKeyForStorage($key);
             if (
                 $normalizedKey === $normalizedName
                 || $normalizedKey === $normalizedNameEn

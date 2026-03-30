@@ -74,6 +74,33 @@ class CategoryField extends Model
         ];
     }
 
+    /**
+     * تطبيع مفتاح الحقل للتخزين والمطابقة (نفس منطق ServiceController)
+     */
+    public static function normalizeFieldKeyForStorage(string $key): string
+    {
+        if ($key === '') {
+            return '';
+        }
+
+        $key = str_replace(' ', '_', $key);
+        $key = strtolower($key);
+
+        return preg_replace('/[^a-z0-9_]/', '', $key);
+    }
+
+    /**
+     * مفتاح custom_fields المخزَّن في الطلبات (name_en المطبّع إن وُجد، وإلا name)
+     */
+    public function getCustomFieldsStorageKey(): string
+    {
+        if (!empty($this->name_en)) {
+            return self::normalizeFieldKeyForStorage($this->name_en);
+        }
+
+        return (string) $this->name;
+    }
+
     // Get field type icon
     public function getTypeIconAttribute()
     {
