@@ -1,6 +1,18 @@
 @extends('layouts.app')
 
-@section('title', 'الرئيسية')
+@section('title', __('messages.home') . ' | ' . config('app.name', 'Endak'))
+
+@php
+    $seoDescription = __('messages.seo_home_description');
+    $seoKeywords = __('messages.seo_home_keywords');
+    $seoSchema = [
+        '@context' => 'https://schema.org',
+        '@type' => 'WebPage',
+        'name' => __('messages.home'),
+        'description' => $seoDescription,
+        'url' => route('home'),
+    ];
+@endphp
 
 @section('content')
 <style>

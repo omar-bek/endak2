@@ -1,6 +1,26 @@
 @extends('layouts.app')
 
-@section('title', $category->name)
+@section('title', ($category->meta_title ?: $category->name) . ' | ' . config('app.name', 'Endak'))
+
+@php
+    $seoDescription = $category->meta_description ?: (app()->getLocale() === 'ar' ? $category->description : $category->description_en);
+    $seoKeywords = $category->name . ', ' . ($category->name_en ?? '') . ', ' . __('messages.seo_default_keywords');
+    $seoImage = $category->image ? asset('storage/' . $category->image) : null;
+    $seoUrl = route('categories.show', $category->slug);
+    $seoBreadcrumbs = [
+        ['name' => __('messages.home'), 'url' => route('home')],
+        ['name' => __('messages.categories'), 'url' => route('categories.index')],
+        ['name' => $category->name],
+    ];
+    $seoSchema = [
+        '@context' => 'https://schema.org',
+        '@type' => 'CollectionPage',
+        'name' => $category->name,
+        'description' => Str::limit(strip_tags($seoDescription ?? ''), 300),
+        'url' => $seoUrl,
+        'image' => $seoImage,
+    ];
+@endphp
 
 @section('content')
     <!-- Flash Messages -->

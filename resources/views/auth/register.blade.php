@@ -1,5 +1,6 @@
 @extends('layouts.app')
 
+@php $seoNoindex = true; @endphp
 @section('title', __('messages.create_account'))
 
 @section('content')

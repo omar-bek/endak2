@@ -1,6 +1,11 @@
 @extends('layouts.app')
 
-@section('title', 'الخدمات')
+@section('title', __('messages.services') . ' | ' . config('app.name', 'Endak'))
+
+@php
+    $seoDescription = __('messages.seo_services_description');
+    $seoKeywords = __('messages.seo_services_keywords');
+@endphp
 
 @section('content')
 {{-- Hero --}}

@@ -1,2 +1,37 @@
+# Endak - Robots.txt
 User-agent: *
-Disallow:
+Allow: /
+
+# Public pages
+Allow: /categories
+Allow: /services
+Allow: /contact
+Allow: /terms
+Allow: /about
+
+# Block private/auth pages
+Disallow: /login
+Disallow: /register
+Disallow: /email/verify
+Disallow: /my-services
+Disallow: /my-offers
+Disallow: /completed-services
+Disallow: /notifications
+Disallow: /messages
+Disallow: /profile
+Disallow: /services/request/
+Disallow: /services/*/edit
+Disallow: /offers/
+
+# Block admin panel
+Disallow: /admin
+Disallow: /admin/
+
+# Block API routes
+Disallow: /api/
+
+# Block internal assets
+Disallow: /storage/voice_notes/
+
+# Sitemap
+Sitemap: https://endak.com/sitemap.xml

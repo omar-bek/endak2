@@ -1,6 +1,15 @@
 @extends('layouts.app')
 
-@section('title', 'الأقسام')
+@section('title', __('messages.categories') . ' | ' . config('app.name', 'Endak'))
+
+@php
+    $seoDescription = __('messages.seo_categories_description');
+    $seoUrl = route('categories.index');
+    $seoBreadcrumbs = [
+        ['name' => __('messages.home'), 'url' => route('home')],
+        ['name' => __('messages.categories')],
+    ];
+@endphp
 
 @section('content')
 <style>

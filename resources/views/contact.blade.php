@@ -1,6 +1,15 @@
 @extends('layouts.app')
 
-@section('title', 'اتصل بنا')
+@section('title', __('messages.contact_us') . ' | ' . config('app.name', 'Endak'))
+
+@php
+    $seoDescription = __('messages.seo_contact_description');
+    $seoUrl = route('contact');
+    $seoBreadcrumbs = [
+        ['name' => __('messages.home'), 'url' => route('home')],
+        ['name' => __('messages.contact_us')],
+    ];
+@endphp
 
 @section('content')
 

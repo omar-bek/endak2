@@ -17,11 +17,15 @@ use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\MessageController;
 use App\Http\Controllers\ProviderProfileController;
 use App\Http\Controllers\Admin\SystemSettingController;
+use App\Http\Controllers\SitemapController;
 use Illuminate\Support\Facades\Broadcast;
 
 
 // Broadcasting Authentication للـ Web Routes (يدعم Session)
 Broadcast::routes(['middleware' => ['web', 'auth']]);
+
+// Sitemap
+Route::get('/sitemap.xml', [SitemapController::class, 'index'])->name('sitemap');
 
 Route::get('/terms', function () {
     return view('terms');

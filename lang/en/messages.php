@@ -1,6 +1,16 @@
 <?php
 
 return [
+    // SEO
+    'seo_default_description' => 'Endak - The leading services platform. Request a service or submit your offers easily and securely.',
+    'seo_default_keywords' => 'services, Endak, request service, service provider, offers, categories',
+    'seo_home_description' => 'Endak - The leading services platform in the region. Browse categories and request the service you need with one click.',
+    'seo_home_keywords' => 'Endak, services, services platform, request service, service providers',
+    'seo_categories_description' => 'Browse all available service categories on Endak. Choose the right category and request your service.',
+    'seo_services_description' => 'Explore all available services on Endak. Find the service you need and submit your request.',
+    'seo_services_keywords' => 'available services, service requests, price quotes, Endak',
+    'seo_contact_description' => 'Get in touch with the Endak team. We are here to help and answer your questions.',
+
     // Navigation
     'home' => 'Home',
     'categories' => 'Categories',

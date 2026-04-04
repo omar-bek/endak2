@@ -1,6 +1,34 @@
 @extends('layouts.app')
 
-@section('title', $service->title)
+@section('title', ($service->meta_title ?: $service->title) . ' | ' . config('app.name', 'Endak'))
+
+@php
+    $seoDescription = $service->meta_description ?: Str::limit(strip_tags($service->description), 160);
+    $seoKeywords = $service->category->name . ', ' . ($service->city->name_ar ?? '') . ', ' . __('messages.seo_default_keywords');
+    $seoImage = $service->image ? asset('storage/' . $service->image) : null;
+    $seoUrl = route('services.show', $service->slug);
+    $seoType = 'article';
+    $seoBreadcrumbs = [
+        ['name' => __('messages.home'), 'url' => route('home')],
+        ['name' => $service->category->name, 'url' => route('categories.show', $service->category->slug)],
+        ['name' => $service->title],
+    ];
+    $seoSchema = [
+        '@context' => 'https://schema.org',
+        '@type' => 'Service',
+        'name' => $service->title,
+        'description' => Str::limit(strip_tags($service->description), 300),
+        'url' => $seoUrl,
+        'provider' => [
+            '@type' => 'Person',
+            'name' => $service->user->name ?? '',
+        ],
+        'areaServed' => $service->city->name_ar ?? $service->city->name_en ?? '',
+        'category' => $service->category->name,
+        'image' => $seoImage,
+        'datePublished' => $service->created_at?->toIso8601String(),
+    ];
+@endphp
 
 @section('content')
 {{-- Hero --}}

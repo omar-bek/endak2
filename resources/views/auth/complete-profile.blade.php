@@ -1,5 +1,6 @@
 @extends('layouts.app')
 
+@php $seoNoindex = true; @endphp
 @section('title', 'إتمام الملف الشخصي')
 
 @section('content')
