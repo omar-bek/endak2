@@ -538,35 +538,45 @@ body {
     bottom: 0;
     left: 0;
     right: 0;
-    background: rgba(255,255,255,0.97);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border-top: 1px solid var(--e-gray-200);
-    box-shadow: 0 -4px 20px rgba(0,0,0,0.06);
     z-index: var(--e-z-navbar);
-    padding: 6px 0 env(safe-area-inset-bottom, 6px);
+    padding: 0 0 env(safe-area-inset-bottom, 0);
+}
+
+/* Glassmorphism background */
+.footer-nav::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: rgba(255,255,255,0.92);
+    backdrop-filter: blur(24px) saturate(180%);
+    -webkit-backdrop-filter: blur(24px) saturate(180%);
+    border-top: 1px solid rgba(47,92,105,0.08);
+    box-shadow: 0 -4px 30px rgba(0,0,0,0.06);
 }
 
 .footer-nav-container {
     display: flex;
     justify-content: space-around;
-    align-items: center;
-    max-width: 500px;
+    align-items: flex-end;
+    max-width: 520px;
     margin: 0 auto;
-    padding: 0 8px;
+    padding: 0 4px;
+    position: relative;
+    z-index: 1;
 }
 
+/* --- Nav Item --- */
 .footer-nav-item {
     display: flex;
     flex-direction: column;
     align-items: center;
     text-decoration: none;
     color: var(--e-gray-400);
-    font-size: 0.65rem;
-    padding: 4px 8px;
-    transition: var(--e-transition);
+    padding: 10px 6px 8px;
+    transition: color 0.2s ease, transform 0.2s ease;
     position: relative;
-    min-width: 48px;
+    min-width: 52px;
+    -webkit-tap-highlight-color: transparent;
 }
 
 .footer-nav-item:hover,
@@ -574,76 +584,136 @@ body {
     color: var(--e-primary);
 }
 
-.footer-nav-icon {
-    position: relative;
-    font-size: 1.15rem;
-    margin-bottom: 2px;
+.footer-nav-item:active {
+    transform: scale(0.92);
 }
 
+/* Active dot indicator */
+.fnav-dot {
+    display: block;
+    width: 0;
+    height: 3px;
+    border-radius: 3px;
+    background: var(--e-primary);
+    margin-top: 3px;
+    transition: width 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.footer-nav-item.active .fnav-dot {
+    width: 20px;
+}
+
+/* Icon */
+.footer-nav-icon {
+    position: relative;
+    font-size: 1.2rem;
+    margin-bottom: 2px;
+    transition: transform 0.2s ease;
+}
+
+.footer-nav-item.active .footer-nav-icon {
+    transform: translateY(-2px);
+}
+
+/* Text */
 .footer-nav-text {
     font-weight: 600;
-    font-size: 0.6rem;
+    font-size: 0.62rem;
     letter-spacing: -0.2px;
+    transition: var(--e-transition);
 }
 
 .footer-nav-item.active .footer-nav-text {
     color: var(--e-primary);
+    font-weight: 700;
 }
 
-/* Center action button */
-.footer-nav-center .footer-nav-icon-center {
-    width: 48px;
-    height: 48px;
+/* --- Center Action Button --- */
+.footer-nav-center {
+    padding-top: 0 !important;
+}
+
+.footer-nav-icon-center {
+    width: 52px;
+    height: 52px;
     border-radius: 50%;
-    background: linear-gradient(135deg, var(--e-primary), var(--e-primary-light));
+    background: linear-gradient(145deg, var(--e-accent), var(--e-accent-dark));
     color: #fff;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.1rem;
-    margin-top: -18px;
-    box-shadow: var(--e-shadow-primary);
+    font-size: 1.2rem;
+    margin-top: -22px;
+    margin-bottom: 1px;
+    box-shadow: 0 4px 16px rgba(243,164,70,0.4);
+    transition: var(--e-transition);
+    position: relative;
+}
+
+/* Glow ring */
+.footer-nav-icon-center::after {
+    content: '';
+    position: absolute;
+    inset: -4px;
+    border-radius: 50%;
+    border: 2px solid rgba(243,164,70,0.15);
     transition: var(--e-transition);
 }
 
-.footer-nav-center:hover .footer-nav-icon-center {
-    transform: scale(1.08);
-    box-shadow: 0 6px 20px rgba(47,92,105,0.35);
+.footer-nav-center:hover .footer-nav-icon-center,
+.footer-nav-center:active .footer-nav-icon-center {
+    transform: scale(1.1) translateY(-2px);
+    box-shadow: 0 8px 24px rgba(243,164,70,0.5);
+}
+
+.footer-nav-center:hover .footer-nav-icon-center::after {
+    border-color: rgba(243,164,70,0.3);
+    inset: -6px;
 }
 
 .footer-nav-center .footer-nav-text {
-    color: var(--e-primary);
+    color: var(--e-accent-dark);
     font-weight: 700;
 }
 
-/* Footer badges */
+.footer-nav-center .fnav-dot { display: none; }
+
+/* --- Badges --- */
 .footer-nav-badge {
     position: absolute;
-    top: -4px;
-    right: -6px;
+    top: -5px;
+    right: -8px;
     color: #fff;
     font-size: 0.55rem;
     font-weight: 700;
-    padding: 1px 5px;
+    padding: 0 5px;
     border-radius: var(--e-radius-full);
-    min-width: 16px;
-    height: 16px;
+    min-width: 17px;
+    height: 17px;
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
     border: 2px solid #fff;
+    animation: fnBadgePop 0.3s ease;
+}
+
+@keyframes fnBadgePop {
+    0% { transform: scale(0); }
+    60% { transform: scale(1.15); }
+    100% { transform: scale(1); }
 }
 
 .footer-nav-badge-messages {
     background: var(--e-danger);
+    box-shadow: 0 2px 6px rgba(239,68,68,0.4);
 }
 
 .footer-nav-badge-notifications {
-    background: linear-gradient(135deg, var(--e-danger), #dc2626);
+    background: linear-gradient(135deg, var(--e-accent), var(--e-accent-dark));
+    box-shadow: 0 2px 6px rgba(243,164,70,0.4);
 }
 
-/* Body padding for footer nav */
+/* --- Body padding --- */
 body { padding-bottom: 76px; }
 
 @media (min-width: 1000px) {
@@ -891,11 +961,13 @@ body { padding-bottom: 76px; }
 
 @media (max-width: 480px) {
     .footer-nav-icon-center {
-        width: 42px !important;
-        height: 42px !important;
+        width: 46px !important;
+        height: 46px !important;
+        margin-top: -18px;
     }
 
     .footer-nav-text { font-size: 0.55rem; }
+    .footer-nav-icon { font-size: 1.1rem; }
 
     .store-buttons { flex-direction: column; }
 }
@@ -912,7 +984,7 @@ body { padding-bottom: 76px; }
     align-items: center;
     overflow: hidden;
     padding: 0;
-    margin-top: 40px;
+    margin-top: 0;
 }
 
 .hero-area .container { position: relative; z-index: 2; }
