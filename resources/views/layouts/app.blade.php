@@ -441,21 +441,27 @@
                 : document.title.replace(/^\(\d+\)\s*/, '');
         }
 
-        // Polling (30s)
-        setInterval(function() { updateMessagesCount(); }, 30000);
-        setInterval(function() {
+        // Polling (60s) - pauses when tab is hidden
+        function fetchNotificationsCount() {
             fetch('/notifications/unread', { headers: { 'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest' } })
                 .then(function(r) { return r.json(); })
                 .then(function(d) { if (d.count !== undefined) updateNotificationBadge(d.count); })
                 .catch(function() {});
-        }, 30000);
+        }
+
+        function fetchAllBadges() {
+            updateMessagesCount();
+            fetchNotificationsCount();
+        }
+
+        var badgeTimer = setInterval(fetchAllBadges, 60000);
+        document.addEventListener('visibilitychange', function() {
+            if (document.hidden) { clearInterval(badgeTimer); badgeTimer = null; }
+            else if (!badgeTimer) { fetchAllBadges(); badgeTimer = setInterval(fetchAllBadges, 60000); }
+        });
 
         // Initial fetch
-        updateMessagesCount();
-        fetch('/notifications/unread', { headers: { 'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest' } })
-            .then(function(r) { return r.json(); })
-            .then(function(d) { if (d.count !== undefined) updateNotificationBadge(d.count); })
-            .catch(function() {});
+        fetchAllBadges();
 
         {{-- Pusher Realtime --}}
         @if (config('broadcasting.default') === 'pusher')

@@ -235,11 +235,9 @@ return [
     'login_welcome' => 'أهلًا بعودتك!',
     'no_account' => 'ليس لديك حساب بعد؟',
     'create_new_account' => 'إنشاء حساب جديد',
-    'email' => 'البريد الإلكتروني',
-    'password' => 'كلمة المرور',
     'remember_me' => 'تذكرني',
-    'login' => 'تسجيل الدخول',
     'or' => 'أو',
+    'sending' => 'جاري الإرسال...',
     'login_with_facebook' => 'تسجيل الدخول عبر فيسبوك',
     'login_with_google' => 'تسجيل الدخول عبر جوجل',
     'register_with_google' => 'التسجيل بجوجل',
@@ -259,12 +257,8 @@ return [
 
     'register_welcome' => 'مرحبًا بك في Endak!',
     'already_have_account' => 'هل لديك حساب بالفعل؟',
-    'login' => 'تسجيل الدخول',
     'full_name' => 'الاسم الكامل',
-    'email' => 'البريد الإلكتروني',
-    'phone' => 'رقم الهاتف (مصر: 01012345678 أو السعودية: 0501234567)',
     'phone_note' => 'يدعم الأرقام المصرية والسعودية',
-    'password' => 'كلمة المرور',
     'password_confirmation' => 'تأكيد كلمة المرور',
     'password_note' => '8 أحرف على الأقل',
     'select_account_type' => 'اختر نوع الحساب',
@@ -308,7 +302,6 @@ return [
 
     'pending_offers_count' => 'عرض في الانتظار',
     'accepted_offer' => 'عرض مقبول',
-    'no_offers' => 'لا توجد عروض',
     'offers' => 'العروض',
 
     'provider_title' => 'لا توجد خدمات متاحة',
@@ -344,13 +337,9 @@ return [
     'validation_field_required' => 'هذا الحقل مطلوب',
 
 
-    'home' => 'الرئيسية',
-    'categories' => 'الأقسام',
-    'request_service' => 'طلب خدمة',
     'service_from_category' => 'طلب خدمة من قسم:',
     'subcategory' => 'القسم الفرعي:',
     'select_subcategory_warning' => '⚠️ يجب اختيار قسم فرعي لطلب الخدمة',
-
 
     'voice_recorder_title' => 'سجل صوت لشرح طلبك',
     'recorder_start_btn' => 'بدء التسجيل',
@@ -360,18 +349,6 @@ return [
     'recorder_status_recording' => 'جاري التسجيل...',
     'recorder_status_time' => 'الوقت: ',
     'recorder_audio_unsupported' => 'متصفحك لا يدعم تشغيل الصوت.',
-
-    'subcategories_title' => 'الأقسام الفرعية',
-    'service_count_suffix' => 'خدمة',
-    'request_service_button' => 'طلب خدمة',
-    'no_image_folder_icon' => 'fas fa-folder',
-
-    'subcategories_title' => 'الأقسام الفرعية',
-    'service_count_suffix' => 'خدمة',
-    'request_service_button' => 'طلب خدمة',
-    'no_image_folder_icon' => 'fas fa-folder',
-    'home' => 'الرئيسية',
-    'categories' => 'الأقسام',
     'service_count_unit' => 'خدمة',
     'subcategory_count_unit' => 'قسم فرعي',
     'info_alert_title' => 'يرجى اختيار قسم فرعي لطلب الخدمة',
@@ -384,8 +361,6 @@ return [
     'cancel_filter' => 'إلغاء التصفية',
     'search_services_placeholder' => 'البحث في الخدمات...',
     'search_button' => 'بحث',
-    'view_details' => 'عرض التفاصيل',
-    'no_services_title' => 'لا توجد خدمات في هذا القسم',
     'no_services_message' => 'سيتم إضافة خدمات قريباً',
 
 
@@ -436,7 +411,6 @@ return [
 
 
 
-    'terms_title' => 'الشروط والأحكام',
     'terms_intro_1' => 'نرحب بك في',
     'terms_intro_2' => '، يُرجى قراءة هذه الشروط بعناية قبل استخدام الموقع.',
     'terms_intro_3' => 'استمرارك في التصفح أو استخدام خدماتنا يعني موافقتك الكاملة على هذه البنود والسياسات.',
@@ -537,7 +511,7 @@ return [
 
     'edit_button' => 'تعديل',
     'delete_button' => 'حذف',
-    'provider_title' => 'مقدم الخدمة',
+    'provider_label' => 'مقدم الخدمة',
     'publish_date' => 'تاريخ النشر',
     'category_title' => 'القسم',
     'subcategory_title' => 'القسم الفرعي',
@@ -576,17 +550,17 @@ return [
 
 
     'provider_info_title' => 'معلومات مزود الخدمة',
-    'offer_rejected_title' => 'تم رفض عرضك:',
+    'offer_rejected_heading' => 'تم رفض عرضك:',
     'offer_rejected_body' => 'يمكنك تقديم عرض جديد إذا كنت ترغب في ذلك.',
     'offer_expired_title' => 'انتهت صلاحية عرضك:',
     'offer_expired_body' => 'يمكنك تقديم عرض جديد إذا كنت ترغب في ذلك.',
-    'offer_accepted_title' => 'تم قبول عرضك!',
+    'offer_accepted_heading' => 'تم قبول عرضك!',
     'offer_accepted_body' => 'يمكنك التواصل مع صاحب الخدمة لإتمام العمل.',
     'offer_pending_title' => 'عرضك قيد المراجعة:',
     'offer_pending_body' => 'في انتظار رد صاحب الخدمة.',
     'current_offer_title' => 'العرض المقدم',
-    'offer_price' => 'السعر المقدم:',
-    'offer_status' => 'حالة العرض:',
+    'offer_price_label' => 'السعر المقدم:',
+    'offer_status_label' => 'حالة العرض:',
     'status_rejected' => 'تم رفض العرض',
     'status_accepted' => 'تم قبول العرض',
     'status_pending' => 'في انتظار الرد',

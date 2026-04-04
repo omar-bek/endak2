@@ -1,300 +1,133 @@
 @extends('layouts.app')
 
-@section('title', 'تسجيل الدخول')
+@section('title', __('messages.login'))
 
 @section('content')
-    <div class="auth-container login-mode" id="authContainer">
-        <div class="auth-card login-card">
-            <div class="side-panel left-panel">
-                <div class="content text-center">
-                    <i class="fas fa-door-open fa-3x text-warning mb-3"></i>
-                    <h2>{{ __('messages.login_welcome') }}</h2>
-                    <p>{{ __('messages.no_account') }}</p>
-                    <button class="btn btn-outline-light mt-3 switch-btn" id="switchToRegister">
-                        {{ __('messages.create_new_account') }}</button>
-                </div>
-            </div>
+    <div class="auth-page">
+        {{-- Background decoration --}}
+        <div class="auth-bg">
+            <div class="auth-bg__shape auth-bg__shape--1"></div>
+            <div class="auth-bg__shape auth-bg__shape--2"></div>
+        </div>
 
-            <div class="form-section fadeInRight">
-                <div class="logo mb-4 text-center">
-                    <a href="{{ route('home') }}" class="text-decoration-none text-dark fs-3 fw-bold">
-                        <img src="{{ asset(\App\Models\SystemSetting::get('site_logo', 'home.png')) }}" alt="Endak Logo"
-                            class="me-2" style="height: 50px; width: auto;"> Endak
-                    </a>
-                </div>
+        <div class="container">
+            <div class="row justify-content-center align-items-center min-vh-100 py-5">
+                <div class="col-xl-10 col-lg-11">
+                    <div class="auth-card">
+                        {{-- Side Panel --}}
+                        <div class="auth-card__side">
+                            <div class="auth-card__side-content">
+                                <div class="auth-card__side-icon">
+                                    <i class="fas fa-door-open"></i>
+                                </div>
+                                <h2 class="auth-card__side-title">{{ __('messages.login_welcome') }}</h2>
+                                <p class="auth-card__side-text">{{ __('messages.no_account') }}</p>
+                                <a href="{{ route('register') }}" class="auth-card__side-btn">
+                                    <i class="fas fa-user-plus me-2"></i>{{ __('messages.create_new_account') }}
+                                </a>
+                            </div>
+                        </div>
 
-                <!-- Social Login Buttons -->
-                <div class="social-login-section mb-4">
-                    <a href="{{ route('auth.google') }}" class="btn btn-social btn-google w-100 mb-3">
-                        <i class="fab fa-google me-2"></i>
-                        {{ __('messages.login_with_google') }}
-                    </a>
+                        {{-- Form Panel --}}
+                        <div class="auth-card__form">
+                            {{-- Logo --}}
+                            <a href="{{ route('home') }}" class="auth-logo">
+                                <img src="{{ asset(\App\Models\SystemSetting::get('site_logo', 'home.png')) }}"
+                                    alt="Endak">
+                            </a>
 
-                    <div class="divider mb-3">
-                        <span class="divider-text">{{ __('messages.or') }}</span>
-                    </div>
-                </div>
+                            <h3 class="auth-form-title">{{ __('messages.login') }}</h3>
 
-                <form method="POST" action="{{ route('login') }}">
-                    @csrf
-                    <div class="mb-3 position-relative">
-                        <i class="fas fa-envelope input-icon text-secondary"></i>
-                        <input type="email" class="form-control @error('email') is-invalid @enderror" name="email"
-                            placeholder="{{ __('messages.email') }}" value="{{ old('email') }}" required autofocus>
-                        @error('email')
-                            <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
-                    </div>
+                            {{-- Social Login --}}
+                            <a href="{{ route('auth.google') }}" class="auth-social-btn">
+                                <svg class="auth-social-btn__icon" viewBox="0 0 24 24" width="20" height="20">
+                                    <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z"/>
+                                    <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                                    <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+                                    <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+                                </svg>
+                                {{ __('messages.login_with_google') }}
+                            </a>
 
-                    <div class="mb-3 position-relative">
-                        <i class="fas fa-lock input-icon text-secondary"></i>
-                        <input type="password" class="form-control @error('password') is-invalid @enderror" name="password"
-                            placeholder="{{ __('messages.password') }}" required>
-                        @error('password')
-                            <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
-                    </div>
+                            <div class="auth-divider">
+                                <span>{{ __('messages.or') }}</span>
+                            </div>
 
-                    <div class="d-flex justify-content-between align-items-center mb-4">
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" id="remember" name="remember">
-                            <label class="form-check-label" for="remember">{{ __('messages.remember_me') }}</label>
+                            {{-- Login Form --}}
+                            <form method="POST" action="{{ route('login') }}" class="auth-form">
+                                @csrf
+
+                                {{-- Email --}}
+                                <div class="ef-field ef-field--icon">
+                                    <i class="fas fa-envelope ef-icon"></i>
+                                    <input type="email"
+                                        class="ef-input @error('email') is-invalid @enderror"
+                                        name="email" id="email" placeholder=" "
+                                        value="{{ old('email') }}" required autofocus
+                                        aria-label="{{ __('messages.email') }}">
+                                    <label for="email" class="ef-label">{{ __('messages.email') }}</label>
+                                    @error('email')
+                                        <div class="auth-field-error">{{ $message }}</div>
+                                    @enderror
+                                </div>
+
+                                {{-- Password --}}
+                                <div class="ef-field ef-field--icon">
+                                    <i class="fas fa-lock ef-icon"></i>
+                                    <input type="password"
+                                        class="ef-input @error('password') is-invalid @enderror"
+                                        name="password" id="password" placeholder=" " required
+                                        aria-label="{{ __('messages.password') }}">
+                                    <label for="password" class="ef-label">{{ __('messages.password') }}</label>
+                                    <button type="button" class="auth-toggle-pw" onclick="togglePassword('password', this)" aria-label="Toggle password">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                    @error('password')
+                                        <div class="auth-field-error">{{ $message }}</div>
+                                    @enderror
+                                </div>
+
+                                {{-- Remember Me --}}
+                                <div class="auth-options">
+                                    <label class="auth-check" for="remember">
+                                        <input type="checkbox" class="auth-check__input" id="remember" name="remember">
+                                        <span class="auth-check__box"></span>
+                                        <span class="auth-check__text">{{ __('messages.remember_me') }}</span>
+                                    </label>
+                                </div>
+
+                                {{-- Submit --}}
+                                <button type="submit" class="auth-submit-btn">
+                                    <span>{{ __('messages.login') }}</span>
+                                    <i class="fas fa-arrow-left ms-2"></i>
+                                </button>
+                            </form>
+
+                            {{-- Mobile: switch link --}}
+                            <div class="auth-mobile-switch">
+                                {{ __('messages.no_account') }}
+                                <a href="{{ route('register') }}">{{ __('messages.create_new_account') }}</a>
+                            </div>
                         </div>
                     </div>
-
-                    <button type="submit" class="btn btn-login w-100 mb-3">
-                        <i class="fas fa-sign-in-alt me-2"></i>{{ __('messages.login') }}
-                    </button>
-                </form>
+                </div>
             </div>
         </div>
     </div>
 
+    @include('auth._auth-styles')
+
     <script>
-        document.getElementById("switchToRegister").addEventListener("click", function() {
-            window.location.href = "{{ route('register') }}";
-        });
+        function togglePassword(id, btn) {
+            const input = document.getElementById(id);
+            const icon = btn.querySelector('i');
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.classList.replace('fa-eye', 'fa-eye-slash');
+            } else {
+                input.type = 'password';
+                icon.classList.replace('fa-eye-slash', 'fa-eye');
+            }
+        }
     </script>
-
-    <style>
-        body {
-            font-family: 'Cairo', sans-serif;
-            background: #f5f6fa;
-            overflow-x: hidden;
-        }
-
-        .auth-container {
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .auth-card {
-            display: flex;
-            width: 900px;
-            max-width: 95%;
-            background: #fff;
-            border-radius: 20px;
-            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
-            overflow: hidden;
-            animation: slideInLeft 0.8s ease;
-        }
-
-        .side-panel {
-            width: 45%;
-            background: linear-gradient(135deg, var(--e-primary), var(--e-primary-light));
-            color: #fff;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-            padding: 2rem;
-        }
-
-        .side-panel .btn {
-            border-radius: 30px;
-            padding: 0.6rem 1.5rem;
-            border: 2px solid #fff;
-            color: #fff;
-            transition: all 0.3s ease;
-        }
-
-        .side-panel .btn:hover {
-            background: var(--e-accent);
-            border-color: var(--e-accent);
-        }
-
-        .form-section {
-            width: 55%;
-            padding: 3rem;
-        }
-
-        .form-control {
-            border: 1px solid #ccc;
-            border-radius: 10px;
-            padding: 0.75rem 2.8rem 0.75rem 1rem;
-            color: #333;
-            font-size: 15px;
-        }
-
-        .form-control::placeholder {
-            color: #999;
-            font-style: italic;
-            opacity: 0.9;
-        }
-
-        .input-icon {
-            position: absolute;
-            right: 15px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: #777;
-            pointer-events: none;
-        }
-
-        .form-control:focus {
-            border-color: var(--e-primary-light);
-            box-shadow: 0 0 6px rgba(47, 92, 105, 0.3);
-            outline: none;
-        }
-
-        /* ========== زر تسجيل الدخول ========== */
-        .btn-login {
-            background: linear-gradient(90deg, var(--e-primary), var(--e-primary-light));
-            border: none;
-            border-radius: 30px;
-            padding: 0.75rem;
-            color: #fff;
-            font-weight: 600;
-            transition: transform 0.3s, background 0.3s;
-        }
-
-        .btn-login:hover {
-            transform: translateY(-3px);
-            background: var(--e-accent);
-        }
-
-        /* Social Login Buttons */
-        .social-login-section {
-            margin-top: 0;
-            margin-bottom: 1.5rem;
-        }
-
-        .divider {
-            text-align: center;
-            position: relative;
-            margin: 1.5rem 0;
-        }
-
-        .divider::before,
-        .divider::after {
-            content: '';
-            position: absolute;
-            top: 50%;
-            width: 45%;
-            height: 1px;
-            background: #ddd;
-        }
-
-        .divider::before {
-            right: 0;
-        }
-
-        .divider::after {
-            left: 0;
-        }
-
-        .divider-text {
-            background: #fff;
-            padding: 0 1rem;
-            color: #999;
-            font-size: 0.9rem;
-            position: relative;
-            z-index: 1;
-        }
-
-        .btn-social {
-            border-radius: 10px;
-            padding: 0.75rem;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            border: 1px solid #ddd;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            text-decoration: none;
-        }
-
-        .btn-facebook {
-            background: #1877f2;
-            color: #fff;
-            border-color: #1877f2;
-        }
-
-        .btn-facebook:hover {
-            background: #166fe5;
-            border-color: #166fe5;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(24, 119, 242, 0.3);
-            color: #fff;
-        }
-
-        .btn-google {
-            background: #fff;
-            color: #4285f4;
-            border-color: #ddd;
-        }
-
-        .btn-google:hover {
-            background: #f8f9fa;
-            border-color: #4285f4;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(66, 133, 244, 0.2);
-            color: #4285f4;
-        }
-
-        @keyframes slideInLeft {
-            from {
-                opacity: 0;
-                transform: translateX(-100px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateX(0);
-            }
-        }
-
-        @media (max-width: 768px) {
-            .auth-card {
-                flex-direction: column;
-                width: 95%;
-                animation: slideDown 0.8s ease;
-            }
-
-            .side-panel {
-                width: 100%;
-                border-radius: 20px 20px 0 0;
-                padding: 1.5rem;
-            }
-
-            .form-section {
-                width: 100%;
-                padding: 2rem;
-            }
-
-            @keyframes slideDown {
-                from {
-                    opacity: 0;
-                    transform: translateY(-80px);
-                }
-
-                to {
-                    opacity: 1;
-                    transform: translateY(0);
-                }
-            }
-        }
-    </style>
 @endsection

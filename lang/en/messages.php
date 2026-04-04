@@ -31,8 +31,8 @@ return [
     'pending_offers_count' => 'Pending offer(s)',
     'accepted_offer' => 'Accepted offer',
     'no_offers' => 'No offers available',
-    'offer'=>'offer',
-    'offer'=>'offers',
+    'offer' => 'offer',
+    'offers_plural' => 'offers',
 
 
     // Home Page
@@ -73,8 +73,6 @@ return [
     'expired' => 'Expired',
     'accept_offer' => 'Accept Offer',
     'reject_offer' => 'Reject Offer',
-    'no_offers' => 'No Offers Found',
-
     // Forms
     'name' => 'Name',
     'email' => 'Email',
@@ -247,11 +245,9 @@ return [
 'login_welcome' => 'Welcome Back!',
 'no_account' => 'Don\'t have an account yet?',
 'create_new_account' => 'Create New Account',
-'email' => 'Email Address',
-'password' => 'Password',
 'remember_me' => 'Remember Me',
-'login' => 'Login',
 'or' => 'OR',
+'sending' => 'Sending...',
 'login_with_facebook' => 'Login with Facebook',
 'login_with_google' => 'Login with Google',
 'register_with_google' => 'Register with Google',
@@ -267,18 +263,11 @@ return [
 'check_internet' => 'Please check your internet connection',
 'user_type_required' => 'You must select an account type',
 'terms_required' => 'You must agree to the terms and conditions',
-'register_with_google' => 'Register with Google',
-
-
 
 'register_welcome' => 'Welcome to Endak!',
     'already_have_account' => 'Already have an account?',
-    'login' => 'Login',
     'full_name' => 'Full Name',
-    'email' => 'Email',
-    'phone' => 'Phone Number (EG: 01012345678 or SA: 0501234567)',
     'phone_note' => 'Supports Egyptian and Saudi numbers',
-    'password' => 'Password',
     'password_confirmation' => 'Confirm Password',
     'password_note' => 'At least 8 characters',
     'select_account_type' => 'Select Account Type',
@@ -347,9 +336,6 @@ return [
     'validation_image_required' => 'This field is required (at least one image must be uploaded)',
     'validation_field_required' => 'This field is required',
 
-            'home' => 'Home',
-    'categories' => 'Categories',
-    'request_service' => 'Request Service',
     'service_from_category' => 'Request service from category:',
     'subcategory' => 'Subcategory:',
     'select_subcategory_warning' => '⚠️ You must select a subcategory to request',
@@ -364,16 +350,9 @@ return [
     'recorder_audio_unsupported' => 'Your browser does not support audio playback.',
 
     'subcategories_title' => 'Subcategories',
-    'service_count_suffix' => 'Service|Services', 
-    'request_service_button' => 'Request Service',
-    'no_image_folder_icon' => 'fas fa-folder',
-
-    'subcategories_title' => 'Subcategories',
     'service_count_suffix' => 'Service|Services',
     'request_service_button' => 'Request Service',
     'no_image_folder_icon' => 'fas fa-folder',
-    'home' => 'Home',
-    'categories' => 'Categories',
     'service_count_unit' => 'service|services',
     'subcategory_count_unit' => 'subcategory|subcategories',
     'info_alert_title' => 'Please choose a subcategory to request the service',
@@ -387,8 +366,6 @@ return [
     'cancel_filter' => 'Cancel Filter',
     'search_services_placeholder' => 'Search services...',
     'search_button' => 'Search',
-    'view_details' => 'View Details',
-    'no_services_title' => 'No services in this category',
     'no_services_message' => 'Services will be added soon',
 
 
@@ -436,7 +413,6 @@ return [
     'language_ar' => 'العربية',
     'language_en' => 'English',
 
-    'terms_title' => 'Terms and Conditions',
     'terms_intro_1' => 'Welcome to',
     'terms_intro_2' => ', please read these terms carefully before using the site.',
     'terms_intro_3' => 'Your continued browsing or use of our services means your full acceptance of these terms and policies.',
@@ -535,11 +511,9 @@ return [
 
 
 
-    'home' => 'Home',
-    'categories' => 'Categories',
     'edit_button' => 'Edit',
     'delete_button' => 'Delete',
-    'provider_title' => 'Service Provider',
+    'provider_label' => 'Service Provider',
     'publish_date' => 'Publish Date',
     'category_title' => 'Category',
     'subcategory_title' => 'Subcategory',
@@ -576,17 +550,17 @@ return [
 
 
     'provider_info_title' => 'Service Provider Info',
-    'offer_rejected_title' => 'Your Offer was Rejected:',
+    'offer_rejected_heading' => 'Your Offer was Rejected:',
     'offer_rejected_body' => 'You can submit a new offer if you wish.',
     'offer_expired_title' => 'Your Offer Expired:',
     'offer_expired_body' => 'You can submit a new offer if you wish.',
-    'offer_accepted_title' => 'Your Offer was Accepted!',
+    'offer_accepted_heading' => 'Your Offer was Accepted!',
     'offer_accepted_body' => 'You can contact the service owner to complete the work.',
     'offer_pending_title' => 'Your Offer is Under Review:',
     'offer_pending_body' => 'Awaiting response from the service owner.',
     'current_offer_title' => 'Submitted Offer',
-    'offer_price' => 'Offered Price:',
-    'offer_status' => 'Offer Status:',
+    'offer_price_label' => 'Offered Price:',
+    'offer_status_label' => 'Offer Status:',
     'status_rejected' => 'Offer Rejected',
     'status_accepted' => 'Offer Accepted',
     'status_pending' => 'Awaiting Response',

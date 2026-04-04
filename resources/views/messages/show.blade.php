@@ -1033,7 +1033,12 @@ document.addEventListener('DOMContentLoaded', function() {
         .catch(() => {});
     }
 
-    setInterval(fetchNewMessages, 3000);
+    // Poll every 10s, pause when tab hidden
+    let pollTimer = setInterval(fetchNewMessages, 10000);
+    document.addEventListener('visibilitychange', function() {
+        if (document.hidden) { clearInterval(pollTimer); pollTimer = null; }
+        else if (!pollTimer) { fetchNewMessages(); pollTimer = setInterval(fetchNewMessages, 10000); }
+    });
 
     // Search
     const searchInput = document.getElementById('searchConversations');
