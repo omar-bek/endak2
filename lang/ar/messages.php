@@ -109,6 +109,9 @@ return [
     'follow_us' => 'تابعنا',
     'all_rights_reserved' => 'جميع الحقوق محفوظة',
     'download_app' => 'حمّل التطبيق',
+    'app_banner_title' => 'حمّل تطبيق إنداك',
+    'app_banner_subtitle' => 'تجربة أفضل وأسرع من التطبيق',
+    'app_banner_btn' => 'تحميل مجاني',
     'provider_app' => 'تطبيق مزود الخدمة',
     'client_app' => 'تطبيق العميل',
 

@@ -119,6 +119,9 @@ return [
     'follow_us' => 'Follow Us',
     'all_rights_reserved' => 'All Rights Reserved',
     'download_app' => 'Download App',
+    'app_banner_title' => 'Get the Endak App',
+    'app_banner_subtitle' => 'Better & faster experience on the app',
+    'app_banner_btn' => 'Free Download',
     'provider_app' => 'Provider App',
     'client_app' => 'Client App',
 

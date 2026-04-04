@@ -105,6 +105,43 @@ if ($request->hasFile('logo_upload')) {
     }
 
     /**
+     * تحديث إعدادات SEO والسوشيال ميديا
+     */
+    public function updateSeo(Request $request)
+    {
+        $request->validate([
+            'site_description_ar' => 'nullable|string|max:300',
+            'site_description_en' => 'nullable|string|max:300',
+            'site_keywords_ar' => 'nullable|string|max:500',
+            'site_keywords_en' => 'nullable|string|max:500',
+            'social_facebook' => 'nullable|url|max:500',
+            'social_twitter' => 'nullable|url|max:500',
+            'social_instagram' => 'nullable|url|max:500',
+            'social_tiktok' => 'nullable|url|max:500',
+            'social_youtube' => 'nullable|url|max:500',
+        ]);
+
+        $fields = [
+            'site_description_ar' => ['type' => 'string', 'group' => 'seo', 'desc' => 'وصف الموقع بالعربي'],
+            'site_description_en' => ['type' => 'string', 'group' => 'seo', 'desc' => 'وصف الموقع بالإنجليزي'],
+            'site_keywords_ar' => ['type' => 'string', 'group' => 'seo', 'desc' => 'كلمات مفتاحية بالعربي'],
+            'site_keywords_en' => ['type' => 'string', 'group' => 'seo', 'desc' => 'كلمات مفتاحية بالإنجليزي'],
+            'social_facebook' => ['type' => 'string', 'group' => 'social', 'desc' => 'رابط فيسبوك'],
+            'social_twitter' => ['type' => 'string', 'group' => 'social', 'desc' => 'رابط تويتر/X'],
+            'social_instagram' => ['type' => 'string', 'group' => 'social', 'desc' => 'رابط إنستغرام'],
+            'social_tiktok' => ['type' => 'string', 'group' => 'social', 'desc' => 'رابط تيك توك'],
+            'social_youtube' => ['type' => 'string', 'group' => 'social', 'desc' => 'رابط يوتيوب'],
+        ];
+
+        foreach ($fields as $key => $meta) {
+            SystemSetting::set($key, $request->input($key, ''), $meta['type'], $meta['group'], $meta['desc']);
+        }
+
+        return redirect()->route('admin.system-settings.index')
+            ->with('success', 'تم تحديث إعدادات SEO والسوشيال ميديا بنجاح');
+    }
+
+    /**
      * تحديث روابط التطبيقات
      */
     public function updateAppLinks(Request $request)

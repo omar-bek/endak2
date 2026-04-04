@@ -108,6 +108,153 @@
                 </div>
             </div>
 
+            <!-- إعدادات SEO والسوشيال ميديا -->
+            <div class="card mb-4">
+                <div class="card-header bg-success bg-opacity-10">
+                    <h5 class="mb-0">
+                        <i class="fas fa-search text-success"></i> إعدادات SEO ومحركات البحث
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <form method="POST" action="{{ route('admin.system-settings.update-seo') }}">
+                        @csrf
+                        @method('PUT')
+
+                        {{-- وصف الموقع --}}
+                        <div class="border rounded p-3 mb-4">
+                            <h6 class="mb-3"><i class="fas fa-file-alt text-primary me-1"></i> وصف الموقع (Meta Description)</h6>
+                            <p class="text-muted small mb-3">يظهر في نتائج بحث جوجل أسفل عنوان الموقع. الحد الأقصى 160 حرف.</p>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="site_description_ar" class="form-label">الوصف بالعربي</label>
+                                        <textarea class="form-control" id="site_description_ar" name="site_description_ar"
+                                            rows="3" maxlength="300" placeholder="إنداك - المنصة الرائدة للخدمات...">{{ \App\Models\SystemSetting::get('site_description_ar', '') }}</textarea>
+                                        <small class="form-text text-muted">
+                                            <span id="desc_ar_count">0</span>/160 حرف موصى به
+                                        </small>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="site_description_en" class="form-label">الوصف بالإنجليزي</label>
+                                        <textarea class="form-control" id="site_description_en" name="site_description_en"
+                                            rows="3" maxlength="300" placeholder="Endak - The leading services platform...">{{ \App\Models\SystemSetting::get('site_description_en', '') }}</textarea>
+                                        <small class="form-text text-muted">
+                                            <span id="desc_en_count">0</span>/160 recommended characters
+                                        </small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {{-- كلمات مفتاحية --}}
+                        <div class="border rounded p-3 mb-4">
+                            <h6 class="mb-3"><i class="fas fa-tags text-warning me-1"></i> الكلمات المفتاحية (Keywords)</h6>
+                            <p class="text-muted small mb-3">كلمات مفصولة بفواصل تساعد محركات البحث في فهم محتوى الموقع.</p>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="site_keywords_ar" class="form-label">كلمات مفتاحية بالعربي</label>
+                                        <input type="text" class="form-control" id="site_keywords_ar" name="site_keywords_ar"
+                                            value="{{ \App\Models\SystemSetting::get('site_keywords_ar', '') }}"
+                                            placeholder="خدمات, إنداك, طلب خدمة, مزود خدمة">
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="site_keywords_en" class="form-label">كلمات مفتاحية بالإنجليزي</label>
+                                        <input type="text" class="form-control" id="site_keywords_en" name="site_keywords_en"
+                                            value="{{ \App\Models\SystemSetting::get('site_keywords_en', '') }}"
+                                            placeholder="services, Endak, request service, provider">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {{-- السوشيال ميديا --}}
+                        <div class="border rounded p-3 mb-4">
+                            <h6 class="mb-3"><i class="fas fa-share-alt text-info me-1"></i> روابط السوشيال ميديا</h6>
+                            <p class="text-muted small mb-3">تظهر في بيانات الموقع المنظمة (JSON-LD) لمحركات البحث وفي الفوتر.</p>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="social_facebook" class="form-label">
+                                            <i class="fab fa-facebook text-primary me-1"></i>فيسبوك
+                                        </label>
+                                        <input type="url" class="form-control" id="social_facebook" name="social_facebook"
+                                            value="{{ \App\Models\SystemSetting::get('social_facebook', '') }}"
+                                            placeholder="https://facebook.com/endak">
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="social_twitter" class="form-label">
+                                            <i class="fab fa-x-twitter me-1"></i>تويتر / X
+                                        </label>
+                                        <input type="url" class="form-control" id="social_twitter" name="social_twitter"
+                                            value="{{ \App\Models\SystemSetting::get('social_twitter', '') }}"
+                                            placeholder="https://x.com/endak">
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="social_instagram" class="form-label">
+                                            <i class="fab fa-instagram text-danger me-1"></i>إنستغرام
+                                        </label>
+                                        <input type="url" class="form-control" id="social_instagram" name="social_instagram"
+                                            value="{{ \App\Models\SystemSetting::get('social_instagram', '') }}"
+                                            placeholder="https://instagram.com/endak">
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="social_tiktok" class="form-label">
+                                            <i class="fab fa-tiktok me-1"></i>تيك توك
+                                        </label>
+                                        <input type="url" class="form-control" id="social_tiktok" name="social_tiktok"
+                                            value="{{ \App\Models\SystemSetting::get('social_tiktok', '') }}"
+                                            placeholder="https://tiktok.com/@endak">
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="social_youtube" class="form-label">
+                                            <i class="fab fa-youtube text-danger me-1"></i>يوتيوب
+                                        </label>
+                                        <input type="url" class="form-control" id="social_youtube" name="social_youtube"
+                                            value="{{ \App\Models\SystemSetting::get('social_youtube', '') }}"
+                                            placeholder="https://youtube.com/@endak">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {{-- معاينة SEO --}}
+                        <div class="border rounded p-3 mb-4 bg-light">
+                            <h6 class="mb-3"><i class="fab fa-google text-success me-1"></i> معاينة نتائج البحث</h6>
+                            <div class="bg-white rounded p-3 border" style="max-width: 600px;">
+                                <div style="color: #1a0dab; font-size: 18px; font-weight: 400; line-height: 1.3; margin-bottom: 3px;" id="seo_preview_title">
+                                    {{ \App\Models\SystemSetting::get('site_name_ar', 'إنداك') }} - {{ \App\Models\SystemSetting::get('site_name', 'Endak') }}
+                                </div>
+                                <div style="color: #006621; font-size: 14px; margin-bottom: 3px;">
+                                    {{ url('/') }}
+                                </div>
+                                <div style="color: #545454; font-size: 13px; line-height: 1.5;" id="seo_preview_desc">
+                                    {{ \App\Models\SystemSetting::get('site_description_ar', 'إنداك - المنصة الرائدة للخدمات. اطلب خدمة أو قدم عروضك بسهولة وأمان.') }}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="text-center">
+                            <button type="submit" class="btn btn-success">
+                                <i class="fas fa-save"></i> حفظ إعدادات SEO
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
             <!-- إعدادات التواصل -->
             <div class="card mb-4">
                 <div class="card-header">
@@ -681,6 +828,31 @@
                 // تحديث معاينة اللوجو عند تغيير القيمة
                 siteLogo.addEventListener('input', updateLogoPreview);
             }
+
+            // ===== SEO Character Counters & Preview =====
+            const descAr = document.getElementById('site_description_ar');
+            const descEn = document.getElementById('site_description_en');
+            const descArCount = document.getElementById('desc_ar_count');
+            const descEnCount = document.getElementById('desc_en_count');
+            const seoPreviewDesc = document.getElementById('seo_preview_desc');
+
+            function updateSeoCounters() {
+                if (descAr && descArCount) {
+                    descArCount.textContent = descAr.value.length;
+                    descArCount.style.color = descAr.value.length > 160 ? '#dc3545' : '#6c757d';
+                }
+                if (descEn && descEnCount) {
+                    descEnCount.textContent = descEn.value.length;
+                    descEnCount.style.color = descEn.value.length > 160 ? '#dc3545' : '#6c757d';
+                }
+                if (descAr && seoPreviewDesc) {
+                    seoPreviewDesc.textContent = descAr.value || 'إنداك - المنصة الرائدة للخدمات...';
+                }
+            }
+
+            if (descAr) { descAr.addEventListener('input', updateSeoCounters); }
+            if (descEn) { descEn.addEventListener('input', updateSeoCounters); }
+            updateSeoCounters();
         });
     </script>
 @endsection

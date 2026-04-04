@@ -170,6 +170,7 @@ Route::middleware(['auth', 'verified', 'user.type.terms', 'admin'])->prefix('adm
     Route::put('/system-settings/provider', [SystemSettingController::class, 'updateProviderSettings'])->name('system-settings.provider');
     Route::put('/system-settings/default-service-image', [SystemSettingController::class, 'updateDefaultServiceImage'])->name('system-settings.default-service-image');
     Route::put('/system-settings/app-links', [SystemSettingController::class, 'updateAppLinks'])->name('system-settings.update-app-links');
+    Route::put('/system-settings/seo', [SystemSettingController::class, 'updateSeo'])->name('system-settings.update-seo');
 
     // إدارة الأقسام والمدن
     Route::get('/category-cities', [App\Http\Controllers\Admin\CategoryCityController::class, 'index'])->name('category-cities.index');

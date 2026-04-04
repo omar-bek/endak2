@@ -79,11 +79,13 @@
     'alternateName' => $siteName,
     'url' => url('/'),
     'logo' => $siteLogo,
-    'sameAs' => array_filter([
+    'sameAs' => array_values(array_filter([
         \App\Models\SystemSetting::get('social_facebook'),
         \App\Models\SystemSetting::get('social_twitter'),
         \App\Models\SystemSetting::get('social_instagram'),
-    ]),
+        \App\Models\SystemSetting::get('social_tiktok'),
+        \App\Models\SystemSetting::get('social_youtube'),
+    ])),
 ], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT) !!}
 </script>
 

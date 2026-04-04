@@ -24,6 +24,9 @@
 </head>
 
 <body>
+    {{-- ==================== SMART APP BANNER (Mobile) ==================== --}}
+    @include('partials._app-banner')
+
     {{-- ==================== NAVBAR (Desktop) ==================== --}}
     <nav class="navbar navbar-expand-lg fixed-top custom-navbar d-none d-lg-block">
         <div class="container">
@@ -175,11 +178,21 @@
 
                 <div class="col-md-4 mb-4">
                     <h5 class="footer-title">{{ __('messages.contact_info') }}</h5>
+                    @php
+                        $socialLinks = [
+                            ['key' => 'social_facebook', 'icon' => 'fab fa-facebook-f'],
+                            ['key' => 'social_twitter', 'icon' => 'fab fa-x-twitter'],
+                            ['key' => 'social_instagram', 'icon' => 'fab fa-instagram'],
+                            ['key' => 'social_tiktok', 'icon' => 'fab fa-tiktok'],
+                            ['key' => 'social_youtube', 'icon' => 'fab fa-youtube'],
+                        ];
+                    @endphp
                     <div class="social-links mt-3 d-flex justify-content-center justify-content-md-start">
-                        <a href="#" class="social-icon"><i class="fab fa-facebook-f"></i></a>
-                        <a href="#" class="social-icon"><i class="fab fa-twitter"></i></a>
-                        <a href="#" class="social-icon"><i class="fab fa-instagram"></i></a>
-                        <a href="#" class="social-icon"><i class="fab fa-linkedin-in"></i></a>
+                        @foreach($socialLinks as $social)
+                            @if($url = \App\Models\SystemSetting::get($social['key']))
+                                <a href="{{ $url }}" target="_blank" rel="noopener noreferrer" class="social-icon"><i class="{{ $social['icon'] }}"></i></a>
+                            @endif
+                        @endforeach
                     </div>
 
                     @php
