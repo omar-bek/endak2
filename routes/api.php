@@ -59,7 +59,7 @@ use Illuminate\Support\Facades\Route;
 //     ]);
 // })->name('api.login.info');
 
-Route::post('login', [ApiAuthController::class, 'login'])->middleware('throttle:10,1')->name('api.login');
+Route::post('login', [ApiAuthController::class, 'login'])->name('api.login');
 
 // Broadcasting Authentication (يجب أن يكون قبل middleware api.token)
 Broadcast::routes(['middleware' => ['api', 'api.token']]);
@@ -99,7 +99,7 @@ Route::get('register', function () {
     ]);
 })->name('api.register.info');
 
-Route::post('register', [ApiAuthController::class, 'register'])->middleware('throttle:5,1')->name('api.register');
+Route::post('register', [ApiAuthController::class, 'register'])->name('api.register');
 
 // Public API endpoints (without v1 prefix)
 Route::get('categories/{category}/fields', [ApiCategoryFieldController::class, 'index'])->whereNumber('category');
@@ -184,7 +184,7 @@ Route::prefix('v1')->name('api.v1.')->group(function () {
         ]);
     })->name('api.v1.auth.login.info');
 
-    Route::post('auth/login', [ApiAuthController::class, 'login'])->middleware('throttle:10,1');
+    Route::post('auth/login', [ApiAuthController::class, 'login']);
 
     Route::get('auth/register', function () {
         return response()->json([
@@ -221,7 +221,7 @@ Route::prefix('v1')->name('api.v1.')->group(function () {
         ]);
     })->name('api.v1.auth.register.info');
 
-    Route::post('auth/register', [ApiAuthController::class, 'register'])->middleware('throttle:5,1');
+    Route::post('auth/register', [ApiAuthController::class, 'register']);
 
     // Google Login
     Route::post('auth/google', [ApiAuthController::class, 'googleLogin']);
@@ -232,7 +232,7 @@ Route::prefix('v1')->name('api.v1.')->group(function () {
     Route::middleware('api.token')->group(function () {
         Route::post('auth/logout', [ApiAuthController::class, 'logout']);
         Route::delete('auth/account', [ApiAuthController::class, 'deleteAccount']);
-        Route::post('auth/email/resend', [ApiAuthController::class, 'resendVerificationEmail'])->middleware('throttle:3,1');
+        Route::post('auth/email/resend', [ApiAuthController::class, 'resendVerificationEmail']);
         Route::get('auth/profile', [ApiAuthController::class, 'profile']);
         Route::post('auth/profile', [ApiAuthController::class, 'updateProfile']);
         Route::get('auth/complete-profile', [ApiAuthController::class, 'getCompleteProfile']);
