@@ -15,8 +15,8 @@ window.Pusher = Pusher;
 // إعداد Echo مع Pusher
 window.Echo = new Echo({
     broadcaster: 'pusher',  // مهم: يجب أن يكون 'pusher' وليس 'reverb'
-    key: import.meta.env.VITE_PUSHER_APP_KEY || process.env.MIX_PUSHER_APP_KEY || 'e91ff80f1a87987e5a08',
-    cluster: import.meta.env.VITE_PUSHER_APP_CLUSTER || process.env.MIX_PUSHER_APP_CLUSTER || 'eu',
+    key: import.meta.env.VITE_PUSHER_APP_KEY || process.env.MIX_PUSHER_APP_KEY,
+    cluster: import.meta.env.VITE_PUSHER_APP_CLUSTER || process.env.MIX_PUSHER_APP_CLUSTER,
     forceTLS: true,
     encrypted: true,
     authEndpoint: '/api/broadcasting/auth',  // مهم: يجب أن يكون /api/broadcasting/auth

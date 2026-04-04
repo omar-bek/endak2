@@ -105,11 +105,8 @@
                                 <!-- معلومات العميل -->
                                 @if($offer->service && $offer->service->user)
                                     <div class="d-flex align-items-center mb-2">
-                                        <img src="{{ $offer->service->user->avatar_url }}" 
-                                             alt="{{ $offer->service->user->name }}"
-                                             class="rounded-circle me-2"
-                                             style="width: 30px; height: 30px; object-fit: cover;">
-                                        <span class="text-muted small">{{ $offer->service->user->name }}</span>
+                                        @include('partials.user-avatar', ['user' => $offer->service->user, 'size' => 36])
+                                        <span class="text-muted small me-2">{{ $offer->service->user->name }}</span>
                                     </div>
                                 @endif
 

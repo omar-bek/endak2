@@ -17,3 +17,7 @@ yarn-error.log
 /.fleet
 /.idea
 /.vscode
+*.sql
+test-*.php
+test_*.php
+diagnose-*.php

@@ -3,300 +3,443 @@
 @section('title', 'تعديل الملف الشخصي - مزود الخدمة')
 
 @section('content')
-    <div class="container py-5">
-        <div class="row justify-content-center">
-            <div class="col-lg-10">
-                <div class="card shadow-lg border-0">
-                    <div class="card-header bg-primary text-white text-center py-4">
-                        <h3 class="mb-0">
-                            <i class="fas fa-edit"></i> تعديل الملف الشخصي
-                        </h3>
-                        <p class="mb-0 mt-2">قم بتحديث معلوماتك الشخصية والأقسام والمدن</p>
+<div class="edit-profile-hero">
+    <div class="container">
+        <div class="d-flex align-items-center gap-3">
+            <a href="{{ route('provider.profile') }}" class="btn btn-sm btn-outline-light rounded-pill px-3">
+                <i class="fas fa-arrow-right me-1"></i>رجوع
+            </a>
+            <div>
+                <h3 class="text-white mb-0 fw-bold">تعديل الملف الشخصي</h3>
+                <p class="text-white-50 mb-0 small">قم بتحديث معلوماتك الشخصية والأقسام والمدن</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container py-4" style="margin-top: -2rem; position: relative; z-index: 2;">
+    <form method="POST" action="{{ route('provider.profile.update') }}" enctype="multipart/form-data">
+        @csrf
+        @method('PUT')
+
+        <div class="row">
+            {{-- Right Side: Main Form --}}
+            <div class="col-lg-8">
+                {{-- المعلومات الأساسية --}}
+                <div class="e-card mb-4">
+                    <div class="e-card-header">
+                        <i class="fas fa-user-circle"></i> المعلومات الأساسية
                     </div>
-
-                    <div class="card-body p-5">
-                        @if (session('success'))
-                            <div class="alert alert-success">
-                                <i class="fas fa-check-circle"></i> {{ session('success') }}
+                    <div class="e-card-body">
+                        <div class="row g-3">
+                            <div class="col-12">
+                                <label for="bio" class="form-label fw-semibold">نبذة عنك <span class="text-danger">*</span></label>
+                                <textarea name="bio" id="bio" class="form-control @error('bio') is-invalid @enderror" rows="4"
+                                    placeholder="اكتب نبذة مختصرة عن خبراتك ومهاراتك...">{{ old('bio', $profile ? $profile->bio : '') }}</textarea>
+                                @error('bio')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
                             </div>
-                        @endif
 
-                        @if (session('error'))
-                            <div class="alert alert-danger">
-                                <i class="fas fa-exclamation-circle"></i> {{ session('error') }}
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold">رقم الهاتف</label>
+                                <input type="text" class="form-control" value="{{ Auth::user()->phone }}" readonly style="background: var(--e-gray-50);">
+                                <small class="text-muted">رقم الهاتف المسجل في حسابك</small>
                             </div>
-                        @endif
 
-                        @if (session('info'))
-                            <div class="alert alert-info">
-                                <i class="fas fa-info-circle"></i> {{ session('info') }}
+                            <div class="col-md-6">
+                                <label for="address" class="form-label fw-semibold">العنوان <span class="text-danger">*</span></label>
+                                <input type="text" name="address" id="address"
+                                    class="form-control @error('address') is-invalid @enderror"
+                                    value="{{ old('address', $profile ? $profile->address : '') }}"
+                                    placeholder="عنوانك الكامل">
+                                @error('address')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
                             </div>
-                        @endif
+                        </div>
+                    </div>
+                </div>
 
-                        <form method="POST" action="{{ route('provider.profile.update') }}" enctype="multipart/form-data">
-                            @csrf
-                            @method('PUT')
+                {{-- الأقسام --}}
+                <div class="e-card mb-4">
+                    <div class="e-card-header">
+                        <i class="fas fa-folder-open"></i> الأقسام التي تعمل فيها
+                        <span class="e-badge e-badge-primary ms-auto">حد أقصى {{ $maxCategories }}</span>
+                    </div>
+                    <div class="e-card-body">
+                        @error('categories')
+                            <div class="alert alert-danger alert-sm mb-3">{{ $message }}</div>
+                        @enderror
 
-                            <!-- المعلومات الأساسية -->
-                            <div class="row mb-5">
-                                <div class="col-12">
-                                    <h4 class="text-primary mb-4">
-                                        <i class="fas fa-user"></i> المعلومات الأساسية
-                                    </h4>
-                                </div>
-
-                                <div class="col-md-6 mb-3">
-                                    <label for="bio" class="form-label">نبذة عنك <span
-                                            class="text-danger">*</span></label>
-                                    <textarea name="bio" id="bio" class="form-control @error('bio') is-invalid @enderror" rows="4"
-                                        placeholder="اكتب نبذة مختصرة عن خبراتك ومهاراتك...">{{ old('bio', $profile ? $profile->bio : '') }}</textarea>
-                                    @error('bio')
-                                        <div class="invalid-feedback">{{ $message }}</div>
-                                    @enderror
-                                </div>
-
-                                <div class="col-md-6 mb-3">
-                                    <label class="form-label">رقم الهاتف</label>
-                                    <input type="text" class="form-control" value="{{ Auth::user()->phone }}" readonly>
-                                    <small class="form-text text-muted">رقم الهاتف المسجل في حسابك</small>
-                                </div>
-
-                                <div class="col-12 mb-3">
-                                    <label for="address" class="form-label">العنوان <span
-                                            class="text-danger">*</span></label>
-                                    <input type="text" name="address" id="address"
-                                        class="form-control @error('address') is-invalid @enderror"
-                                        value="{{ old('address', $profile ? $profile->address : '') }}"
-                                        placeholder="عنوانك الكامل">
-                                    @error('address')
-                                        <div class="invalid-feedback">{{ $message }}</div>
-                                    @enderror
-                                </div>
-
-                                <div class="col-12 mb-3">
-                                    <label for="image" class="form-label">الصورة الشخصية</label>
-                                    <input type="file" class="form-control @error('image') is-invalid @enderror"
-                                        id="image" name="image" accept="image/*">
-                                    <small class="form-text text-muted">الأبعاد المفضلة: 300x300 بكسل. الأنواع المدعومة:
-                                        JPG, PNG, GIF</small>
-                                    @error('image')
-                                        <div class="invalid-feedback">{{ $message }}</div>
-                                    @enderror
-
-                                    @if (Auth::user()->image)
-                                        <div class="mt-2">
-                                            <small class="text-muted">الصورة الحالية:</small>
-                                            <div class="mt-1">
-                                                <img src="{{ asset('storage/' . Auth::user()->image) }}"
-                                                    alt="الصورة الحالية" class="rounded"
-                                                    style="width: 80px; height: 80px; object-fit: cover;">
-                                            </div>
+                        <div class="row g-3">
+                            @foreach ($categories as $category)
+                                @php
+                                    $selectedCategories = $profile ? $profile->activeCategories()->pluck('category_id')->toArray() : [];
+                                    $selectedSubCategories = $profile ? $profile->activeCategories()->where('category_id', $category->id)->pluck('sub_category_id')->filter()->toArray() : [];
+                                    $subCategories = $category->subCategories()->where('status', true)->get();
+                                    $hasSubCategories = $subCategories->count() > 0;
+                                    $isChecked = in_array($category->id, old('categories', $selectedCategories));
+                                @endphp
+                                <div class="col-md-6">
+                                    <div class="category-select-card {{ $isChecked ? 'is-selected' : '' }}">
+                                        <div class="form-check">
+                                            <input class="form-check-input category-checkbox" type="checkbox"
+                                                name="categories[]" value="{{ $category->id }}"
+                                                id="category_{{ $category->id }}"
+                                                data-category-id="{{ $category->id }}"
+                                                {{ $isChecked ? 'checked' : '' }}>
+                                            <label class="form-check-label" for="category_{{ $category->id }}">
+                                                <i class="{{ $category->icon ?? 'fas fa-folder' }} category-select-icon"></i>
+                                                <strong>{{ $category->name }}</strong>
+                                            </label>
                                         </div>
-                                    @endif
-                                </div>
-                            </div>
 
-                            <!-- الأقسام -->
-                            <div class="row mb-5">
-                                <div class="col-12">
-                                    <h4 class="text-primary mb-4">
-                                        <i class="fas fa-folder"></i> الأقسام التي تعمل فيها
-                                        <small class="text-muted">(حد أقصى {{ $maxCategories }} أقسام)</small>
-                                    </h4>
-
-                                    @error('categories')
-                                        <div class="alert alert-danger">{{ $message }}</div>
-                                    @enderror
-
-                                    <div class="row">
-                                        @foreach ($categories as $category)
-                                            @php
-                                                $selectedCategories = $profile
-                                                    ? $profile->activeCategories()->pluck('category_id')->toArray()
-                                                    : [];
-                                                $selectedSubCategories = $profile
-                                                    ? $profile
-                                                        ->activeCategories()
-                                                        ->where('category_id', $category->id)
-                                                        ->pluck('sub_category_id')
-                                                        ->filter()
-                                                        ->toArray()
-                                                    : [];
-                                                $subCategories = $category
-                                                    ->subCategories()
-                                                    ->where('status', true)
-                                                    ->get();
-                                                $hasSubCategories = $subCategories->count() > 0;
-                                            @endphp
-                                            <div class="col-md-6 mb-4">
-                                                <div class="card border">
-                                                    <div class="card-body">
-                                                        <div class="form-check mb-2">
-                                                            <input class="form-check-input category-checkbox"
-                                                                type="checkbox" name="categories[]"
-                                                                value="{{ $category->id }}"
-                                                                id="category_{{ $category->id }}"
+                                        @if ($hasSubCategories)
+                                            <div class="sub-categories-area" id="sub_categories_{{ $category->id }}"
+                                                style="{{ $isChecked ? '' : 'display:none;' }}">
+                                                <small class="text-muted d-block mb-2">الأقسام الفرعية:</small>
+                                                <div class="d-flex flex-wrap gap-2">
+                                                    @foreach ($subCategories as $subCategory)
+                                                        <label class="sub-category-chip {{ in_array($subCategory->id, old("sub_categories.{$category->id}", $selectedSubCategories)) ? 'is-selected' : '' }}">
+                                                            <input class="d-none sub-category-checkbox" type="checkbox"
+                                                                name="sub_categories[{{ $category->id }}][]"
+                                                                value="{{ $subCategory->id }}"
                                                                 data-category-id="{{ $category->id }}"
-                                                                {{ in_array($category->id, old('categories', $selectedCategories)) ? 'checked' : '' }}>
-                                                            <label class="form-check-label fw-bold"
-                                                                for="category_{{ $category->id }}">
-                                                                <i class="{{ $category->icon }} text-primary"></i>
-                                                                {{ $category->name }}
-                                                            </label>
-                                                        </div>
-
-                                                        @if ($hasSubCategories)
-                                                            <div class="sub-categories-container"
-                                                                id="sub_categories_{{ $category->id }}"
-                                                                style="display: {{ in_array($category->id, old('categories', $selectedCategories)) ? 'block' : 'none' }}; margin-top: 10px; padding-right: 20px;">
-                                                                <small class="text-muted d-block mb-2">الأقسام
-                                                                    الفرعية:</small>
-                                                                @foreach ($subCategories as $subCategory)
-                                                                    <div class="form-check mb-2">
-                                                                        <input
-                                                                            class="form-check-input sub-category-checkbox"
-                                                                            type="checkbox"
-                                                                            name="sub_categories[{{ $category->id }}][]"
-                                                                            value="{{ $subCategory->id }}"
-                                                                            id="sub_category_{{ $subCategory->id }}"
-                                                                            data-category-id="{{ $category->id }}"
-                                                                            {{ in_array($subCategory->id, old("sub_categories.{$category->id}", $selectedSubCategories)) ? 'checked' : '' }}>
-                                                                        <label class="form-check-label"
-                                                                            for="sub_category_{{ $subCategory->id }}">
-                                                                            {{ $subCategory->name_ar }}
-                                                                        </label>
-                                                                    </div>
-                                                                @endforeach
-                                                            </div>
-                                                        @endif
-                                                    </div>
+                                                                {{ in_array($subCategory->id, old("sub_categories.{$category->id}", $selectedSubCategories)) ? 'checked' : '' }}>
+                                                            <span>{{ $subCategory->name_ar }}</span>
+                                                        </label>
+                                                    @endforeach
                                                 </div>
                                             </div>
-                                        @endforeach
+                                        @endif
                                     </div>
                                 </div>
-                            </div>
+                            @endforeach
+                        </div>
+                    </div>
+                </div>
 
-                            <!-- المدن -->
-                            <div class="row mb-5">
-                                <div class="col-12">
-                                    <h4 class="text-primary mb-4">
-                                        <i class="fas fa-map-marker-alt"></i> المدن التي تعمل فيها
-                                        <small class="text-muted">(حد أقصى {{ $maxCities }} مدن)</small>
-                                    </h4>
+                {{-- المدن --}}
+                <div class="e-card mb-4">
+                    <div class="e-card-header">
+                        <i class="fas fa-map-marker-alt"></i> المدن التي تعمل فيها
+                        <span class="e-badge e-badge-primary ms-auto">حد أقصى {{ $maxCities }}</span>
+                    </div>
+                    <div class="e-card-body">
+                        @error('cities')
+                            <div class="alert alert-danger alert-sm mb-3">{{ $message }}</div>
+                        @enderror
 
-                                    @error('cities')
-                                        <div class="alert alert-danger">{{ $message }}</div>
-                                    @enderror
+                        @php
+                            $selectedCities = $profile ? $profile->activeCities()->pluck('city_id')->toArray() : [];
+                        @endphp
+                        <div class="d-flex flex-wrap gap-2">
+                            @foreach ($cities as $city)
+                                <label class="city-chip {{ in_array($city->id, old('cities', $selectedCities)) ? 'is-selected' : '' }}">
+                                    <input class="d-none" type="checkbox" name="cities[]" value="{{ $city->id }}"
+                                        {{ in_array($city->id, old('cities', $selectedCities)) ? 'checked' : '' }}>
+                                    <i class="fas fa-map-pin"></i>
+                                    <span>{{ $city->name_ar }}</span>
+                                </label>
+                            @endforeach
+                        </div>
+                    </div>
+                </div>
+            </div>
 
-                                    <div class="row">
-                                        @foreach ($cities as $city)
-                                            <div class="col-md-4 mb-3">
-                                                <div class="form-check">
-                                                    @php
-                                                        $selectedCities = $profile
-                                                            ? $profile->activeCities()->pluck('city_id')->toArray()
-                                                            : [];
-                                                    @endphp
-                                                    <input class="form-check-input" type="checkbox" name="cities[]"
-                                                        value="{{ $city->id }}" id="city_{{ $city->id }}"
-                                                        {{ in_array($city->id, old('cities', $selectedCities)) ? 'checked' : '' }}>
-                                                    <label class="form-check-label" for="city_{{ $city->id }}">
-                                                        <i class="fas fa-map-marker-alt text-info"></i>
-                                                        {{ $city->name_ar }}
-                                                    </label>
-                                                </div>
-                                            </div>
-                                        @endforeach
-                                    </div>
+            {{-- Left Side: Avatar + Actions --}}
+            <div class="col-lg-4">
+                {{-- الصورة الشخصية --}}
+                <div class="e-card mb-4">
+                    <div class="e-card-header">
+                        <i class="fas fa-camera"></i> الصورة الشخصية
+                    </div>
+                    <div class="e-card-body text-center">
+                        <div class="avatar-upload-area mb-3">
+                            @if (Auth::user()->image)
+                                <img src="{{ asset('storage/' . Auth::user()->image) }}" alt="الصورة الحالية"
+                                    class="avatar-preview" id="avatarPreview">
+                            @else
+                                <div class="avatar-preview-placeholder" id="avatarPreview">
+                                    <i class="fas fa-user fa-3x"></i>
                                 </div>
-                            </div>
+                            @endif
+                        </div>
 
-                            <!-- أزرار الإجراءات -->
-                            <div class="row">
-                                <div class="col-12 text-center">
-                                    <button type="submit" class="btn btn-primary btn-lg me-3">
-                                        <i class="fas fa-save"></i> حفظ التعديلات
-                                    </button>
-                                    <a href="{{ route('provider.profile') }}" class="btn btn-secondary btn-lg">
-                                        <i class="fas fa-arrow-left"></i> العودة للملف الشخصي
-                                    </a>
-                                </div>
-                            </div>
-                        </form>
+                        <label for="image" class="btn btn-outline-primary btn-sm rounded-pill px-4">
+                            <i class="fas fa-upload me-1"></i>{{ Auth::user()->image ? 'تغيير الصورة' : 'رفع صورة' }}
+                        </label>
+                        <input type="file" class="d-none @error('image') is-invalid @enderror"
+                            id="image" name="image" accept="image/*" onchange="previewImage(this)">
+                        <small class="text-muted d-block mt-2">JPG, PNG, GIF - حد أقصى 2MB</small>
+                        @error('image')
+                            <div class="text-danger small mt-1">{{ $message }}</div>
+                        @enderror
+                    </div>
+                </div>
+
+                {{-- أزرار الحفظ --}}
+                <div class="e-card mb-4 sticky-actions">
+                    <div class="e-card-body">
+                        <button type="submit" class="btn btn-primary w-100 mb-2 rounded-pill">
+                            <i class="fas fa-save me-1"></i>حفظ التعديلات
+                        </button>
+                        <a href="{{ route('provider.profile') }}" class="btn btn-outline-secondary w-100 rounded-pill">
+                            <i class="fas fa-times me-1"></i>إلغاء
+                        </a>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
+    </form>
+</div>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // إظهار/إخفاء الأقسام الفرعية عند اختيار قسم رئيسي
-            document.querySelectorAll('.category-checkbox').forEach(function(checkbox) {
-                checkbox.addEventListener('change', function() {
-                    const categoryId = this.getAttribute('data-category-id');
-                    const subCategoriesContainer = document.getElementById('sub_categories_' +
-                        categoryId);
+@push('styles')
+<style>
+    .edit-profile-hero {
+        background: linear-gradient(135deg, var(--e-primary), var(--e-primary-light));
+        padding: 2rem 0 4rem;
+    }
 
-                    if (subCategoriesContainer) {
-                        if (this.checked) {
-                            subCategoriesContainer.style.display = 'block';
-                        } else {
-                            subCategoriesContainer.style.display = 'none';
-                            // إلغاء تحديد جميع الأقسام الفرعية عند إلغاء تحديد القسم الرئيسي
-                            subCategoriesContainer.querySelectorAll('.sub-category-checkbox')
-                                .forEach(function(subCheckbox) {
-                                    subCheckbox.checked = false;
-                                });
-                        }
-                    }
-                });
-            });
+    /* Cards (same as provider profile) */
+    .e-card {
+        background: var(--e-white, #fff);
+        border-radius: 16px;
+        border: 1px solid var(--e-gray-200, #e2e8f0);
+        overflow: hidden;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+    }
 
-            // تحديد القسم الرئيسي تلقائياً عند تحديد قسم فرعي
-            document.querySelectorAll('.sub-category-checkbox').forEach(function(checkbox) {
-                checkbox.addEventListener('change', function() {
-                    const categoryId = this.getAttribute('data-category-id');
-                    const categoryCheckbox = document.getElementById('category_' + categoryId);
+    .e-card-header {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 1rem 1.25rem;
+        font-weight: 700;
+        font-size: 0.95rem;
+        color: var(--e-primary, #2f5c69);
+        border-bottom: 1px solid var(--e-gray-100, #f1f5f9);
+        background: var(--e-gray-50, #f8fafc);
+    }
 
-                    if (this.checked && categoryCheckbox && !categoryCheckbox.checked) {
-                        categoryCheckbox.checked = true;
-                        categoryCheckbox.dispatchEvent(new Event('change'));
-                    }
-                });
-            });
+    .e-card-body { padding: 1.25rem; }
 
-            // التحقق من عدد الأقسام المحددة
-            const maxCategories = {{ $maxCategories }};
-            const categoryCheckboxes = document.querySelectorAll('.category-checkbox');
+    .e-badge {
+        display: inline-flex;
+        align-items: center;
+        padding: 0.25rem 0.65rem;
+        border-radius: 999px;
+        font-size: 0.72rem;
+        font-weight: 600;
+    }
 
-            categoryCheckboxes.forEach(function(checkbox) {
-                checkbox.addEventListener('change', function() {
-                    const checkedCount = document.querySelectorAll('.category-checkbox:checked')
-                        .length;
+    .e-badge-primary { background: rgba(47,92,105,0.1); color: var(--e-primary, #2f5c69); }
 
-                    if (checkedCount >= maxCategories) {
-                        categoryCheckboxes.forEach(function(cb) {
-                            if (!cb.checked) {
-                                cb.disabled = true;
-                            }
+    /* Avatar Upload */
+    .avatar-upload-area { position: relative; display: inline-block; }
+
+    .avatar-preview {
+        width: 120px;
+        height: 120px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 4px solid var(--e-gray-200, #e2e8f0);
+        transition: 0.3s;
+    }
+
+    .avatar-preview-placeholder {
+        width: 120px;
+        height: 120px;
+        border-radius: 50%;
+        background: var(--e-gray-100, #f1f5f9);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--e-gray-400, #94a3b8);
+        border: 4px dashed var(--e-gray-300, #cbd5e1);
+    }
+
+    /* Category Select Card */
+    .category-select-card {
+        padding: 1rem;
+        border: 2px solid var(--e-gray-200, #e2e8f0);
+        border-radius: 12px;
+        transition: 0.25s;
+        height: 100%;
+        background: var(--e-white, #fff);
+    }
+
+    .category-select-card:hover { border-color: var(--e-primary, #2f5c69); }
+
+    .category-select-card.is-selected {
+        border-color: var(--e-primary, #2f5c69);
+        background: rgba(47, 92, 105, 0.03);
+    }
+
+    .category-select-icon {
+        color: var(--e-primary, #2f5c69);
+        margin-left: 0.25rem;
+    }
+
+    .sub-categories-area {
+        margin-top: 0.75rem;
+        padding-top: 0.75rem;
+        border-top: 1px solid var(--e-gray-200, #e2e8f0);
+    }
+
+    /* Sub-category Chips */
+    .sub-category-chip {
+        display: inline-flex;
+        align-items: center;
+        padding: 0.3rem 0.75rem;
+        border-radius: 999px;
+        font-size: 0.8rem;
+        font-weight: 500;
+        cursor: pointer;
+        border: 1.5px solid var(--e-gray-300, #cbd5e1);
+        background: var(--e-white, #fff);
+        color: var(--e-gray-600, #475569);
+        transition: 0.2s;
+        user-select: none;
+    }
+
+    .sub-category-chip:hover {
+        border-color: var(--e-primary, #2f5c69);
+        color: var(--e-primary, #2f5c69);
+    }
+
+    .sub-category-chip.is-selected {
+        background: var(--e-primary, #2f5c69);
+        color: #fff;
+        border-color: var(--e-primary, #2f5c69);
+    }
+
+    /* City Chips */
+    .city-chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+        padding: 0.45rem 1rem;
+        border-radius: 999px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        cursor: pointer;
+        border: 2px solid var(--e-gray-200, #e2e8f0);
+        background: var(--e-white, #fff);
+        color: var(--e-gray-600, #475569);
+        transition: 0.2s;
+        user-select: none;
+    }
+
+    .city-chip:hover {
+        border-color: var(--e-primary, #2f5c69);
+        color: var(--e-primary, #2f5c69);
+    }
+
+    .city-chip.is-selected {
+        background: linear-gradient(135deg, var(--e-primary, #2f5c69), var(--e-primary-light, #3d7a8a));
+        color: #fff;
+        border-color: transparent;
+        box-shadow: 0 2px 8px rgba(47,92,105,0.25);
+    }
+
+    .city-chip.is-selected i { color: rgba(255,255,255,0.7); }
+
+    /* Sticky actions on desktop */
+    @media (min-width: 992px) {
+        .sticky-actions { position: sticky; top: 80px; }
+    }
+
+    /* Form Controls */
+    .form-control:focus, .form-select:focus {
+        border-color: var(--e-primary, #2f5c69);
+        box-shadow: 0 0 0 3px rgba(47,92,105,0.1);
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+        .edit-profile-hero { padding: 1.5rem 0 3rem; }
+        .edit-profile-hero h3 { font-size: 1.2rem; }
+    }
+</style>
+@endpush
+
+@push('scripts')
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var maxCategories = {{ $maxCategories }};
+        var categoryCheckboxes = document.querySelectorAll('.category-checkbox');
+
+        // Toggle sub-categories & card style
+        categoryCheckboxes.forEach(function(cb) {
+            cb.addEventListener('change', function() {
+                var card = this.closest('.category-select-card');
+                var subArea = document.getElementById('sub_categories_' + this.dataset.categoryId);
+
+                if (this.checked) {
+                    card.classList.add('is-selected');
+                    if (subArea) subArea.style.display = 'block';
+                } else {
+                    card.classList.remove('is-selected');
+                    if (subArea) {
+                        subArea.style.display = 'none';
+                        subArea.querySelectorAll('.sub-category-checkbox').forEach(function(s) {
+                            s.checked = false;
+                            s.closest('.sub-category-chip').classList.remove('is-selected');
                         });
-                    } else {
-                        categoryCheckboxes.forEach(function(cb) {
-                            cb.disabled = false;
-                        });
                     }
-                });
-            });
+                }
 
-            // تشغيل التحقق عند تحميل الصفحة
-            categoryCheckboxes.forEach(function(checkbox) {
-                if (checkbox.checked) {
-                    checkbox.dispatchEvent(new Event('change'));
+                // Limit max categories
+                var checkedCount = document.querySelectorAll('.category-checkbox:checked').length;
+                categoryCheckboxes.forEach(function(c) { c.disabled = !c.checked && checkedCount >= maxCategories; });
+            });
+        });
+
+        // Sub-category chip toggle
+        document.querySelectorAll('.sub-category-checkbox').forEach(function(cb) {
+            cb.addEventListener('change', function() {
+                var chip = this.closest('.sub-category-chip');
+                chip.classList.toggle('is-selected', this.checked);
+
+                // Auto-check parent
+                if (this.checked) {
+                    var parent = document.getElementById('category_' + this.dataset.categoryId);
+                    if (parent && !parent.checked) { parent.checked = true; parent.dispatchEvent(new Event('change')); }
                 }
             });
         });
-    </script>
 
+        // City chip toggle
+        document.querySelectorAll('.city-chip input').forEach(function(cb) {
+            cb.addEventListener('change', function() {
+                this.closest('.city-chip').classList.toggle('is-selected', this.checked);
+            });
+        });
+
+        // Init state on load
+        categoryCheckboxes.forEach(function(cb) { if (cb.checked) cb.dispatchEvent(new Event('change')); });
+    });
+
+    function previewImage(input) {
+        if (input.files && input.files[0]) {
+            var reader = new FileReader();
+            reader.onload = function(e) {
+                var preview = document.getElementById('avatarPreview');
+                if (preview.tagName === 'IMG') {
+                    preview.src = e.target.result;
+                } else {
+                    var img = document.createElement('img');
+                    img.src = e.target.result;
+                    img.className = 'avatar-preview';
+                    img.id = 'avatarPreview';
+                    preview.parentNode.replaceChild(img, preview);
+                }
+            };
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+</script>
+@endpush
 @endsection

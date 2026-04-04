@@ -58,6 +58,8 @@ class Notification extends Model
             'offer_accepted' => 'fas fa-check-circle text-success',
             'offer_rejected' => 'fas fa-times-circle text-danger',
             'service_requested' => 'fas fa-concierge-bell text-primary',
+            'service_delivered' => 'fas fa-box-open text-info',
+            'provider_reviewed' => 'fas fa-star text-warning',
             'payment_received' => 'fas fa-money-bill-wave text-success',
             'service_completed' => 'fas fa-flag-checkered text-success',
             'message_received' => 'fas fa-comments text-primary',
@@ -76,6 +78,8 @@ class Notification extends Model
             'offer_accepted' => 'success',
             'offer_rejected' => 'danger',
             'service_requested' => 'primary',
+            'service_delivered' => 'info',
+            'provider_reviewed' => 'warning',
             'payment_received' => 'success',
             'service_completed' => 'success',
             'message_received' => 'primary',
@@ -127,11 +131,28 @@ class Notification extends Model
         return $notification;
     }
 
+    /**
+     * الحصول على رابط الأفاتار للمستخدم
+     */
+    private static function getUserAvatar($user)
+    {
+        if ($user->image) {
+            return 'storage/' . $user->image;
+        }
+        if ($user->avatar) {
+            return $user->avatar;
+        }
+        return null;
+    }
+
     // إنشاء إشعار عند تقديم عرض
     public static function createOfferReceivedNotification($serviceOffer)
     {
         $service = $serviceOffer->service;
+        $service->load(['city', 'category']);
         $provider = $serviceOffer->provider;
+        $cityName = $service->city->name_ar ?? '';
+        $categoryName = $service->category->name ?? $service->title;
 
         return static::createNotification(
             $service->user_id,
@@ -139,12 +160,18 @@ class Notification extends Model
             __('messages.offer_received_title'),
             __('messages.offer_received_message', [
                 'provider' => $provider->name,
-                'service' => $service->title
+                'service' => $categoryName,
+                'city' => $cityName,
             ]),
             [
                 'service_id' => $service->id,
                 'offer_id' => $serviceOffer->id,
                 'provider_id' => $provider->id,
+                'provider_name' => $provider->name,
+                'avatar' => static::getUserAvatar($provider),
+                'service_title' => $service->title,
+                'category_name' => $categoryName,
+                'city' => $cityName,
                 'price' => $serviceOffer->price,
             ]
         );
@@ -154,7 +181,10 @@ class Notification extends Model
     public static function createOfferAcceptedNotification($serviceOffer)
     {
         $service = $serviceOffer->service;
+        $service->load(['city', 'category']);
         $customer = $service->user;
+        $cityName = $service->city->name_ar ?? '';
+        $categoryName = $service->category->name ?? $service->title;
 
         return static::createNotification(
             $serviceOffer->provider_id,
@@ -162,12 +192,18 @@ class Notification extends Model
             __('messages.offer_accepted_title'),
             __('messages.offer_accepted_message', [
                 'customer' => $customer->name,
-                'service' => $service->title
+                'service' => $categoryName,
+                'city' => $cityName,
             ]),
             [
                 'service_id' => $service->id,
                 'offer_id' => $serviceOffer->id,
                 'customer_id' => $customer->id,
+                'customer_name' => $customer->name,
+                'avatar' => static::getUserAvatar($customer),
+                'service_title' => $service->title,
+                'category_name' => $categoryName,
+                'city' => $cityName,
             ]
         );
     }
@@ -176,7 +212,10 @@ class Notification extends Model
     public static function createOfferRejectedNotification($serviceOffer)
     {
         $service = $serviceOffer->service;
+        $service->load(['city', 'category']);
         $customer = $service->user;
+        $cityName = $service->city->name_ar ?? '';
+        $categoryName = $service->category->name ?? $service->title;
 
         return static::createNotification(
             $serviceOffer->provider_id,
@@ -184,12 +223,81 @@ class Notification extends Model
             __('messages.offer_rejected_title'),
             __('messages.offer_rejected_message', [
                 'customer' => $customer->name,
-                'service' => $service->title
+                'service' => $categoryName,
+                'city' => $cityName,
             ]),
             [
                 'service_id' => $service->id,
                 'offer_id' => $serviceOffer->id,
                 'customer_id' => $customer->id,
+                'customer_name' => $customer->name,
+                'avatar' => static::getUserAvatar($customer),
+                'service_title' => $service->title,
+                'category_name' => $categoryName,
+                'city' => $cityName,
+            ]
+        );
+    }
+
+    // إنشاء إشعار عند تسليم الخدمة
+    public static function createServiceDeliveredNotification($serviceOffer)
+    {
+        $service = $serviceOffer->service;
+        $service->load(['city', 'category']);
+        $customer = $service->user;
+        $cityName = $service->city->name_ar ?? '';
+        $categoryName = $service->category->name ?? $service->title;
+
+        return static::createNotification(
+            $serviceOffer->provider_id,
+            'service_delivered',
+            __('messages.service_delivered_title'),
+            __('messages.service_delivered_message', [
+                'customer' => $customer->name,
+                'service' => $categoryName,
+                'city' => $cityName,
+            ]),
+            [
+                'service_id' => $service->id,
+                'offer_id' => $serviceOffer->id,
+                'customer_id' => $customer->id,
+                'customer_name' => $customer->name,
+                'avatar' => static::getUserAvatar($customer),
+                'service_title' => $service->title,
+                'category_name' => $categoryName,
+                'city' => $cityName,
+            ]
+        );
+    }
+
+    // إنشاء إشعار عند تقييم مزود الخدمة
+    public static function createProviderReviewedNotification($serviceOffer)
+    {
+        $service = $serviceOffer->service;
+        $service->load(['city', 'category']);
+        $customer = $service->user;
+        $cityName = $service->city->name_ar ?? '';
+        $categoryName = $service->category->name ?? $service->title;
+
+        return static::createNotification(
+            $serviceOffer->provider_id,
+            'provider_reviewed',
+            __('messages.provider_reviewed_title'),
+            __('messages.provider_reviewed_message', [
+                'customer' => $customer->name,
+                'service' => $categoryName,
+                'city' => $cityName,
+            ]),
+            [
+                'service_id' => $service->id,
+                'offer_id' => $serviceOffer->id,
+                'customer_id' => $customer->id,
+                'customer_name' => $customer->name,
+                'avatar' => static::getUserAvatar($customer),
+                'service_title' => $service->title,
+                'category_name' => $categoryName,
+                'city' => $cityName,
+                'rating' => $serviceOffer->rating,
             ]
         );
     }
@@ -247,11 +355,16 @@ class Notification extends Model
                     $categoryName = $category->name ?? 'خدمة';
                     $cityName = $city->name_ar ?? 'مدينة';
 
+                    $customerName = $customer->name ?? '';
+                    $serviceTitle = $service->title ?? '';
+
                     $title = __('messages.service_requested_title', [], 'ar') ?: 'طلب خدمة جديد';
                     $message = __('messages.service_requested_message', [
+                        'customer' => $customerName,
+                        'service' => $serviceTitle,
                         'category' => $categoryName,
                         'city' => $cityName,
-                    ], 'ar') ?: "تم طلب خدمة جديدة في قسم {$categoryName} بمدينة {$cityName}";
+                    ], 'ar') ?: "طلب {$customerName} خدمة جديدة: {$serviceTitle} في قسم {$categoryName} بمدينة {$cityName}";
 
                     static::createNotification(
                         $provider->id,
@@ -260,9 +373,14 @@ class Notification extends Model
                         $message,
                         [
                             'service_id' => $service->id,
+                            'service_title' => $serviceTitle,
                             'category_id' => $service->category_id,
+                            'category_name' => $categoryName,
                             'city_id' => $service->city_id,
+                            'city' => $cityName,
                             'customer_id' => $service->user_id,
+                            'customer_name' => $customerName,
+                            'avatar' => static::getUserAvatar($customer),
                         ]
                     );
                     $notificationsSent++;

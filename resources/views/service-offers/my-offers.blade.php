@@ -69,10 +69,10 @@
 
                                 <!-- صاحب الخدمة -->
                                 @if($offer->service && $offer->service->user)
-                                    <p class="text-muted mb-2 small">
-                                        <i class="fas fa-user text-info"></i>
-                                        {{ $offer->service->user->name }}
-                                    </p>
+                                    <div class="d-flex align-items-center mb-2">
+                                        @include('partials.user-avatar', ['user' => $offer->service->user, 'size' => 28])
+                                        <span class="text-muted small me-2">{{ $offer->service->user->name }}</span>
+                                    </div>
                                 @endif
 
                                 <!-- السعر -->
@@ -176,25 +176,25 @@ body {
     background-color: #f5f7fa;
 }
 
-.text-primary { color: #2f5c69 !important; }
-.text-gold { color: #f3a446 !important; }
+.text-primary { color: var(--e-primary) !important; }
+.text-gold { color: var(--e-accent) !important; }
 .btn-gold {
-    background: linear-gradient(90deg, #f3a446, #f6b65a);
+    background: linear-gradient(90deg, var(--e-accent), var(--e-accent-light));
     color: #fff;
     border: none;
     border-radius: 30px;
     transition: 0.3s;
 }
 .btn-gold:hover {
-    background: #2f5c69;
+    background: var(--e-primary);
     color: #fff;
 }
 .btn-outline-primary {
-    border-color: #2f5c69;
-    color: #2f5c69;
+    border-color: var(--e-primary);
+    color: var(--e-primary);
 }
 .btn-outline-primary:hover {
-    background: #2f5c69;
+    background: var(--e-primary);
     color: #fff;
 }
 
@@ -206,7 +206,7 @@ body {
 }
 .offer-card:hover {
     transform: translateY(-5px);
-    box-shadow: 0 10px 25px rgba(47, 92, 105, 0.15);
+    box-shadow: 0 10px 25px var(--e-primary-200);
 }
 
 .offers-page h2 {

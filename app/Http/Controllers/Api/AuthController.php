@@ -48,12 +48,29 @@ class AuthController extends BaseApiController
 
             $token = $user->generateApiToken();
 
-            Log::info('API User registered', ['user_id' => $user->id]);
+            // Send email verification notification directly
+            $emailSent = false;
+            try {
+                $user->sendEmailVerificationNotification();
+                $emailSent = true;
+            } catch (Exception $e) {
+                Log::error('API: Email verification failed during registration', [
+                    'user_id' => $user->id,
+                    'error' => $e->getMessage()
+                ]);
+            }
+
+            Log::info('API User registered', ['user_id' => $user->id, 'email_sent' => $emailSent]);
 
             return $this->success([
                 'token' => $token,
                 'user' => $user,
-            ], 'تم إنشاء الحساب بنجاح', 201);
+                'email_verified' => false,
+                'email_sent' => $emailSent,
+            ], $emailSent
+                ? 'تم إنشاء الحساب بنجاح. تم إرسال رابط التحقق إلى بريدك الإلكتروني.'
+                : 'تم إنشاء الحساب بنجاح. لكن فشل إرسال رابط التحقق، يرجى طلب إعادة الإرسال.',
+                201);
         }, 'حدث خطأ أثناء التسجيل');
     }
 
@@ -74,6 +91,12 @@ class AuthController extends BaseApiController
             if (!$user || !Hash::check($credentials['password'], $user->password)) {
                 throw ValidationException::withMessages([
                     'email' => ['بيانات تسجيل الدخول غير صحيحة'],
+                ]);
+            }
+
+            if (!$user->hasVerifiedEmail()) {
+                throw ValidationException::withMessages([
+                    'email' => ['يجب التحقق من الإيميل أولاً. تحقق من بريدك الإلكتروني للحصول على رابط التحقق.'],
                 ]);
             }
 
@@ -171,10 +194,37 @@ class AuthController extends BaseApiController
                     'trace' => $e->getTraceAsString(),
                 ]);
                 throw ValidationException::withMessages([
-                    'access_token' => ['فشل تسجيل الدخول بجوجل: ' . $e->getMessage()],
+                    'access_token' => ['فشل تسجيل الدخول بجوجل. يرجى المحاولة مرة أخرى.'],
                 ]);
             }
         }, 'حدث خطأ أثناء تسجيل الدخول بجوجل');
+    }
+
+    /**
+     * إعادة إرسال رابط التحقق من الإيميل
+     * POST /api/v1/auth/email/resend
+     */
+    public function resendVerificationEmail(Request $request)
+    {
+        return $this->executeApiWithTryCatch(function () use ($request) {
+            $user = $request->user();
+
+            if ($user->hasVerifiedEmail()) {
+                return $this->success(null, 'الإيميل محقق بالفعل');
+            }
+
+            try {
+                $user->sendEmailVerificationNotification();
+            } catch (Exception $e) {
+                Log::error('API: Resend verification email failed', [
+                    'user_id' => $user->id,
+                    'error' => $e->getMessage()
+                ]);
+                return $this->error('فشل إرسال رابط التحقق. يرجى المحاولة لاحقاً.', 500);
+            }
+
+            return $this->success(null, 'تم إرسال رابط التحقق بنجاح');
+        }, 'حدث خطأ أثناء إرسال رابط التحقق');
     }
 
     /**
@@ -656,10 +706,11 @@ class AuthController extends BaseApiController
     {
         $requestData = $request->all();
 
-        // Fallback to $_POST for form-data in PUT requests
-        if (empty($requestData) && !empty($_POST)) {
-            foreach ($_POST as $key => $value) {
-                $request->merge([$key => $value]);
+        // Fallback for form-data in PUT requests
+        if (empty($requestData) && $request->isMethod('PUT')) {
+            $requestData = $request->post();
+            if (!empty($requestData)) {
+                $request->merge($requestData);
             }
             $requestData = $request->all();
         }

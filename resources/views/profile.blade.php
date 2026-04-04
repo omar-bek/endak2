@@ -4,343 +4,454 @@
 
 @section('content')
 <style>
-.profile-page {
-    background: linear-gradient(135deg, #eaf6f8, #ffffff);
-    font-family: 'Tajawal', sans-serif;
-    border-radius: 20px;
-    padding: 20px;
+.ep-profile { min-height: 100vh; padding-bottom: 100px; }
+
+/* Cover */
+.ep-cover {
+    position: relative;
+    height: 220px;
+    background: linear-gradient(135deg, var(--e-primary-dark), var(--e-primary), var(--e-primary-light));
+    overflow: hidden;
+}
+.ep-cover::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+}
+.ep-cover::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 80px;
+    background: linear-gradient(to top, var(--e-gray-50), transparent);
 }
 
-@media (min-width: 992px) {
-    .profile-page {
-        margin-top: 60px;
-    }
+/* Avatar */
+.ep-avatar-section {
+    position: relative;
+    margin-top: -75px;
+    z-index: 2;
+    text-align: center;
 }
-
-.profile-page .card {
-    border: none;
-    border-radius: 20px;
-    box-shadow: 0 10px 25px rgba(60, 111, 125, 0.15);
-    transition: all 0.4s ease;
-    background: #fff;
+.ep-avatar-wrap { position: relative; display: inline-block; }
+.ep-avatar-img {
+    width: 140px;
+    height: 140px;
+    border-radius: var(--e-radius-full);
+    object-fit: cover;
+    border: 5px solid var(--e-white);
+    box-shadow: var(--e-shadow-lg);
+    background: var(--e-white);
 }
-.profile-page .card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 12px 28px rgba(60, 111, 125, 0.25);
-}
-
-.profile-page .card-header {
-    background: linear-gradient(135deg, #2f5c69, #3c6f7d);
-    color: white;
-    border-radius: 20px 20px 0 0;
-    padding: 15px 20px;
-    font-weight: 600;
-    letter-spacing: 0.5px;
-}
-
-.profile-page .btn-primary {
-    background: linear-gradient(135deg, #3c6f7d, #2f5c69);
-    border: none;
-    transition: all 0.3s ease;
-    box-shadow: 0 5px 15px rgba(60, 111, 125, 0.3);
-}
-.profile-page .btn-primary:hover {
-    background: linear-gradient(135deg, #f3a446, #f6b76a);
-    box-shadow: 0 7px 18px rgba(243, 164, 70, 0.45);
-    transform: scale(1.05);
-}
-.profile-page .btn-outline-primary {
-    color: #3c6f7d;
-    border: 2px solid #3c6f7d;
-    transition: all 0.3s ease;
-}
-.profile-page .btn-outline-primary:hover {
-    background: linear-gradient(135deg, #3c6f7d, #2f5c69);
-    color: #fff;
-    border-color: transparent;
-    transform: translateY(-3px);
-}
-.profile-page .btn-warning {
-    background: linear-gradient(135deg, #f3a446, #f6b76a);
-    border: none;
-    color: #fff;
-    transition: 0.3s ease;
-}
-.profile-page .btn-warning:hover {
-    background: linear-gradient(135deg, #3c6f7d, #2f5c69);
-    transform: scale(1.05);
-}
-
-.profile-page .card-body img {
-    border: 4px solid #f3a446;
-    box-shadow: 0 4px 10px rgba(60, 111, 125, 0.3);
-    transition: all 0.4s ease;
-}
-.profile-page .card-body img:hover {
-    transform: rotate(3deg) scale(1.07);
-    box-shadow: 0 8px 20px rgba(60, 111, 125, 0.4);
-}
-
-.profile-page h4 {
-    color: #2f5c69;
+.ep-avatar-fallback {
+    width: 140px;
+    height: 140px;
+    border-radius: var(--e-radius-full);
+    background: linear-gradient(135deg, var(--e-primary), var(--e-primary-light));
+    color: var(--e-white);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 52px;
     font-weight: 700;
+    border: 5px solid var(--e-white);
+    box-shadow: var(--e-shadow-lg);
 }
-.profile-page .text-muted {
-    color: #607d8b !important;
+.ep-online-dot {
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+    width: 18px;
+    height: 18px;
+    border-radius: var(--e-radius-full);
+    background: var(--e-success);
+    border: 3px solid var(--e-white);
+}
+.ep-user-name {
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: var(--e-gray-800);
+    margin: 14px 0 6px;
+}
+.ep-user-role {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 16px;
+    border-radius: var(--e-radius-full);
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+.ep-role-provider { background: var(--e-primary-100); color: var(--e-primary); }
+.ep-role-customer { background: var(--e-accent-50); color: var(--e-accent-dark); }
+.ep-role-admin { background: var(--e-warning-light); color: #92400e; }
+.ep-bio {
+    color: var(--e-gray-500);
+    font-size: 0.9rem;
+    margin-top: 12px;
+    max-width: 480px;
+    margin-inline: auto;
+    line-height: 1.8;
+}
+.ep-edit-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 18px;
+    padding: 10px 28px;
+    border-radius: var(--e-radius-full);
+    background: linear-gradient(135deg, var(--e-primary), var(--e-primary-light));
+    color: var(--e-white);
+    font-size: 0.88rem;
+    font-weight: 600;
+    font-family: var(--e-font);
+    text-decoration: none;
+    border: none;
+    cursor: pointer;
+    box-shadow: var(--e-shadow-primary);
+    transition: var(--e-transition);
+}
+.ep-edit-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(47, 92, 105, 0.35);
+    color: var(--e-white);
 }
 
-/* ===== أنيميشن دخول الصفحة ===== */
-.profile-page .container {
-    animation: fadeInUp 1s ease forwards;
-    opacity: 0;
+/* Info Grid */
+.ep-info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+    margin-top: 28px;
 }
-@keyframes fadeInUp {
-    0% {
-        transform: translateY(40px);
-        opacity: 0;
-    }
-    100% {
-        transform: translateY(0);
-        opacity: 1;
-    }
+.ep-info-item {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 16px 20px;
+    background: var(--e-white);
+    border-radius: var(--e-radius-lg);
+    border: 1px solid var(--e-gray-200);
+    transition: var(--e-transition);
 }
-
-.profile-page .bg-primary,
-.profile-page .bg-success,
-.profile-page .bg-warning {
-    border-radius: 15px;
-    padding: 15px;
-    transition: all 0.3s ease;
+.ep-info-item:hover {
+    box-shadow: var(--e-shadow);
+    border-color: var(--e-gray-300);
 }
-.profile-page .bg-primary {
-    background: linear-gradient(135deg, #2f5c69, #3c6f7d) !important;
+.ep-info-icon {
+    width: 42px;
+    height: 42px;
+    border-radius: var(--e-radius);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    flex-shrink: 0;
 }
-.profile-page .bg-success {
-    background: linear-gradient(135deg, #3c6f7d, #2f5c69) !important;
+.ep-info-icon.phone { background: var(--e-success-light); color: var(--e-success); }
+.ep-info-icon.email { background: var(--e-info-light); color: var(--e-info); }
+.ep-info-icon.date { background: var(--e-warning-light); color: var(--e-warning); }
+.ep-info-label {
+    font-size: 0.75rem;
+    color: var(--e-gray-400);
+    font-weight: 500;
+    margin-bottom: 2px;
 }
-.profile-page .bg-warning {
-    background: linear-gradient(135deg, #f3a446, #f6b76a) !important;
-}
-.profile-page .bg-primary:hover,
-.profile-page .bg-success:hover,
-.profile-page .bg-warning:hover {
-    transform: scale(1.05);
-    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15);
-}
-
-/* ===== الفورم ===== */
-.profile-page .form-control {
-    border-radius: 10px;
-    border: 1px solid rgba(60, 111, 125, 0.25);
-    transition: all 0.3s ease;
-}
-.profile-page .form-control:focus {
-    border-color: #f3a446;
-    box-shadow: 0 0 6px rgba(243, 164, 70, 0.4);
-}
-
-.profile-page label {
-    color: #2f5c69;
+.ep-info-value {
+    font-size: 0.9rem;
+    color: var(--e-gray-700);
     font-weight: 600;
 }
 
-.profile-page .alert-warning {
-    background: linear-gradient(135deg, #fff6e5, #ffe7c3);
-    border: 1px solid #f3a446;
-    color: #3c6f7d;
-    border-radius: 15px;
-    animation: pulse 2.5s infinite;
+/* Alerts */
+.ep-profile .alert {
+    border-radius: var(--e-radius);
+    border: none;
+    font-size: 0.9rem;
 }
-@keyframes pulse {
-    0%, 100% {
-        box-shadow: 0 0 0 rgba(243, 164, 70, 0);
-    }
-    50% {
-        box-shadow: 0 0 15px rgba(243, 164, 70, 0.5);
-    }
-}
+.ep-profile .alert-success { background: var(--e-success-light); color: #065f46; }
+.ep-profile .alert-danger { background: var(--e-danger-light); color: #991b1b; }
 
-.profile-page i {
-    color: #f3a446;
-    transition: transform 0.3s ease;
+/* Cards */
+.ep-card {
+    background: var(--e-white);
+    border-radius: var(--e-radius-lg);
+    box-shadow: var(--e-shadow);
+    border: 1px solid var(--e-gray-200);
+    overflow: hidden;
+    transition: var(--e-transition);
 }
-.profile-page i:hover {
-    transform: scale(1.2);
+.ep-card:hover { box-shadow: var(--e-shadow-md); }
+.ep-card-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 18px 24px;
+    border-bottom: 1px solid var(--e-gray-100);
 }
-.profile-page .profile-sidebar {
-    border: 2px solid #3c6f7d; 
+.ep-card-header-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: var(--e-radius);
+    background: var(--e-primary-100);
+    color: var(--e-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 15px;
 }
+.ep-card-header h5 {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--e-gray-800);
+}
+.ep-card-body { padding: 24px; }
 
+/* Stats */
+.ep-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 14px;
+}
+.ep-stat-card {
+    text-align: center;
+    padding: 22px 14px;
+    border-radius: var(--e-radius);
+    transition: var(--e-transition);
+}
+.ep-stat-card:hover { transform: translateY(-3px); }
+.ep-stat-card.primary {
+    background: linear-gradient(135deg, var(--e-primary), var(--e-primary-light));
+    color: var(--e-white);
+    box-shadow: var(--e-shadow-primary);
+}
+.ep-stat-card.success {
+    background: linear-gradient(135deg, #059669, var(--e-success));
+    color: var(--e-white);
+    box-shadow: 0 4px 14px rgba(16, 185, 129, 0.25);
+}
+.ep-stat-card.accent {
+    background: linear-gradient(135deg, var(--e-accent-dark), var(--e-accent));
+    color: var(--e-white);
+    box-shadow: var(--e-shadow-accent);
+}
+.ep-stat-number { font-size: 1.8rem; font-weight: 800; line-height: 1; margin-bottom: 4px; }
+.ep-stat-label { font-size: 0.82rem; opacity: 0.9; font-weight: 500; }
+
+/* Links */
+.ep-links { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-top: 16px; }
+.ep-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 10px 24px;
+    border: none;
+    border-radius: var(--e-radius);
+    font-family: var(--e-font);
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--e-transition);
+    text-decoration: none;
+}
+.ep-btn-primary {
+    background: linear-gradient(135deg, var(--e-primary), var(--e-primary-light));
+    color: var(--e-white);
+    box-shadow: var(--e-shadow-primary);
+}
+.ep-btn-primary:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(47, 92, 105, 0.35); color: var(--e-white); }
+.ep-btn-accent {
+    background: linear-gradient(135deg, var(--e-accent), var(--e-accent-light));
+    color: var(--e-white);
+    box-shadow: var(--e-shadow-accent);
+}
+.ep-btn-accent:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(243, 164, 70, 0.4); color: var(--e-white); }
+.ep-btn-outline {
+    background: transparent;
+    color: var(--e-primary);
+    border: 2px solid var(--e-primary-200);
+}
+.ep-btn-outline:hover { background: var(--e-primary); color: var(--e-white); border-color: var(--e-primary); }
+
+/* Complete Alert */
+.ep-complete-alert {
+    background: linear-gradient(135deg, #fffbeb, #fef3c7);
+    border: 1px solid #fcd34d;
+    border-radius: var(--e-radius);
+    padding: 20px;
+    text-align: center;
+}
+.ep-complete-alert i { font-size: 2rem; color: var(--e-warning); margin-bottom: 8px; }
+.ep-complete-alert h6 { font-weight: 700; color: var(--e-gray-800); margin-bottom: 6px; }
+.ep-complete-alert p { color: var(--e-gray-500); font-size: 0.85rem; margin-bottom: 14px; }
+
+/* Animation */
+.ep-animate {
+    opacity: 0;
+    transform: translateY(20px);
+    animation: epSlideUp 0.5s ease forwards;
+}
+.ep-animate-d1 { animation-delay: 0.08s; }
+.ep-animate-d2 { animation-delay: 0.16s; }
+.ep-animate-d3 { animation-delay: 0.24s; }
+@keyframes epSlideUp { to { opacity: 1; transform: translateY(0); } }
+
+/* Responsive */
+@media (max-width: 767px) {
+    .ep-cover { height: 160px; }
+    .ep-avatar-section { margin-top: -60px; }
+    .ep-avatar-img, .ep-avatar-fallback { width: 115px; height: 115px; font-size: 42px; }
+    .ep-user-name { font-size: 1.3rem; }
+    .ep-info-grid { grid-template-columns: 1fr; }
+    .ep-card-body { padding: 18px; }
+    .ep-stats { grid-template-columns: 1fr 1fr; }
+}
 </style>
 
-<div class="container py-5 profile-page">
-    <div class="row">
-        <div class="col-lg-4 mb-4">
-            <div class="card profile-sidebar">
-                <div class="card-body text-center">
-                    @if($user->image && file_exists(public_path('storage/' . $user->image)))
-                        <img src="{{ asset('storage/' . $user->image) }}" alt="{{ $user->name }}"
-                             class="rounded-circle mb-3" width="120" height="120" style="object-fit: cover;">
-                    @else
-                        <div class="rounded-circle mb-3 mx-auto d-flex align-items-center justify-content-center bg-primary text-white"
-                             style="width: 120px; height: 120px; font-size: 48px; font-weight: bold;">
-                            {{ strtoupper(substr($user->name, 0, 1)) }}
-                        </div>
-                    @endif
+<div class="ep-profile">
+    <div class="ep-cover"></div>
 
-                    <h4>{{ $user->name }}</h4>
-                    <p class="text-muted">
-                        @if($user->isProvider())
-                            <i class="fas fa-tools me-1"></i>مزود خدمة
-                        @elseif($user->isCustomer())
-                            <i class="fas fa-user me-1"></i>مستخدم
-                        @elseif($user->isAdmin())
-                            <i class="fas fa-crown me-1"></i>مدير النظام
-                        @endif
-                    </p>
+    <div class="container" style="max-width: 720px;">
+        {{-- Alerts --}}
+        @if(session('success'))
+            <div class="alert alert-success alert-dismissible fade show mt-3 ep-animate" role="alert">
+                <i class="fas fa-check-circle me-2"></i>{{ session('success') }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        @endif
+        @if(session('error'))
+            <div class="alert alert-danger alert-dismissible fade show mt-3 ep-animate" role="alert">
+                <i class="fas fa-exclamation-circle me-2"></i>{{ session('error') }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        @endif
 
-                    @if($user->phone)
-                        <p class="text-muted"><i class="fas fa-phone me-1"></i>{{ $user->phone }}</p>
-                    @endif
+        {{-- Avatar & Info --}}
+        <div class="ep-avatar-section ep-animate">
+            <div class="ep-avatar-wrap">
+                @if($user->image && file_exists(public_path('storage/' . $user->image)))
+                    <img src="{{ asset('storage/' . $user->image) }}" alt="{{ $user->name }}" class="ep-avatar-img">
+                @else
+                    <div class="ep-avatar-fallback">{{ strtoupper(mb_substr($user->name, 0, 1)) }}</div>
+                @endif
+                <span class="ep-online-dot"></span>
+            </div>
 
-                    <p class="text-muted"><i class="fas fa-envelope me-1"></i>{{ $user->email }}</p>
+            <h3 class="ep-user-name">{{ $user->name }}</h3>
 
-                    @if($user->bio)
-                        <p class="text-muted">{{ $user->bio }}</p>
-                    @endif
+            @if($user->isProvider())
+                <span class="ep-user-role ep-role-provider"><i class="fas fa-tools"></i> مزود خدمة</span>
+            @elseif($user->isCustomer())
+                <span class="ep-user-role ep-role-customer"><i class="fas fa-user"></i> عميل</span>
+            @elseif($user->isAdmin())
+                <span class="ep-user-role ep-role-admin"><i class="fas fa-crown"></i> مدير النظام</span>
+            @endif
 
-                    <p class="text-muted"><small>انضم في {{ $user->created_at->format('Y/m/d') }}</small></p>
+            @if($user->bio)
+                <p class="ep-bio">{{ $user->bio }}</p>
+            @endif
+
+            <a href="{{ route('profile.edit') }}" class="ep-edit-btn">
+                <i class="fas fa-pen"></i> تعديل الملف الشخصي
+            </a>
+        </div>
+
+        {{-- Info Cards --}}
+        <div class="ep-info-grid ep-animate ep-animate-d1">
+            @if($user->phone)
+            <div class="ep-info-item">
+                <div class="ep-info-icon phone"><i class="fas fa-phone-alt"></i></div>
+                <div>
+                    <div class="ep-info-label">رقم الهاتف</div>
+                    <div class="ep-info-value" dir="ltr">{{ $user->phone }}</div>
+                </div>
+            </div>
+            @endif
+            <div class="ep-info-item">
+                <div class="ep-info-icon email"><i class="fas fa-envelope"></i></div>
+                <div>
+                    <div class="ep-info-label">البريد الإلكتروني</div>
+                    <div class="ep-info-value">{{ $user->email }}</div>
+                </div>
+            </div>
+            <div class="ep-info-item">
+                <div class="ep-info-icon date"><i class="fas fa-calendar-alt"></i></div>
+                <div>
+                    <div class="ep-info-label">تاريخ الانضمام</div>
+                    <div class="ep-info-value">{{ $user->created_at->format('Y/m/d') }}</div>
                 </div>
             </div>
         </div>
 
-        <div class="col-lg-8">
-            <div class="card">
-                <div class="card-header">
-                    <h5 class="mb-0"><i class="fas fa-edit me-2"></i>تعديل الملف الشخصي</h5>
+        {{-- Provider Dashboard --}}
+        @if($user->isProvider())
+            <div class="ep-card mt-4 ep-animate ep-animate-d2">
+                <div class="ep-card-header">
+                    <div class="ep-card-header-icon"><i class="fas fa-chart-bar"></i></div>
+                    <h5>لوحة مزود الخدمة</h5>
                 </div>
-                <div class="card-body">
-                    <form action="{{ route('profile.update') }}" method="POST" enctype="multipart/form-data">
-                        @csrf
-                        @method('PUT')
-
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label for="name" class="form-label">الاسم الكامل *</label>
-                                <input type="text" class="form-control @error('name') is-invalid @enderror"
-                                       id="name" name="name" value="{{ old('name', $user->name) }}" required>
-                                @error('name')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
+                <div class="ep-card-body">
+                    @if($user->hasCompleteProviderProfile())
+                        <div class="ep-stats">
+                            <div class="ep-stat-card primary">
+                                <div class="ep-stat-number">{{ $user->services->count() }}</div>
+                                <div class="ep-stat-label">إجمالي الخدمات</div>
                             </div>
-
-                            <div class="col-md-6 mb-3">
-                                <label for="phone" class="form-label">رقم الهاتف *</label>
-                                <input type="tel" class="form-control @error('phone') is-invalid @enderror"
-                                       id="phone" name="phone" value="{{ old('phone', $user->phone) }}" required>
-                                @error('phone')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
+                            <div class="ep-stat-card success">
+                                <div class="ep-stat-number">{{ $user->services->where('is_active', true)->count() }}</div>
+                                <div class="ep-stat-label">خدمات نشطة</div>
+                            </div>
+                            <div class="ep-stat-card accent">
+                                <div class="ep-stat-number">{{ \App\Models\ServiceOffer::where('provider_id', $user->id)->count() }}</div>
+                                <div class="ep-stat-label">العروض المقدمة</div>
                             </div>
                         </div>
-
-                        <div class="mb-3">
-                            <label for="bio" class="form-label">نبذة شخصية</label>
-                            <textarea class="form-control @error('bio') is-invalid @enderror"
-                                      id="bio" name="bio" rows="3">{{ old('bio', $user->bio) }}</textarea>
-                            @error('bio')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
+                        <div class="ep-links">
+                            <a href="{{ route('provider.services.index') }}" class="ep-btn ep-btn-primary">
+                                <i class="fas fa-cogs"></i> إدارة الخدمات
+                            </a>
+                            <a href="{{ route('provider.profile') }}" class="ep-btn ep-btn-outline">
+                                <i class="fas fa-user-cog"></i> الملف المتقدم
+                            </a>
                         </div>
-
-                        <div class="mb-3">
-                            <label for="image" class="form-label">الصورة الشخصية</label>
-                            <input type="file" class="form-control @error('image') is-invalid @enderror"
-                                   id="image" name="image" accept="image/*">
-                            <small class="form-text text-muted">الأبعاد المفضلة: 300x300 بكسل. الأنواع المدعومة: JPG, PNG, GIF</small>
-                            @error('image')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-
-                            @if($user->image)
-                                <div class="mt-2">
-                                    <small class="text-muted">الصورة الحالية:</small>
-                                    <div class="mt-1">
-                                        <img src="{{ asset('storage/' . $user->image) }}" alt="الصورة الحالية"
-                                             class="rounded" style="width: 80px; height: 80px; object-fit: cover;">
-                                    </div>
-                                </div>
-                            @endif
+                    @else
+                        <div class="ep-complete-alert">
+                            <i class="fas fa-exclamation-triangle d-block"></i>
+                            <h6>يجب إكمال الملف الشخصي أولاً</h6>
+                            <p>لإدارة الخدمات والعروض، أكمل ملفك الشخصي كمزود خدمة.</p>
+                            <a href="{{ route('provider.complete-profile') }}" class="ep-btn ep-btn-accent">
+                                <i class="fas fa-user-plus"></i> إكمال الملف الشخصي
+                            </a>
                         </div>
-
-                        <div class="d-flex justify-content-end">
-                            <button type="submit" class="btn btn-primary">
-                                <i class="fas fa-save me-2"></i>حفظ التغييرات
-                            </button>
-                        </div>
-                    </form>
+                    @endif
                 </div>
             </div>
+        @endif
 
-            @if($user->isProvider())
-                <div class="card mt-4">
-                    <div class="card-header"><h5 class="mb-0"><i class="fas fa-tachometer-alt me-2"></i>لوحة مزود الخدمة</h5></div>
-                    <div class="card-body">
-                        @if($user->hasCompleteProviderProfile())
-                            <div class="row text-center">
-                                <div class="col-md-4 mb-3">
-                                    <div class="bg-primary text-white rounded p-3">
-                                        <h3>{{ $user->services->count() }}</h3>
-                                        <p class="mb-0">الخدمات</p>
-                                    </div>
-                                </div>
-                                <div class="col-md-4 mb-3">
-                                    <div class="bg-success text-white rounded p-3">
-                                        <h3>{{ $user->services->where('is_active', true)->count() }}</h3>
-                                        <p class="mb-0">الخدمات النشطة</p>
-                                    </div>
-                                </div>
-                                <div class="col-md-4 mb-3">
-                                    <div class="bg-warning text-white rounded p-3">
-                                        <p class="mb-0">الطلبات</p>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="text-center">
-                                <a href="{{ route('provider.services.index') }}" class="btn btn-primary">
-                                    <i class="fas fa-cogs me-2"></i>إدارة الخدمات
-                                </a>
-                                <a href="{{ route('provider.profile') }}" class="btn btn-outline-primary">
-                                    <i class="fas fa-user me-2"></i>الملف الشخصي المتقدم
-                                </a>
-                            </div>
-                        @else
-                            <div class="alert alert-warning">
-                                <i class="fas fa-exclamation-triangle me-2"></i>
-                                <strong>يجب إكمال الملف الشخصي أولاً</strong>
-                                <p class="mb-0 mt-2">لإدارة الخدمات والعروض، يجب إكمال ملفك الشخصي كمزود خدمة.</p>
-                            </div>
-                            <div class="text-center">
-                                <a href="{{ route('provider.complete-profile') }}" class="btn btn-warning">
-                                    <i class="fas fa-user-plus me-2"></i>إكمال الملف الشخصي
-                                </a>
-                            </div>
-                        @endif
-                    </div>
+        {{-- Customer Dashboard --}}
+        @if($user->isCustomer())
+            <div class="ep-card mt-4 ep-animate ep-animate-d2">
+                <div class="ep-card-header">
+                    <div class="ep-card-header-icon"><i class="fas fa-th-large"></i></div>
+                    <h5>الإجراءات السريعة</h5>
                 </div>
-            @endif
-
-            @if($user->isCustomer())
-                <div class="card mt-4">
-                    <div class="card-header"><h5 class="mb-0"><i class="fas fa-user me-2"></i>لوحة العميل</h5></div>
-                    <div class="card-body text-center">
-                        <a href="{{ route('services.index') }}" class="btn btn-outline-primary">
-                            <i class="fas fa-search me-2"></i>تصفح الخدمات
+                <div class="ep-card-body">
+                    <div class="ep-links">
+                        <a href="{{ route('services.index') }}" class="ep-btn ep-btn-primary">
+                            <i class="fas fa-search"></i> تصفح الخدمات
+                        </a>
+                        <a href="{{ route('services.my-services') }}" class="ep-btn ep-btn-outline">
+                            <i class="fas fa-list"></i> خدماتي
                         </a>
                     </div>
                 </div>
-            @endif
-        </div>
+            </div>
+        @endif
     </div>
 </div>
 @endsection

@@ -1,189 +1,336 @@
-<div class="voice-note-recorder mb-3">
-    <label class="form-label" style="font-size: 1.2rem; font-weight: 600; margin-bottom: 1rem;">
-        <i class="fas fa-microphone text-primary me-2"></i> {{ __('messages.voice_recorder_title') }}
-    </label>
+{{-- Voice Note Recorder - Modern Design --}}
+<div class="vn-recorder" id="vnRecorder">
+    <p class="vn-subtitle">{{ __('messages.voice_note_subtitle') }}</p>
 
-    <div class="voice-recorder-container">
-        <div class="recorder-controls d-flex align-items-center gap-3 mb-2">
-            <button type="button" class="btn btn-outline-primary btn-sm record-btn" id="recordBtn">
+    {{-- Idle State --}}
+    <div class="vn-state vn-state--idle" id="vnStateIdle">
+        <button type="button" class="vn-record-btn" id="vnRecordBtn" aria-label="{{ __('messages.voice_note_tap_to_record') }}">
+            <span class="vn-record-btn__ring"></span>
+            <span class="vn-record-btn__inner">
                 <i class="fas fa-microphone"></i>
-                <span class="btn-text">{{ __('messages.recorder_start_btn') }}</span>
-            </button>
+            </span>
+        </button>
+        <span class="vn-status-text">{{ __('messages.voice_note_tap_to_record') }}</span>
+    </div>
 
-            <button type="button" class="btn btn-outline-danger btn-sm stop-btn" id="stopBtn" style="display: none;">
+    {{-- Recording State --}}
+    <div class="vn-state vn-state--recording" id="vnStateRecording" style="display:none;">
+        <button type="button" class="vn-stop-btn" id="vnStopBtn" aria-label="{{ __('messages.voice_note_tap_to_stop') }}">
+            <span class="vn-stop-btn__ring vn-pulse-ring"></span>
+            <span class="vn-stop-btn__inner">
                 <i class="fas fa-stop"></i>
-                <span class="btn-text">{{ __('messages.recorder_stop_btn') }}</span>
-            </button>
-
-            <button type="button" class="btn btn-outline-secondary btn-sm play-btn" id="playBtn" style="display: none;">
-                <i class="fas fa-play"></i>
-                <span class="btn-text">{{ __('messages.recorder_play_btn') }}</span>
-            </button>
-
-            <button type="button" class="btn btn-outline-warning btn-sm delete-btn" id="deleteBtn" style="display: none;">
-                <i class="fas fa-trash"></i>
-                <span class="btn-text">{{ __('messages.recorder_delete_btn') }}</span>
-            </button>
-        </div>
-
-        <div class="recorder-status d-flex align-items-center gap-2">
-            <div class="recording-indicator" id="recordingIndicator" style="display: none;">
-                <div class="pulse-dot"></div>
-                <span class="text-danger">{{ __('messages.recorder_status_recording') }}</span>
+            </span>
+        </button>
+        <div class="vn-recording-info">
+            <div class="vn-recording-badge">
+                <span class="vn-live-dot"></span>
+                {{ __('messages.voice_note_recording') }}
             </div>
-
-            <div class="timer" id="timer" style="display: none;">
-                <span class="text-muted">{{ __('messages.recorder_status_time') }}</span>
-                <span id="timeDisplay">00:00</span>
-            </div>
+            <div class="vn-timer" id="vnTimer">00:00</div>
         </div>
+        <canvas class="vn-waveform" id="vnWaveform" width="280" height="48"></canvas>
+    </div>
 
-        <div class="audio-visualizer" id="audioVisualizer" style="display: none;">
-            <canvas id="visualizer" width="300" height="60"></canvas>
+    {{-- Recorded State --}}
+    <div class="vn-state vn-state--done" id="vnStateDone" style="display:none;">
+        <div class="vn-done-badge">
+            <i class="fas fa-check-circle"></i>
+            {{ __('messages.voice_note_recorded') }}
         </div>
-
-        <div class="audio-player" id="audioPlayer" style="display: none;">
-            <audio id="recordedAudio" controls class="w-100">
+        <div class="vn-player-wrap">
+            <audio id="vnAudio" controls class="vn-audio">
                 {{ __('messages.recorder_audio_unsupported') }}
             </audio>
         </div>
-
-        <input type="hidden" name="voice_note" id="voiceNoteInput">
+        <div class="vn-done-actions">
+            <button type="button" class="vn-action-btn vn-action-btn--redo" id="vnRedoBtn">
+                <i class="fas fa-redo-alt"></i>
+                {{ __('messages.voice_note_re_record') }}
+            </button>
+            <button type="button" class="vn-action-btn vn-action-btn--delete" id="vnDeleteBtn">
+                <i class="fas fa-trash-alt"></i>
+                {{ __('messages.voice_note_delete') }}
+            </button>
+        </div>
     </div>
+
+    <input type="hidden" name="voice_note" id="voiceNoteInput">
 </div>
 
 <style>
-.voice-note-recorder {
-    border: 2px dashed #dee2e6;
-    border-radius: 10px;
-    padding: 2rem;
-    background: #f8f9fa;
+/* ===== Voice Note Recorder ===== */
+.vn-recorder {
+    text-align: center;
+    padding: 0;
+}
+
+.vn-subtitle {
+    font-size: 0.82rem;
+    color: var(--e-gray-400);
+    margin-bottom: 1.25rem;
+}
+
+/* States */
+.vn-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.85rem;
+}
+
+/* ---- Idle / Record Button ---- */
+.vn-record-btn {
+    position: relative;
+    width: 72px;
+    height: 72px;
+    border: none;
+    background: none;
+    cursor: pointer;
+    padding: 0;
+    outline: none;
+}
+
+.vn-record-btn__ring {
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    border: 2.5px solid var(--e-gray-200);
     transition: all 0.3s ease;
-    margin-bottom: 2rem;
 }
 
-.voice-note-recorder:hover {
-    border-color: #007bff;
-    background: #f0f8ff;
+.vn-record-btn:hover .vn-record-btn__ring {
+    border-color: var(--e-primary);
+    transform: scale(1.08);
 }
 
-.recorder-controls .btn {
-    border-radius: 25px;
-    padding: 0.75rem 1.5rem;
-    font-size: 1rem;
-    transition: all 0.3s ease;
-    font-weight: 500;
-}
-
-.recorder-controls .btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-}
-
-.recording-indicator {
+.vn-record-btn__inner {
+    position: absolute;
+    inset: 8px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--e-primary) 0%, var(--e-primary-dark) 100%);
     display: flex;
     align-items: center;
-    gap: 0.5rem;
+    justify-content: center;
+    color: #fff;
+    font-size: 1.35rem;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 14px rgba(47, 92, 105, 0.3);
 }
 
-.pulse-dot {
-    width: 12px;
-    height: 12px;
-    background: #dc3545;
+.vn-record-btn:hover .vn-record-btn__inner {
+    box-shadow: 0 6px 20px rgba(47, 92, 105, 0.45);
+    transform: scale(1.04);
+}
+
+.vn-record-btn:active .vn-record-btn__inner {
+    transform: scale(0.95);
+}
+
+.vn-status-text {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--e-gray-500);
+}
+
+/* ---- Recording / Stop Button ---- */
+.vn-stop-btn {
+    position: relative;
+    width: 72px;
+    height: 72px;
+    border: none;
+    background: none;
+    cursor: pointer;
+    padding: 0;
+    outline: none;
+}
+
+.vn-stop-btn__ring {
+    position: absolute;
+    inset: 0;
     border-radius: 50%;
-    animation: pulse 1.5s infinite;
+    border: 2.5px solid var(--e-danger);
 }
 
-@keyframes pulse {
-    0% {
-        transform: scale(1);
-        opacity: 1;
-    }
-    50% {
-        transform: scale(1.2);
-        opacity: 0.7;
-    }
-    100% {
-        transform: scale(1);
-        opacity: 1;
-    }
+.vn-pulse-ring {
+    animation: vnPulse 1.5s ease-in-out infinite;
 }
 
-.timer {
-    font-family: 'Courier New', monospace;
-    font-weight: bold;
+@keyframes vnPulse {
+    0%, 100% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.12); opacity: 0.6; }
 }
 
-.audio-visualizer {
-    margin: 1rem 0;
-    text-align: center;
+.vn-stop-btn__inner {
+    position: absolute;
+    inset: 8px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--e-danger) 0%, #c0392b 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-size: 1.2rem;
+    box-shadow: 0 4px 14px rgba(239, 68, 68, 0.35);
+    transition: all 0.2s ease;
 }
 
-.audio-visualizer canvas {
-    border: 1px solid #dee2e6;
-    border-radius: 5px;
-    background: #fff;
+.vn-stop-btn:hover .vn-stop-btn__inner {
+    box-shadow: 0 6px 20px rgba(239, 68, 68, 0.5);
 }
 
-.audio-player {
-    margin-top: 1.5rem;
-    padding: 1rem;
-    background: #fff;
-    border-radius: 10px;
-    border: 2px solid #e9ecef;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+.vn-stop-btn:active .vn-stop-btn__inner {
+    transform: scale(0.92);
 }
 
-.audio-player audio {
-    border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
-    height: 70px;
+/* Recording info */
+.vn-recording-info {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.vn-recording-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: var(--e-danger);
+    background: var(--e-danger-light);
+    padding: 0.3rem 0.75rem;
+    border-radius: var(--e-radius-full);
+}
+
+.vn-live-dot {
+    width: 8px;
+    height: 8px;
+    background: var(--e-danger);
+    border-radius: 50%;
+    animation: vnBlink 1s step-end infinite;
+}
+
+@keyframes vnBlink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0; }
+}
+
+.vn-timer {
+    font-family: 'Cairo', 'Courier New', monospace;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--e-gray-800);
+    letter-spacing: 1px;
+    min-width: 52px;
+}
+
+/* Waveform canvas */
+.vn-waveform {
+    border-radius: var(--e-radius);
+    background: var(--e-gray-50);
+    border: 1px solid var(--e-gray-100);
     width: 100%;
-    max-width: 500px;
-    margin: 0 auto;
-    display: block;
-    background: #fff;
-    border: 2px solid #e9ecef;
+    max-width: 320px;
+    height: 48px;
 }
 
-.audio-player audio::-webkit-media-controls-panel {
-    background-color: #f8f9fa;
+/* ---- Done State ---- */
+.vn-done-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: var(--e-success);
+    background: var(--e-success-light);
+    padding: 0.4rem 1rem;
+    border-radius: var(--e-radius-full);
 }
 
-.audio-player audio::-webkit-media-controls-play-button {
-    background-color: #007bff;
-    border-radius: 50%;
-    margin: 0 10px;
+.vn-done-badge i {
+    font-size: 0.9rem;
 }
 
-.audio-player audio::-webkit-media-controls-current-time-display,
-.audio-player audio::-webkit-media-controls-time-remaining-display {
-    font-size: 14px;
-    font-weight: bold;
-    color: #495057;
+.vn-player-wrap {
+    width: 100%;
+    max-width: 420px;
+    background: var(--e-gray-50);
+    border: 1px solid var(--e-gray-200);
+    border-radius: var(--e-radius-lg);
+    padding: 0.75rem;
 }
 
-/* تحسين مظهر الأزرار */
-.record-btn.recording {
-    background: #dc3545;
-    border-color: #dc3545;
-    color: white;
+.vn-audio {
+    width: 100%;
+    height: 42px;
+    border-radius: var(--e-radius);
+    outline: none;
 }
 
-.play-btn.playing {
-    background: #28a745;
-    border-color: #28a745;
-    color: white;
+.vn-audio::-webkit-media-controls-panel {
+    background: var(--e-gray-50);
 }
 
-/* تأثيرات إضافية */
-.recorder-controls .btn:active {
-    transform: translateY(0);
+.vn-done-actions {
+    display: flex;
+    gap: 0.6rem;
 }
 
-.recorder-controls .btn:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
+.vn-action-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.45rem 1rem;
+    border: 1.5px solid var(--e-gray-200);
+    border-radius: var(--e-radius-full);
+    font-size: 0.78rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all var(--e-transition);
+    background: var(--e-white);
+    color: var(--e-gray-600);
+}
+
+.vn-action-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: var(--e-shadow-sm);
+}
+
+.vn-action-btn--redo {
+    color: var(--e-primary);
+    border-color: var(--e-primary-200);
+}
+
+.vn-action-btn--redo:hover {
+    background: var(--e-primary-50);
+    border-color: var(--e-primary);
+}
+
+.vn-action-btn--delete {
+    color: var(--e-danger);
+    border-color: rgba(239, 68, 68, 0.2);
+}
+
+.vn-action-btn--delete:hover {
+    background: var(--e-danger-light);
+    border-color: var(--e-danger);
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 576px) {
+    .vn-record-btn,
+    .vn-stop-btn {
+        width: 64px;
+        height: 64px;
+    }
+
+    .vn-record-btn__inner,
+    .vn-stop-btn__inner {
+        font-size: 1.15rem;
+    }
+
+    .vn-waveform {
+        max-width: 100%;
+    }
 }
 </style>
 
@@ -198,31 +345,38 @@ class VoiceRecorder {
         this.isPlaying = false;
         this.startTime = 0;
         this.timerInterval = null;
+        this.audioContext = null;
+        this.analyser = null;
+        this.animFrame = null;
 
-        this.initializeElements();
+        this.el = {
+            stateIdle: document.getElementById('vnStateIdle'),
+            stateRecording: document.getElementById('vnStateRecording'),
+            stateDone: document.getElementById('vnStateDone'),
+            recordBtn: document.getElementById('vnRecordBtn'),
+            stopBtn: document.getElementById('vnStopBtn'),
+            redoBtn: document.getElementById('vnRedoBtn'),
+            deleteBtn: document.getElementById('vnDeleteBtn'),
+            timer: document.getElementById('vnTimer'),
+            waveform: document.getElementById('vnWaveform'),
+            audio: document.getElementById('vnAudio'),
+            input: document.getElementById('voiceNoteInput'),
+        };
+
         this.bindEvents();
     }
 
-    initializeElements() {
-        this.recordBtn = document.getElementById('recordBtn');
-        this.stopBtn = document.getElementById('stopBtn');
-        this.playBtn = document.getElementById('playBtn');
-        this.deleteBtn = document.getElementById('deleteBtn');
-        this.recordingIndicator = document.getElementById('recordingIndicator');
-        this.timer = document.getElementById('timer');
-        this.timeDisplay = document.getElementById('timeDisplay');
-        this.audioVisualizer = document.getElementById('audioVisualizer');
-        this.visualizer = document.getElementById('visualizer');
-        this.audioPlayer = document.getElementById('audioPlayer');
-        this.recordedAudio = document.getElementById('recordedAudio');
-        this.voiceNoteInput = document.getElementById('voiceNoteInput');
+    bindEvents() {
+        this.el.recordBtn.addEventListener('click', () => this.startRecording());
+        this.el.stopBtn.addEventListener('click', () => this.stopRecording());
+        this.el.redoBtn.addEventListener('click', () => this.deleteAndRestart());
+        this.el.deleteBtn.addEventListener('click', () => this.deleteRecording());
     }
 
-    bindEvents() {
-        this.recordBtn.addEventListener('click', () => this.startRecording());
-        this.stopBtn.addEventListener('click', () => this.stopRecording());
-        this.playBtn.addEventListener('click', () => this.playRecording());
-        this.deleteBtn.addEventListener('click', () => this.deleteRecording());
+    showState(state) {
+        this.el.stateIdle.style.display = state === 'idle' ? 'flex' : 'none';
+        this.el.stateRecording.style.display = state === 'recording' ? 'flex' : 'none';
+        this.el.stateDone.style.display = state === 'done' ? 'flex' : 'none';
     }
 
     async startRecording() {
@@ -232,119 +386,73 @@ class VoiceRecorder {
             this.mediaRecorder = new MediaRecorder(stream);
             this.audioChunks = [];
 
-            this.mediaRecorder.ondataavailable = (event) => {
-                this.audioChunks.push(event.data);
+            this.mediaRecorder.ondataavailable = (e) => {
+                this.audioChunks.push(e.data);
             };
 
             this.mediaRecorder.onstop = () => {
                 this.audioBlob = new Blob(this.audioChunks, { type: 'audio/wav' });
                 this.audioUrl = URL.createObjectURL(this.audioBlob);
-                this.recordedAudio.src = this.audioUrl;
+                this.el.audio.src = this.audioUrl;
 
-                // تحويل الصوت إلى base64
                 const reader = new FileReader();
-                reader.onload = () => {
-                    this.voiceNoteInput.value = reader.result;
-                };
+                reader.onload = () => { this.el.input.value = reader.result; };
                 reader.readAsDataURL(this.audioBlob);
 
-                this.showPlayControls();
+                this.showState('done');
                 this.stopTimer();
+                this.stopWaveform();
             };
 
             this.mediaRecorder.start();
             this.isRecording = true;
             this.startTime = Date.now();
 
-            this.showRecordingState();
+            this.showState('recording');
             this.startTimer();
-            this.startVisualizer(stream);
+            this.startWaveform(stream);
 
-        } catch (error) {
-            console.error('خطأ في الوصول للميكروفون:', error);
-            alert('لا يمكن الوصول للميكروفون. يرجى السماح بالوصول للميكروفون.');
+        } catch (err) {
+            alert('{{ __("messages.voice_note_mic_error") }}');
         }
     }
 
     stopRecording() {
         if (this.mediaRecorder && this.isRecording) {
             this.mediaRecorder.stop();
-            this.mediaRecorder.stream.getTracks().forEach(track => track.stop());
+            this.mediaRecorder.stream.getTracks().forEach(t => t.stop());
             this.isRecording = false;
-
-            this.hideRecordingState();
-            this.stopVisualizer();
-        }
-    }
-
-    playRecording() {
-        if (this.recordedAudio.src) {
-            if (this.isPlaying) {
-                this.recordedAudio.pause();
-                this.isPlaying = false;
-                this.playBtn.innerHTML = '<i class="fas fa-play"></i><span class="btn-text">تشغيل</span>';
-                this.playBtn.classList.remove('playing');
-            } else {
-                this.recordedAudio.play();
-                this.isPlaying = true;
-                this.playBtn.innerHTML = '<i class="fas fa-pause"></i><span class="btn-text">إيقاف مؤقت</span>';
-                this.playBtn.classList.add('playing');
-            }
         }
     }
 
     deleteRecording() {
+        this.cleanup();
+        this.showState('idle');
+    }
+
+    deleteAndRestart() {
+        this.cleanup();
+        this.startRecording();
+    }
+
+    cleanup() {
         this.audioBlob = null;
         this.audioUrl = null;
-        this.recordedAudio.src = '';
-        this.voiceNoteInput.value = '';
-
-        this.hidePlayControls();
-        this.hideRecordingState();
-        this.stopTimer();
-        this.stopVisualizer();
-
-        this.isPlaying = false;
+        this.el.audio.src = '';
+        this.el.input.value = '';
         this.isRecording = false;
-    }
-
-    showRecordingState() {
-        this.recordBtn.style.display = 'none';
-        this.stopBtn.style.display = 'inline-block';
-        this.recordingIndicator.style.display = 'flex';
-        this.timer.style.display = 'flex';
-        this.audioVisualizer.style.display = 'block';
-
-        this.recordBtn.classList.add('recording');
-    }
-
-    hideRecordingState() {
-        this.recordBtn.style.display = 'inline-block';
-        this.stopBtn.style.display = 'none';
-        this.recordingIndicator.style.display = 'none';
-        this.audioVisualizer.style.display = 'none';
-
-        this.recordBtn.classList.remove('recording');
-    }
-
-    showPlayControls() {
-        this.playBtn.style.display = 'inline-block';
-        this.deleteBtn.style.display = 'inline-block';
-        this.audioPlayer.style.display = 'block';
-    }
-
-    hidePlayControls() {
-        this.playBtn.style.display = 'none';
-        this.deleteBtn.style.display = 'none';
-        this.audioPlayer.style.display = 'none';
+        this.isPlaying = false;
+        this.stopTimer();
+        this.stopWaveform();
+        this.el.timer.textContent = '00:00';
     }
 
     startTimer() {
         this.timerInterval = setInterval(() => {
             const elapsed = Date.now() - this.startTime;
-            const minutes = Math.floor(elapsed / 60000);
-            const seconds = Math.floor((elapsed % 60000) / 1000);
-            this.timeDisplay.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            const m = Math.floor(elapsed / 60000);
+            const s = Math.floor((elapsed % 60000) / 1000);
+            this.el.timer.textContent = `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
         }, 1000);
     }
 
@@ -355,54 +463,75 @@ class VoiceRecorder {
         }
     }
 
-    startVisualizer(stream) {
-        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-        const analyser = audioContext.createAnalyser();
-        const microphone = audioContext.createMediaStreamSource(stream);
+    startWaveform(stream) {
+        this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        this.analyser = this.audioContext.createAnalyser();
+        const source = this.audioContext.createMediaStreamSource(stream);
+        source.connect(this.analyser);
+        this.analyser.fftSize = 128;
 
-        microphone.connect(analyser);
-        analyser.fftSize = 256;
+        const canvas = this.el.waveform;
+        const ctx = canvas.getContext('2d');
+        const bufLen = this.analyser.frequencyBinCount;
+        const data = new Uint8Array(bufLen);
 
-        const bufferLength = analyser.frequencyBinCount;
-        const dataArray = new Uint8Array(bufferLength);
-
-        const canvas = this.visualizer;
-        const canvasCtx = canvas.getContext('2d');
+        const primary = getComputedStyle(document.documentElement).getPropertyValue('--e-primary').trim() || '#2f5c69';
+        const primaryLight = getComputedStyle(document.documentElement).getPropertyValue('--e-primary-light').trim() || '#3d7a8a';
 
         const draw = () => {
             if (!this.isRecording) return;
+            this.animFrame = requestAnimationFrame(draw);
 
-            requestAnimationFrame(draw);
+            this.analyser.getByteFrequencyData(data);
 
-            analyser.getByteFrequencyData(dataArray);
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-            canvasCtx.fillStyle = 'rgb(255, 255, 255)';
-            canvasCtx.fillRect(0, 0, canvas.width, canvas.height);
+            const barCount = Math.min(bufLen, 40);
+            const gap = 3;
+            const barW = (canvas.width - (barCount - 1) * gap) / barCount;
+            const maxH = canvas.height * 0.85;
 
-            const barWidth = (canvas.width / bufferLength) * 2.5;
-            let barHeight;
-            let x = 0;
+            for (let i = 0; i < barCount; i++) {
+                const val = data[i] / 255;
+                const h = Math.max(3, val * maxH);
+                const x = i * (barW + gap);
+                const y = (canvas.height - h) / 2;
 
-            for (let i = 0; i < bufferLength; i++) {
-                barHeight = dataArray[i] / 2;
+                const grad = ctx.createLinearGradient(x, y, x, y + h);
+                grad.addColorStop(0, primaryLight);
+                grad.addColorStop(1, primary);
 
-                canvasCtx.fillStyle = `rgb(${barHeight + 100}, 50, 50)`;
-                canvasCtx.fillRect(x, canvas.height - barHeight, barWidth, barHeight);
-
-                x += barWidth + 1;
+                ctx.fillStyle = grad;
+                ctx.beginPath();
+                ctx.roundRect(x, y, barW, h, barW / 2);
+                ctx.fill();
             }
         };
 
         draw();
     }
 
-    stopVisualizer() {
-        // إيقاف الرسوم المتحركة
+    stopWaveform() {
+        if (this.animFrame) {
+            cancelAnimationFrame(this.animFrame);
+            this.animFrame = null;
+        }
+        if (this.audioContext) {
+            this.audioContext.close().catch(() => {});
+            this.audioContext = null;
+        }
+        // Clear canvas
+        const canvas = this.el.waveform;
+        if (canvas) {
+            const ctx = canvas.getContext('2d');
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+        }
     }
 }
 
-// تهيئة مسجل الصوت عند تحميل الصفحة
 document.addEventListener('DOMContentLoaded', function() {
-    new VoiceRecorder();
+    if (document.getElementById('vnRecorder')) {
+        new VoiceRecorder();
+    }
 });
 </script>

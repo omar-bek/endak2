@@ -197,14 +197,14 @@
 </div>
 
 <style>
-    .text-teal { color: #008b8b !important; }
-    .bg-teal { background-color: #008b8b !important; }
+    .text-teal { color: var(--e-primary) !important; }
+    .bg-teal { background-color: var(--e-primary) !important; }
     .btn-outline-teal {
-        color: #008b8b;
-        border-color: #008b8b;
+        color: var(--e-primary);
+        border-color: var(--e-primary);
     }
     .btn-outline-teal:hover {
-        background-color: #008b8b;
+        background-color: var(--e-primary);
         color: #fff;
     }
     .text-gold { color: #d4af37 !important; }

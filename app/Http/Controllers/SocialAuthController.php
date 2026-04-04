@@ -165,7 +165,7 @@ class SocialAuthController extends Controller
             Log::error('Google login error: ' . $e->getMessage());
             Log::error('Google login error trace: ' . $e->getTraceAsString());
             return redirect()->route('register')->withErrors([
-                'email' => 'فشل التسجيل عبر جوجل: ' . $e->getMessage() . '. يرجى المحاولة مرة أخرى.'
+                'email' => 'فشل التسجيل عبر جوجل. يرجى المحاولة مرة أخرى.'
             ]);
         }
     }

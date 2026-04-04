@@ -29,8 +29,47 @@
         <div class="notifications-list">
             @foreach($notifications as $notification)
             <div class="notification-card {{ $notification->isRead() ? 'is-read' : 'is-unread' }}" style="animation-delay: {{ $loop->index * 0.05 }}s">
-                <div class="notification-icon">
-                    <i class="{{ $notification->icon }}"></i>
+                <div class="notification-avatar-wrapper">
+                    @php
+                        // جلب الصورة الشخصية الحالية من المستخدم مباشرة
+                        $avatarUrl = null;
+                        $avatarName = '';
+                        $ntfData = $notification->data ?? [];
+                        $relatedUserId = $ntfData['provider_id'] ?? ($ntfData['customer_id'] ?? null);
+                        $avatarName = $ntfData['provider_name'] ?? ($ntfData['customer_name'] ?? '');
+
+                        if ($relatedUserId) {
+                            $relatedUser = \App\Models\User::find($relatedUserId);
+                            if ($relatedUser) {
+                                $avatarUrl = $relatedUser->avatar_url;
+                                if (empty($avatarName)) $avatarName = $relatedUser->name;
+                            }
+                        }
+                        // fallback للصورة المخزنة في بيانات الإشعار
+                        if (!$avatarUrl && !empty($ntfData['avatar'])) {
+                            $avatarUrl = asset($ntfData['avatar']);
+                        }
+                    @endphp
+                    @if($avatarUrl)
+                        <img src="{{ $avatarUrl }}"
+                             alt="{{ $avatarName }}"
+                             class="notification-avatar"
+                             onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                        <div class="notification-avatar-fallback" style="display: none;">
+                            {{ strtoupper(mb_substr($avatarName ?: '?', 0, 1)) }}
+                        </div>
+                    @elseif(!empty($avatarName))
+                        <div class="notification-avatar-fallback">
+                            {{ strtoupper(mb_substr($avatarName, 0, 1)) }}
+                        </div>
+                    @else
+                        <div class="notification-icon notification-icon-{{ $notification->color }}">
+                            <i class="{{ $notification->icon }}"></i>
+                        </div>
+                    @endif
+                    <span class="notification-type-dot notification-dot-{{ $notification->color }}">
+                        <i class="{{ str_replace(['text-success','text-danger','text-primary','text-info','text-warning'], '', $notification->icon) }}"></i>
+                    </span>
                 </div>
                 <div class="notification-content">
                     <div class="notification-header">
@@ -44,7 +83,52 @@
                             <i class="fas fa-clock"></i> {{ $notification->created_at->diffForHumans() }}
                         </small>
                     </div>
-                    <p class="notification-message">{{ $notification->message }}</p>
+                    @php
+                        $msg = $notification->message;
+                        $data = $notification->data ?? [];
+
+                        $providerName = $data['provider_name'] ?? '';
+                        $customerName = $data['customer_name'] ?? '';
+                        $categoryName = $data['category_name'] ?? '';
+                        $cityName = $data['city'] ?? '';
+                        $serviceTitleName = $data['service_title'] ?? '';
+
+                        // جلب البيانات من قاعدة البيانات إذا لم تكن مخزنة في بيانات الإشعار
+                        if ((empty($providerName) || empty($categoryName)) && isset($data['offer_id'])) {
+                            $offerObj = \App\Models\ServiceOffer::with(['provider', 'service.category'])->find($data['offer_id']);
+                            if ($offerObj) {
+                                if (empty($providerName) && $offerObj->provider) {
+                                    $providerName = $offerObj->provider->name;
+                                }
+                                if (empty($categoryName) && $offerObj->service && $offerObj->service->category) {
+                                    $categoryName = $offerObj->service->category->name;
+                                }
+                            }
+                        }
+                        if (empty($categoryName) && isset($data['service_id'])) {
+                            $svc = \App\Models\Service::with('category')->find($data['service_id']);
+                            if ($svc && $svc->category) {
+                                $categoryName = $svc->category->name;
+                            }
+                        }
+                        if (empty($providerName) && isset($data['provider_id'])) {
+                            $provUser = \App\Models\User::find($data['provider_id']);
+                            if ($provUser) $providerName = $provUser->name;
+                        }
+
+                        $serviceName = $categoryName ?: $serviceTitleName;
+                        $who = $providerName ?: $customerName;
+
+                        // استبدال كلا الصيغتين: {placeholder} و :placeholder
+                        $msg = str_replace(
+                            ['{provider}', '{service}', '{customer}', '{category}', '{city}',
+                             ':provider', ':service', ':customer', ':category', ':city'],
+                            [$who, $serviceName, $customerName, $categoryName, $cityName,
+                             $who, $serviceName, $customerName, $categoryName, $cityName],
+                            $msg
+                        );
+                    @endphp
+                    <p class="notification-message">{{ $msg }}</p>
 
                     <div class="notification-actions">
                         @if($notification->data && isset($notification->data['offer_id']))
@@ -123,7 +207,7 @@
 
     /* === Color & Style Variables (from Navbar) === */
     :root {
-        --bg-dark: #2f5c69;
+        --bg-dark: var(--e-primary, #2f5c69);
         --accent: #f3a446;
         --accent-hover: #ffb861;
         --page-bg: #f5f7fa;
@@ -162,14 +246,24 @@
     .page-title .fa-bell {
         margin-left: 10px;
         color: var(--accent);
+        font-size: 1.5rem;
     }
 
     .unread-count-badge {
-        background-color: var(--accent);
-        color: var(--bg-dark);
-        font-weight: bold;
-        border-radius: 8px;
-        font-size: 0.9rem;
+        background: linear-gradient(135deg, #ef4444, #dc2626);
+        color: #fff;
+        font-weight: 700;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        padding: 0.3rem 0.75rem;
+        box-shadow: 0 3px 8px rgba(239, 68, 68, 0.35);
+        animation: badgePop 0.4s ease-out;
+    }
+
+    @keyframes badgePop {
+        0% { transform: scale(0); }
+        60% { transform: scale(1.15); }
+        100% { transform: scale(1); }
     }
 
     .btn-mark-all {
@@ -223,23 +317,121 @@
         opacity: 1;
     }
 
-    .notification-icon {
+    /* أفاتار المستخدم في الإشعار */
+    .notification-avatar-wrapper {
         flex-shrink: 0;
-        width: 50px;
-        height: 50px;
-        border-radius: 50%;
-        background-color: rgba(47, 92, 105, 0.1);
-        color: var(--bg-dark);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 1.5rem;
+        position: relative;
+        width: 52px;
+        height: 52px;
         margin-left: 1.5rem;
     }
 
-    .is-unread .notification-icon {
-        background-color: rgba(243, 164, 70, 0.1);
-        color: var(--accent);
+    .notification-avatar {
+        width: 52px;
+        height: 52px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 2px solid #e9ecef;
+        transition: transform 0.3s ease, border-color 0.3s ease;
+    }
+
+    .is-unread .notification-avatar {
+        border-color: var(--accent);
+    }
+
+    .notification-card:hover .notification-avatar {
+        transform: scale(1.08);
+    }
+
+    .notification-avatar-fallback {
+        width: 52px;
+        height: 52px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, var(--bg-dark), #3d7a8a);
+        color: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.3rem;
+        font-weight: 700;
+        border: 2px solid #e9ecef;
+        transition: transform 0.3s ease;
+    }
+
+    .is-unread .notification-avatar-fallback {
+        border-color: var(--accent);
+    }
+
+    .notification-card:hover .notification-avatar-fallback {
+        transform: scale(1.08);
+    }
+
+    /* نقطة نوع الإشعار على الأفاتار */
+    .notification-type-dot {
+        position: absolute;
+        bottom: -2px;
+        right: -2px;
+        width: 22px;
+        height: 22px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.55rem;
+        color: #fff;
+        border: 2px solid #fff;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+    }
+
+    .notification-dot-success { background: var(--e-success, #10b981); }
+    .notification-dot-danger { background: var(--e-danger, #ef4444); }
+    .notification-dot-primary { background: var(--e-primary, #2f5c69); }
+    .notification-dot-info { background: var(--e-info, #3b82f6); }
+    .notification-dot-warning { background: var(--e-warning, #f59e0b); }
+
+    /* أيقونة fallback بدون أفاتار */
+    .notification-icon {
+        flex-shrink: 0;
+        width: 52px;
+        height: 52px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.3rem;
+        transition: transform 0.3s ease;
+    }
+
+    .notification-card:hover .notification-icon {
+        transform: scale(1.08);
+    }
+
+    .notification-icon-success {
+        background: linear-gradient(135deg, rgba(16, 185, 129, 0.15), rgba(16, 185, 129, 0.05));
+        color: #059669;
+    }
+    .notification-icon-danger {
+        background: linear-gradient(135deg, rgba(239, 68, 68, 0.15), rgba(239, 68, 68, 0.05));
+        color: #dc2626;
+    }
+    .notification-icon-primary {
+        background: linear-gradient(135deg, var(--e-primary-100), var(--e-primary-50));
+        color: var(--e-primary);
+    }
+    .notification-icon-info {
+        background: linear-gradient(135deg, rgba(59, 130, 246, 0.15), rgba(59, 130, 246, 0.05));
+        color: #2563eb;
+    }
+    .notification-icon-warning {
+        background: linear-gradient(135deg, rgba(245, 158, 11, 0.15), rgba(245, 158, 11, 0.05));
+        color: #d97706;
+    }
+
+    .is-read .notification-avatar-wrapper {
+        opacity: 0.6;
+    }
+    .is-read:hover .notification-avatar-wrapper {
+        opacity: 1;
     }
 
     .notification-content {
@@ -262,10 +454,14 @@
     }
 
     .new-badge {
-        background-color: var(--accent);
+        background: linear-gradient(135deg, var(--accent), var(--accent-hover));
         color: var(--bg-dark);
-        font-size: 0.7rem;
-        padding: 0.2rem 0.5rem;
+        font-size: 0.65rem;
+        font-weight: 700;
+        padding: 0.15rem 0.5rem;
+        border-radius: 20px;
+        letter-spacing: 0.3px;
+        vertical-align: middle;
     }
 
     .notification-time {
@@ -349,26 +545,7 @@
         font-weight: 600;
     }
 
-    /* === Pagination Styling === */
-    .pagination .page-link {
-        color: var(--bg-dark);
-        border: 1px solid var(--border-color);
-        margin: 0 3px;
-        border-radius: 8px;
-    }
-    .pagination .page-link:hover {
-        background-color: rgba(47, 92, 105, 0.1);
-        color: var(--bg-dark);
-    }
-    .pagination .page-item.active .page-link {
-        background-color: var(--bg-dark);
-        border-color: var(--bg-dark);
-        color: #fff;
-        box-shadow: 0 4px 10px rgba(47, 92, 105, 0.3);
-    }
-    .pagination .page-item.disabled .page-link {
-        color: #ccc;
-    }
+    /* Pagination styles in endak.css */
 
     /* === Animation === */
     @keyframes fadeInUp {

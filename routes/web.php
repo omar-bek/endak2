@@ -51,9 +51,21 @@ Route::get('/email/verify/{id}/{hash}', function (Illuminate\Foundation\Auth\Ema
 })->middleware(['auth', 'signed'])->name('verification.verify');
 
 Route::post('/email/verification-notification', function (Request $request) {
-    $request->user()->sendEmailVerificationNotification();
-    return back()->with('success', 'تم إرسال رابط التحقق مرة أخرى!');
-})->middleware(['auth', 'throttle:6,1'])->name('verification.send');
+    if ($request->user()->hasVerifiedEmail()) {
+        return redirect('/');
+    }
+
+    try {
+        $request->user()->sendEmailVerificationNotification();
+        return back()->with('success', 'تم إرسال رابط التحقق مرة أخرى! تحقق من بريدك الإلكتروني بما في ذلك مجلد الـ Spam.');
+    } catch (\Exception $e) {
+        \Illuminate\Support\Facades\Log::error('Failed to resend verification email', [
+            'user_id' => $request->user()->id,
+            'error' => $e->getMessage()
+        ]);
+        return back()->with('warning', 'فشل إرسال رابط التحقق. يرجى المحاولة مرة أخرى بعد قليل.');
+    }
+})->middleware(['auth', 'throttle:3,1'])->name('verification.send');
 
 // Social Login Routes
 Route::get('/auth/facebook', [App\Http\Controllers\SocialAuthController::class, 'redirectToFacebook'])->name('auth.facebook');
@@ -61,8 +73,6 @@ Route::get('/auth/facebook/callback', [App\Http\Controllers\SocialAuthController
 
 Route::get('/auth/google', [App\Http\Controllers\SocialAuthController::class, 'redirectToGoogle'])->name('auth.google');
 Route::get('/auth/google/callback', [App\Http\Controllers\SocialAuthController::class, 'handleGoogleCallback']);
-
-Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
 // الصفحة الرئيسية
 Route::get('/', [HomeController::class, 'index'])->name('home');
@@ -126,7 +136,6 @@ Route::middleware(['auth', 'verified', 'user.type.terms'])->group(function () {
     Route::delete('/messages/{id}', [MessageController::class, 'destroy'])->name('messages.destroy');
     Route::get('/messages/unread/count', [MessageController::class, 'getUnreadCount'])->name('messages.unread-count');
     Route::post('/messages/mark-all-read', [MessageController::class, 'markAllAsRead'])->name('messages.mark-all-read');
-    Route::get('/messages/stream', [MessageController::class, 'stream'])->name('messages.stream');
     Route::get('/services/{serviceId}/conversation', [MessageController::class, 'serviceConversation'])->name('messages.service-conversation');
     Route::get('/offers/{offerId}/conversation', [MessageController::class, 'offerConversation'])->name('messages.offer-conversation');
 });
@@ -238,6 +247,7 @@ Route::middleware('auth')->group(function () {
 // Profile يتطلب تحقق من الإيميل والموافقة على الشروط
 Route::middleware(['auth', 'verified', 'user.type.terms'])->group(function () {
     Route::get('/profile', [AuthController::class, 'profile'])->name('profile');
+    Route::get('/profile/edit', [AuthController::class, 'editProfile'])->name('profile.edit');
     Route::put('/profile', [AuthController::class, 'updateProfile'])->name('profile.update');
 
     // Provider Routes
@@ -269,36 +279,8 @@ Route::get('/provider/profile/{userId?}', [ProviderProfileController::class, 'sh
 // الملف الشخصي العام للمستخدم (متاح للجميع)
 Route::get('/users/{userId}/profile', [AuthController::class, 'publicProfile'])->name('user.profile.public');
 
-// Route اختبار لحفظ sub_category_id
-Route::get('/test-subcategory', function () {
-    // إنشاء خدمة تجريبية مع sub_category_id
-    $service = \App\Models\Service::create([
-        'title' => 'خدمة تجريبية',
-        'description' => 'وصف تجريبي',
-        'category_id' => 1,
-        'sub_category_id' => 1,
-        'city_id' => 1,
-        'user_id' => 1,
-        'price' => 100,
-        'is_active' => true,
-        'custom_fields' => [],
-    ]);
-
-    return response()->json([
-        'success' => true,
-        'service' => $service->toArray(),
-        'sub_category_id' => $service->sub_category_id,
-        'subCategory' => $service->subCategory ? $service->subCategory->toArray() : null
-    ]);
-});
-
-// صفحة اختبار القسم الفرعي
-Route::get('/test-subcategory-page', function () {
-    return view('test-subcategory');
-});
-
 // API لجلب الأقسام الفرعية
-Route::get('/api/categories/{category}/subcategories', function ($category) {
+Route::middleware('auth')->get('/api/categories/{category}/subcategories', function ($category) {
     $subCategories = \App\Models\SubCategory::where('category_id', $category)
         ->where('status', true)
         ->get(['id', 'name_ar', 'name_en']);

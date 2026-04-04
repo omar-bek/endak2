@@ -138,8 +138,7 @@
                 </div>
                 <div class="card-body">
                     <div class="text-center mb-3">
-                        <img src="https://ui-avatars.com/api/?name={{ $offer->provider->name }}&background=667eea&color=fff"
-                             alt="Avatar" class="rounded-circle" width="80" height="80">
+                        @include('partials.user-avatar', ['user' => $offer->provider, 'size' => 80])
                         <h5 class="mt-2 mb-1">{{ $offer->provider->name }}</h5>
                         <p class="text-muted mb-2">{{ $offer->provider->email }}</p>
                         <span class="badge bg-success">مزود خدمة</span>

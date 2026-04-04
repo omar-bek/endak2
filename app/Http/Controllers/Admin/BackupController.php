@@ -48,6 +48,7 @@ class BackupController extends Controller
      */
     public function download($filename)
     {
+        $filename = basename($filename);
         $path = 'backups/' . $filename;
 
         if (!Storage::disk('local')->exists($path)) {
@@ -62,6 +63,7 @@ class BackupController extends Controller
      */
     public function destroy($filename)
     {
+        $filename = basename($filename);
         $path = 'backups/' . $filename;
 
         if (Storage::disk('local')->exists($path)) {

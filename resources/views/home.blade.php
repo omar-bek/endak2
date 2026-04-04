@@ -2,449 +2,515 @@
 
 @section('title', 'الرئيسية')
 
-
 @section('content')
-    <!-- Hero Section -->
-    <section class="hero-area position-relative text-white overflow-hidden">
-        <div class="hero-bg-small bg-info"></div>
+<style>
+/* ===== Hero ===== */
+.eh-hero {
+    position: relative;
+    background: linear-gradient(160deg, var(--e-primary-dark) 0%, var(--e-primary) 40%, var(--e-primary-light) 100%);
+    overflow: hidden;
+    padding: 80px 0 100px;
+    margin-top: -2px;
+}
+.eh-hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: url("data:image/svg+xml,%3Csvg width='80' height='80' viewBox='0 0 80 80' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Ccircle cx='40' cy='40' r='4'/%3E%3C/g%3E%3C/svg%3E");
+}
+.eh-hero::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    right: 0;
+    height: 80px;
+    background: var(--e-gray-50);
+    clip-path: ellipse(55% 100% at 50% 100%);
+}
+.eh-hero-inner {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    gap: 40px;
+}
+.eh-hero-text { flex: 1; }
+.eh-hero-visual {
+    flex: 0 0 380px;
+    text-align: center;
+}
+.eh-hero-visual img {
+    max-width: 100%;
+    max-height: 320px;
+    filter: drop-shadow(0 20px 40px rgba(0,0,0,0.2));
+    animation: ehFloat 5s ease-in-out infinite;
+}
+@keyframes ehFloat {
+    0%,100% { transform: translateY(0); }
+    50% { transform: translateY(-14px); }
+}
+.eh-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(255,255,255,0.12);
+    border: 1px solid rgba(255,255,255,0.15);
+    backdrop-filter: blur(8px);
+    padding: 8px 18px;
+    border-radius: var(--e-radius-full);
+    color: var(--e-accent);
+    font-size: 0.85rem;
+    font-weight: 600;
+    margin-bottom: 20px;
+}
+.eh-badge i { font-size: 0.9rem; }
+.eh-title {
+    font-size: 2.6rem;
+    font-weight: 800;
+    color: var(--e-white);
+    line-height: 1.3;
+    margin-bottom: 18px;
+}
+.eh-title .accent { color: var(--e-accent); }
+.eh-title .light { color: rgba(255,255,255,0.7); }
+.eh-desc {
+    font-size: 1.05rem;
+    color: rgba(255,255,255,0.8);
+    line-height: 1.8;
+    margin-bottom: 28px;
+    max-width: 520px;
+}
+.eh-btns { display: flex; flex-wrap: wrap; gap: 12px; }
+.eh-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 13px 30px;
+    border-radius: var(--e-radius-full);
+    font-family: var(--e-font);
+    font-size: 0.95rem;
+    font-weight: 700;
+    text-decoration: none;
+    transition: var(--e-transition);
+    border: none;
+    cursor: pointer;
+}
+.eh-btn-accent {
+    background: var(--e-accent);
+    color: var(--e-white);
+    box-shadow: 0 6px 24px rgba(243,164,70,0.4);
+}
+.eh-btn-accent:hover {
+    background: var(--e-accent-dark);
+    transform: translateY(-3px);
+    box-shadow: 0 10px 30px rgba(243,164,70,0.5);
+    color: var(--e-white);
+}
+.eh-btn-outline {
+    background: rgba(255,255,255,0.1);
+    color: var(--e-white);
+    border: 2px solid rgba(255,255,255,0.3);
+}
+.eh-btn-outline:hover {
+    background: var(--e-white);
+    color: var(--e-primary);
+    border-color: var(--e-white);
+    transform: translateY(-3px);
+}
+.eh-stats {
+    display: flex;
+    gap: 32px;
+    margin-top: 36px;
+    padding-top: 28px;
+    border-top: 1px solid rgba(255,255,255,0.12);
+}
+.eh-stat-num {
+    font-size: 1.6rem;
+    font-weight: 800;
+    color: var(--e-white);
+    line-height: 1;
+}
+.eh-stat-label {
+    font-size: 0.78rem;
+    color: rgba(255,255,255,0.6);
+    margin-top: 4px;
+}
 
-        <div class="container py-5 d-flex align-items-center">
-            <div class="row align-items-center w-100 flex-column-reverse flex-lg-row">
-                <div class="col-lg-6 text-center text-lg-start mb-4 mb-lg-0">
+/* ===== Categories ===== */
+.eh-cats {
+    padding: 70px 0 60px;
+    background: var(--e-gray-50);
+}
+.eh-section-head {
+    text-align: center;
+    margin-bottom: 40px;
+}
+.eh-section-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--e-primary-100);
+    color: var(--e-primary);
+    padding: 6px 16px;
+    border-radius: var(--e-radius-full);
+    font-size: 0.8rem;
+    font-weight: 700;
+    margin-bottom: 12px;
+}
+.eh-section-title {
+    font-size: 1.8rem;
+    font-weight: 800;
+    color: var(--e-gray-800);
+    margin-bottom: 8px;
+}
+.eh-section-desc {
+    color: var(--e-gray-500);
+    font-size: 0.95rem;
+}
 
-                    <div class="d-flex justify-content-center justify-content-lg-start align-items-center mb-3">
-                        <i class="fas fa-star text-warning fs-4 mx-1"></i>
-                        <i class="fas fa-star text-warning fs-4 mx-1"></i>
-                        <i class="fas fa-star text-warning fs-4 mx-1"></i>
-                        <i class="fas fa-star text-warning fs-4 mx-1"></i>
-                        <i class="fas fa-star text-warning fs-4 mx-1"></i>
-                        <span class="ms-2 small">{{ __('messages.hero_rating') }}</span>
-                    </div>
+/* Category Card */
+.eh-cat-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 20px;
+}
+.eh-cat-card {
+    position: relative;
+    border-radius: var(--e-radius-lg);
+    overflow: hidden;
+    text-decoration: none;
+    display: block;
+    box-shadow: var(--e-shadow);
+    transition: var(--e-transition);
+}
+.eh-cat-card:hover {
+    transform: translateY(-6px);
+    box-shadow: var(--e-shadow-lg);
+}
+.eh-cat-img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.5s ease;
+}
+.eh-cat-card:hover .eh-cat-img { transform: scale(1.08); }
+.eh-cat-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(0deg, rgba(0,0,0,0.65) 0%, rgba(0,0,0,0.1) 60%, transparent 100%);
+    display: flex;
+    align-items: flex-end;
+    padding: 18px;
+    transition: var(--e-transition);
+}
+.eh-cat-card:hover .eh-cat-overlay {
+    background: linear-gradient(0deg, rgba(47,92,105,0.85) 0%, rgba(47,92,105,0.2) 60%, transparent 100%);
+}
+.eh-cat-name {
+    color: var(--e-white);
+    font-size: 1.15rem;
+    font-weight: 700;
+    text-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    margin: 0;
+}
+.eh-cat-arrow {
+    position: absolute;
+    top: 14px;
+    left: 14px;
+    width: 34px;
+    height: 34px;
+    border-radius: var(--e-radius-full);
+    background: rgba(255,255,255,0.2);
+    backdrop-filter: blur(6px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--e-white);
+    font-size: 13px;
+    opacity: 0;
+    transform: translateX(8px);
+    transition: var(--e-transition);
+}
+.eh-cat-card:hover .eh-cat-arrow {
+    opacity: 1;
+    transform: translateX(0);
+}
 
-                    <h1 class="display-5 fw-bold mb-3 text-white">
-                        {{ __('messages.hero_title_1') }} <span style="color: #f3a446;">Endak</span>
-                        {{ __('messages.hero_title_2') }} <span class="text-info">{{ __('messages.hero_title_3') }}</span>
-                        {{ __('messages.hero_title_4') }}
-                    </h1>
+/* ===== Features ===== */
+.eh-features {
+    padding: 60px 0;
+    background: var(--e-white);
+}
+.eh-feat-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 24px;
+}
+.eh-feat-card {
+    text-align: center;
+    padding: 32px 24px;
+    border-radius: var(--e-radius-lg);
+    border: 1px solid var(--e-gray-100);
+    transition: var(--e-transition);
+    background: var(--e-white);
+}
+.eh-feat-card:hover {
+    border-color: var(--e-primary-200);
+    box-shadow: var(--e-shadow-md);
+    transform: translateY(-4px);
+}
+.eh-feat-icon {
+    width: 64px;
+    height: 64px;
+    border-radius: var(--e-radius-lg);
+    margin: 0 auto 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    transition: var(--e-transition);
+}
+.eh-feat-card:hover .eh-feat-icon { transform: scale(1.1); }
+.eh-feat-icon.i1 { background: var(--e-primary-100); color: var(--e-primary); }
+.eh-feat-icon.i2 { background: var(--e-accent-50); color: var(--e-accent); }
+.eh-feat-icon.i3 { background: var(--e-success-light); color: var(--e-success); }
+.eh-feat-icon.i4 { background: var(--e-info-light); color: var(--e-info); }
+.eh-feat-title {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--e-gray-800);
+    margin-bottom: 6px;
+}
+.eh-feat-desc {
+    font-size: 0.85rem;
+    color: var(--e-gray-500);
+    line-height: 1.7;
+}
 
-                    <p class="lead mb-4 border-start border-3 ps-3 text-white">
-                        {{ __('messages.hero_description') }}
-                    </p>
+/* ===== CTA ===== */
+.eh-cta {
+    padding: 60px 0;
+    background: linear-gradient(135deg, var(--e-primary-dark), var(--e-primary));
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+.eh-cta::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23ffffff' fill-opacity='0.04'%3E%3Cpath d='M20 20h20v20H20z'/%3E%3C/g%3E%3C/svg%3E");
+}
+.eh-cta-inner { position: relative; z-index: 2; }
+.eh-cta-title {
+    font-size: 1.8rem;
+    font-weight: 800;
+    color: var(--e-white);
+    margin-bottom: 12px;
+}
+.eh-cta-desc {
+    color: rgba(255,255,255,0.75);
+    font-size: 1rem;
+    margin-bottom: 28px;
+    max-width: 480px;
+    margin-inline: auto;
+}
 
-                    <div class="d-flex flex-wrap justify-content-center justify-content-lg-start gap-3 mb-5"
-                        style="position: relative; z-index: 10;">
-                        <a href="{{ route('categories.index') }}" class="btn btn-lg px-4 rounded-pill shadow"
-                            style="background-color:#f3a446;color:#fff;border:none;position: relative; z-index: 10;">{{ __('messages.hero_explore_categories') }}</a>
+/* ===== Animation ===== */
+.eh-anim {
+    opacity: 0;
+    transform: translateY(24px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+}
+.eh-anim.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
 
-                        <a href="{{ route('services.index') }}" class="btn btn-outline-light btn-lg px-4 rounded-pill"
-                            style="position: relative; z-index: 10;">{{ __('messages.hero_explore_services') }}</a>
-                    </div>
+/* ===== Responsive ===== */
+@media (max-width: 991px) {
+    .eh-hero { padding: 50px 0 80px; }
+    .eh-hero-inner { flex-direction: column-reverse; text-align: center; }
+    .eh-hero-visual { flex: none; width: 100%; }
+    .eh-hero-visual img { max-height: 220px; }
+    .eh-title { font-size: 2rem; }
+    .eh-desc { margin-inline: auto; }
+    .eh-btns { justify-content: center; }
+    .eh-stats { justify-content: center; }
+}
+@media (max-width: 576px) {
+    .eh-hero { padding: 36px 0 70px; }
+    .eh-title { font-size: 1.55rem; }
+    .eh-desc { font-size: 0.92rem; }
+    .eh-btn { padding: 11px 22px; font-size: 0.88rem; }
+    .eh-stats { gap: 20px; }
+    .eh-stat-num { font-size: 1.3rem; }
+    .eh-section-title { font-size: 1.4rem; }
+    .eh-cat-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+    .eh-cat-img { height: 140px; }
+    .eh-cat-name { font-size: 0.9rem; }
+    .eh-cta-title { font-size: 1.4rem; }
+}
+</style>
+
+{{-- Hero --}}
+<section class="eh-hero">
+    <div class="container">
+        <div class="eh-hero-inner">
+            <div class="eh-hero-text">
+                <div class="eh-badge">
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <span style="color:rgba(255,255,255,0.8);margin-right:4px;">{{ __('messages.hero_rating') }}</span>
                 </div>
 
-                <div class="col-lg-6 text-center position-relative mb-4 mb-lg-0">
-                    <img src="{{ asset(\App\Models\SystemSetting::get('site_logo', 'home.png')) }}"
-                        alt="{{ \App\Models\SystemSetting::get('site_name_ar', 'إنداك') }}" class="img-fluid hero-img">
+                <h1 class="eh-title">
+                    {{ __('messages.hero_title_1') }}
+                    <span class="accent">Endak</span>
+                    {{ __('messages.hero_title_2') }}
+                    <span class="light">{{ __('messages.hero_title_3') }}</span>
+                    {{ __('messages.hero_title_4') }}
+                </h1>
+
+                <p class="eh-desc">{{ __('messages.hero_description') }}</p>
+
+                <div class="eh-btns">
+                    <a href="{{ route('categories.index') }}" class="eh-btn eh-btn-accent">
+                        <i class="fas fa-th-large"></i> {{ __('messages.hero_explore_categories') }}
+                    </a>
+                    <a href="{{ route('services.index') }}" class="eh-btn eh-btn-outline">
+                        <i class="fas fa-search"></i> {{ __('messages.hero_explore_services') }}
+                    </a>
+                </div>
+
+                <div class="eh-stats">
+                    <div>
+                        <div class="eh-stat-num">{{ \App\Models\Category::where('is_active', true)->count() }}+</div>
+                        <div class="eh-stat-label">قسم متاح</div>
+                    </div>
+                    <div>
+                        <div class="eh-stat-num">{{ \App\Models\Service::where('is_active', true)->count() }}+</div>
+                        <div class="eh-stat-label">خدمة منشورة</div>
+                    </div>
+                    <div>
+                        <div class="eh-stat-num">{{ \App\Models\User::count() }}+</div>
+                        <div class="eh-stat-label">مستخدم نشط</div>
+                    </div>
                 </div>
             </div>
-        </div>
 
-        <svg viewBox="0 0 1440 200" preserveAspectRatio="none" class="position-absolute bottom-0 start-0 w-100 hero-wave">
-            <defs>
-                <linearGradient id="waveGradient" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stop-color="#2f5c69" />
-                    <stop offset="100%" stop-color="#f1f7ff" />
-                </linearGradient>
-
-                <filter id="shadow" x="-10%" y="-10%" width="120%" height="120%">
-                    <feDropShadow dx="0" dy="-2" stdDeviation="4" flood-color="#1c3944"
-                        flood-opacity="0.5" />
-                </filter>
-            </defs>
-
-            <path id="wavePath" d="M0,120 Q360,70 720,120 T1440,120 L1440,200 L0,200 Z" fill="url(#waveGradient)"
-                filter="url(#shadow)" opacity="0.95">
-                <animate attributeName="d" dur="6s" repeatCount="indefinite"
-                    values="
-                M0,120 Q360,70 720,120 T1440,120 L1440,200 L0,200 Z;
-                M0,125 Q360,80 720,125 T1440,125 L1440,200 L0,200 Z;
-                M0,120 Q360,70 720,120 T1440,120 L1440,200 L0,200 Z" />
-            </path>
-        </svg>
-
-        <style>
-            .hero-area {
-                background: linear-gradient(135deg, #2f5c69, #3c6f7d, #2f5c69);
-                min-height: auto;
-                position: relative;
-                display: flex;
-                align-items: center;
-                overflow: hidden;
-                padding: 0;
-                margin-top: 40px
-            }
-
-            .hero-img {
-                max-width: 80%;
-                z-index: 2;
-                position: relative;
-                animation: floatMove 4s ease-in-out infinite;
-            }
-
-            @keyframes floatMove {
-                0% {
-                    transform: rotate(0deg) translateX(0);
-                }
-
-                25% {
-                    transform: rotate(1.5deg) translateX(8px);
-                }
-
-                50% {
-                    transform: rotate(0deg) translateX(0);
-                }
-
-                75% {
-                    transform: rotate(-1.5deg) translateX(-8px);
-                }
-
-                100% {
-                    transform: rotate(0deg) translateX(0);
-                }
-            }
-
-            .hero-wave {
-                z-index: 1;
-                bottom: 0;
-            }
-
-            .hero-area .container {
-                position: relative;
-                z-index: 2;
-            }
-
-            @media (max-width: 768px) {
-                .hero-area {
-                    padding: 0 !important;
-                    text-align: center;
-                    margin-top: 0px
-                }
-
-                .hero-img {
-                    width: 80%;
-                    margin: 0 auto;
-                }
-
-                .col-lg-6 {
-                    padding: 0 !important;
-                }
-
-                .hero-area .container {
-                    padding: 0 !important;
-                }
-
-                .hero-area h1 {
-                    font-size: 1.6rem;
-                }
-
-                .hero-area p {
-                    font-size: 1rem;
-                    margin-bottom: 1rem;
-                }
-            }
-        </style>
-    </section>
-
-
-
-    <section class="categories-section py-5 text-center">
-        <div class="container">
-            <div class="text-center mb-5">
-                <h2 class="fw-bold text-black">{{ __('messages.categories_title') }}</h2>
-                <p class="text-light-50">{{ __('messages.categories_subtitle') }}</p>
-            </div>
-
-            <div class="row justify-content-center">
-                @forelse($categories as $category)
-                    <div class="col-6 col-md-6 col-lg-3 mb-4 fade-card">
-                        <a href="{{ $category->hasChildren() ? route('categories.subcategories', $category->slug) : route('categories.show', $category->slug) }}"
-                            class="card-link">
-                            <div class="card category-card h-100">
-                                <div class="category-image-container">
-                                    <img src="{{ $category->image_url }}" class="category-image"
-                                        alt="{{ $category->name }}"
-                                        onerror="this.onerror=null; this.src='{{ asset('images/default-service.svg') }}';">
-                                    <div class="category-overlay">
-                                        <h1 class="category-title">
-                                            {{ app()->getLocale() == 'ar' ? $category->name : $category->name_en }}
-                                        </h1>
-                                    </div>
-                                </div>
-                            </div>
-                        </a>
-                    </div>
-                @empty
-                    <div class="col-12 text-center">
-                        <p class="text-muted">لا توجد أقسام متاحة حالياً</p>
-                    </div>
-                @endforelse
+            <div class="eh-hero-visual">
+                <img src="{{ asset(\App\Models\SystemSetting::get('site_logo', 'home.png')) }}"
+                     alt="{{ \App\Models\SystemSetting::get('site_name_ar', 'إنداك') }}"
+                     onerror="this.onerror=null;this.src='{{ asset('home.png') }}';">
             </div>
         </div>
+    </div>
+</section>
 
-        <style>
-            .categories-section {
-                background: linear-gradient(135deg, #f1f7ff, #e6eefc, #f1f7ff);
-                color: #1b3c72;
-                position: relative;
-                overflow: hidden;
-            }
+{{-- Categories --}}
+<section class="eh-cats">
+    <div class="container">
+        <div class="eh-section-head eh-anim">
+            <div class="eh-section-tag"><i class="fas fa-layer-group"></i> الأقسام</div>
+            <h2 class="eh-section-title">{{ __('messages.categories_title') }}</h2>
+            <p class="eh-section-desc">{{ __('messages.categories_subtitle') }}</p>
+        </div>
 
-            .fade-card {
-                opacity: 0;
-                transform: translateY(30px);
-                animation: fadeUp 0.8s ease forwards;
-            }
-
-            .fade-card:nth-child(odd) {
-                transform: translateX(-50px);
-            }
-
-            .fade-card:nth-child(even) {
-                transform: translateX(50px);
-            }
-
-            @keyframes fadeUp {
-                0% {
-                    opacity: 0;
-                    transform: translateY(30px);
-                }
-
-                100% {
-                    opacity: 1;
-                    transform: translateY(0);
-                }
-            }
-
-            .card-link {
-                text-decoration: none;
-                color: inherit;
-                display: block;
-            }
-
-            .category-card {
-                position: relative;
-                background: rgba(255, 255, 255, 0.7);
-                border-radius: 20px;
-                box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
-                transition: all 0.4s ease;
-                border: none;
-                text-align: center;
-                overflow: hidden;
-                padding-bottom: 15px;
-            }
-
-            .category-card::before {
-                content: "";
-                position: absolute;
-                top: 0;
-                right: 0;
-                width: 100px;
-                height: 100px;
-                border-top: 3px solid #004d40;
-                border-right: 3px solid #004d40;
-                border-top-right-radius: 20px;
-                transition: all 0.4s ease;
-            }
-
-            .category-card::after {
-                content: "";
-                position: absolute;
-                bottom: 0;
-                left: 0;
-                width: 100px;
-                height: 100px;
-                border-bottom: 3px solid #004d40;
-                border-left: 3px solid #004d40;
-                border-bottom-left-radius: 20px;
-                transition: all 0.4s ease;
-            }
-
-            .category-card:hover {
-                transform: scale(1.05);
-                box-shadow: 0 15px 25px rgba(0, 0, 0, 0.2);
-            }
-
-            .category-card:hover::before,
-            .category-card:hover::after {
-                width: 100%;
-                height: 100%;
-                border-radius: 20px;
-            }
-
-            .category-image-container {
-                position: relative;
-                height: 200px;
-                overflow: hidden;
-                border-radius: 20px 20px 0 0;
-            }
-
-            .category-image {
-                width: 100%;
-                height: 100%;
-                object-fit: cover;
-                transition: transform 0.4s ease;
-            }
-
-            .category-card:hover .category-image {
-                transform: scale(1.1);
-            }
-
-            .category-overlay {
-                position: absolute;
-                inset: 0;
-                background: rgba(0, 0, 0, 0.3);
-                display: flex;
-                justify-content: center;
-                align-items: center;
-                border-radius: 20px;
-                transition: background 0.3s ease;
-            }
-
-            .category-card:hover .category-overlay {
-                background: rgba(0, 0, 0, 0.45);
-            }
-
-            .category-title {
-                font-size: 1.5rem;
-                font-weight: bold;
-                color: #fff;
-                text-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
-                margin: 0;
-            }
-
-            @media (min-width: 1200px) {
-                .col-lg-3 {
-                    flex: 0 0 25%;
-                    max-width: 25%;
-                }
-            }
-
-            @media (max-width: 768px) {
-                .category-image-container {
-                    height: 150px;
-                }
-
-                .category-title {
-                    font-size: 1rem;
-                }
-            }
-
-            @media (max-width: 576px) {
-                .col-6 {
-                    flex: 0 0 50%;
-                    max-width: 50%;
-                }
-
-                .category-image-container {
-                    height: 120px;
-                }
-
-                .category-title {
-                    font-size: 0.9rem;
-                }
-            }
-        </style>
-    </section>
-
-    <!-- Latest Services Section -->
-
-
-    <!-- Features Section -->
-    <!-- <section class="features-section py-5">
-                    <div class="container">
-                        <div class="row">
-                            <div class="col-md-4 text-center mb-4">
-                                <div class="icon-box mb-3">
-                                    <i class="fas fa-shield-alt"></i>
-                                </div>
-                                <h4>خدمات آمنة</h4>
-                                <p>جميع الخدمات مضمونة وآمنة 100%</p>
-                            </div>
-                            <div class="col-md-4 text-center mb-4">
-                                <div class="icon-box mb-3">
-                                    <i class="fas fa-clock"></i>
-                                </div>
-                                <h4>خدمة سريعة</h4>
-                                <p>احصل على الخدمة في أسرع وقت ممكن</p>
-                            </div>
-                            <div class="col-md-4 text-center mb-4">
-                                <div class="icon-box mb-3">
-                                    <i class="fas fa-star"></i>
-                                </div>
-                                <h4>جودة عالية</h4>
-                                <p>نختار لك أفضل مزودي الخدمات</p>
-                            </div>
-                        </div>
+        <div class="eh-cat-grid">
+            @forelse($categories as $category)
+                <a href="{{ $category->hasChildren() ? route('categories.subcategories', $category->slug) : route('categories.show', $category->slug) }}"
+                   class="eh-cat-card eh-anim">
+                    <img src="{{ $category->image_url }}" alt="{{ $category->name }}" class="eh-cat-img"
+                         onerror="this.onerror=null;this.src='{{ asset('images/default-service.svg') }}';">
+                    <div class="eh-cat-overlay">
+                        <h3 class="eh-cat-name">{{ app()->getLocale() == 'ar' ? $category->name : $category->name_en }}</h3>
                     </div>
-                </section> -->
+                    <span class="eh-cat-arrow"><i class="fas fa-arrow-left"></i></span>
+                </a>
+            @empty
+                <div style="grid-column:1/-1;text-align:center;padding:40px;color:var(--e-gray-400);">
+                    <i class="fas fa-layer-group" style="font-size:2rem;margin-bottom:10px;display:block;"></i>
+                    لا توجد أقسام متاحة حالياً
+                </div>
+            @endforelse
+        </div>
+    </div>
+</section>
 
-    <!-- <style>
-                    .features-section {
-                        background: linear-gradient(135deg, #e6eefe, #f1f7ee);
-                        color: #2f5c69;
-                        overflow: hidden;
-                    }
+{{-- Features --}}
+<section class="eh-features">
+    <div class="container">
+        <div class="eh-section-head eh-anim">
+            <div class="eh-section-tag"><i class="fas fa-sparkles"></i> لماذا إنداك؟</div>
+            <h2 class="eh-section-title">نوفر لك تجربة سلسة وآمنة</h2>
+        </div>
 
-                    .features-section h4 {
-                        color: #2f5c69;
-                        font-weight: 600;
-                        margin-top: 15px;
-                    }
+        <div class="eh-feat-grid">
+            <div class="eh-feat-card eh-anim">
+                <div class="eh-feat-icon i1"><i class="fas fa-shield-alt"></i></div>
+                <div class="eh-feat-title">خدمات موثوقة</div>
+                <div class="eh-feat-desc">جميع مزودي الخدمات يتم التحقق منهم لضمان جودة العمل</div>
+            </div>
+            <div class="eh-feat-card eh-anim">
+                <div class="eh-feat-icon i2"><i class="fas fa-bolt"></i></div>
+                <div class="eh-feat-title">استجابة سريعة</div>
+                <div class="eh-feat-desc">احصل على عروض من مزودي الخدمات في دقائق معدودة</div>
+            </div>
+            <div class="eh-feat-card eh-anim">
+                <div class="eh-feat-icon i3"><i class="fas fa-comments"></i></div>
+                <div class="eh-feat-title">تواصل مباشر</div>
+                <div class="eh-feat-desc">تواصل مع مزود الخدمة مباشرة عبر نظام الرسائل المدمج</div>
+            </div>
+            <div class="eh-feat-card eh-anim">
+                <div class="eh-feat-icon i4"><i class="fas fa-star"></i></div>
+                <div class="eh-feat-title">تقييمات حقيقية</div>
+                <div class="eh-feat-desc">اطلع على تقييمات العملاء السابقين قبل اختيار مزود الخدمة</div>
+            </div>
+        </div>
+    </div>
+</section>
 
-                    .features-section p {
-                        color: #4b6e79;
-                        font-size: 0.95rem;
-                    }
+{{-- CTA --}}
+<section class="eh-cta">
+    <div class="container">
+        <div class="eh-cta-inner eh-anim">
+            <h2 class="eh-cta-title">جاهز تبدأ؟</h2>
+            <p class="eh-cta-desc">سواء كنت تبحث عن خدمة أو تريد تقديم خدماتك، إنداك هو المكان المناسب لك.</p>
+            <div class="eh-btns" style="justify-content:center;">
+                @guest
+                    <a href="{{ route('register') }}" class="eh-btn eh-btn-accent">
+                        <i class="fas fa-user-plus"></i> سجّل الآن مجاناً
+                    </a>
+                @else
+                    <a href="{{ route('categories.index') }}" class="eh-btn eh-btn-accent">
+                        <i class="fas fa-rocket"></i> ابدأ الآن
+                    </a>
+                @endguest
+                <a href="{{ route('contact') }}" class="eh-btn eh-btn-outline">
+                    <i class="fas fa-envelope"></i> تواصل معنا
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
 
-                    .icon-box {
-                        width: 100px;
-                        height: 100px;
-                        margin: 0 auto;
-                        background: rgba(47, 92, 105, 0.1);
-                        border-radius: 50%;
-                        display: flex;
-                        justify-content: center;
-                        align-items: center;
-                        transition: all 0.4s ease;
-                        animation: floatIcon 3s ease-in-out infinite;
-                    }
-
-                    .icon-box i {
-                        font-size: 2.5rem;
-                        color: #2f5c69;
-                        transition: all 0.4s ease;
-                    }
-
-                    .icon-box:hover {
-                        background: rgba(47, 92, 105, 0.2);
-                        transform: translateY(-8px);
-                    }
-
-                    .icon-box:hover i {
-                        color: #f3a446;
-                        transform: scale(1.1);
-                    }
-
-                    @keyframes floatIcon {
-
-                        0%,
-                        100% {
-                            transform: translateY(0);
-                        }
-
-                        50% {
-                            transform: translateY(-10px);
-                        }
-                    }
-                </style> -->
-
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach((entry, i) => {
+            if (entry.isIntersecting) {
+                setTimeout(() => entry.target.classList.add('visible'), i * 60);
+                observer.unobserve(entry.target);
+            }
+        });
+    }, { threshold: 0.15 });
+    document.querySelectorAll('.eh-anim').forEach(el => observer.observe(el));
+});
+</script>
 @endsection

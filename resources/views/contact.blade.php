@@ -221,9 +221,9 @@
 
     /* === Color & Style Variables (from Navbar) === */
     :root {
-        --bg-dark: #2f5c69;
+        --bg-dark: var(--e-primary);
         --bg-dark-rgb: 47, 92, 105;
-        --accent: #f3a446;
+        --accent: var(--e-accent);
         --accent-hover: #ffb861;
         --page-bg: #f8f9fa;
         --card-bg: #ffffff;

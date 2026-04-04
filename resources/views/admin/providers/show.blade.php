@@ -24,8 +24,7 @@
                 <div class="card-body">
                     <div class="row">
                         <div class="col-md-4 text-center mb-3">
-                            <img src="https://ui-avatars.com/api/?name={{ $provider->name }}&background=667eea&color=fff"
-                                 alt="Avatar" class="rounded-circle" width="120" height="120">
+                            @include('partials.user-avatar', ['user' => $provider, 'size' => 120])
                             <h4 class="mt-3 mb-1">{{ $provider->name }}</h4>
                             <p class="text-muted mb-2">{{ $provider->email }}</p>
 

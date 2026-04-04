@@ -47,7 +47,7 @@
     <div class="modal fade" id="termsModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-lg modal-dialog-centered">
             <div class="modal-content border-0 shadow-lg">
-                <div class="modal-header" style="background: linear-gradient(135deg, #2f5c69, #3c7d8b); color: #fff;">
+                <div class="modal-header" style="background: linear-gradient(135deg, var(--e-primary), var(--e-primary-light)); color: #fff;">
                     <h5 class="modal-title">{{ __('messages.terms_title') }}</h5>
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
                         aria-label="Close"></button>
@@ -87,7 +87,7 @@
                 </div>
                 <div class="modal-footer border-0 d-flex justify-content-center" style="background: #f9fbfc;">
                     <button type="button" class="btn text-white px-4"
-                        style="background: linear-gradient(135deg, #2f5c69, #3c7d8b);"
+                        style="background: linear-gradient(135deg, var(--e-primary), var(--e-primary-light));"
                         data-bs-dismiss="modal">{{ __('messages.terms_modal_close') }}</button>
                 </div>
             </div>

@@ -202,12 +202,15 @@ class Message extends Model
     /**
      * استعادة الرسالة المحذوفة
      */
-    public function restore(): void
+    public function restoreMessage(): void
     {
         $this->update([
             'is_deleted' => false,
-            'deleted_at' => null
         ]);
+
+        if ($this->trashed()) {
+            parent::restore();
+        }
     }
 
     // دوال التحقق من نوع الرسالة

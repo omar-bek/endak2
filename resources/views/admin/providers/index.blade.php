@@ -65,8 +65,7 @@
                         <tr>
                             <td>{{ $provider->id }}</td>
                             <td>
-                                <img src="https://ui-avatars.com/api/?name={{ $provider->name }}&background=667eea&color=fff"
-                                     alt="{{ $provider->name }}" class="rounded-circle" width="40" height="40">
+                                @include('partials.user-avatar', ['user' => $provider, 'size' => 40])
                             </td>
                             <td>
                                 <div class="fw-bold">{{ $provider->name }}</div>

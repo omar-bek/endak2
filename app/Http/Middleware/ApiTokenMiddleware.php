@@ -31,7 +31,6 @@ class ApiTokenMiddleware
             \Illuminate\Support\Facades\Log::warning('API Token invalid', [
                 'path' => $request->path(),
                 'method' => $request->method(),
-                'token_preview' => substr($token, 0, 10) . '...'
             ]);
             return response()->json([
                 'success' => false,
@@ -58,7 +57,7 @@ class ApiTokenMiddleware
             return substr($authorization, 7);
         }
 
-        return $request->query('api_token') ?? $request->input('api_token');
+        return null;
     }
 }
 

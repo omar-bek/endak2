@@ -226,7 +226,7 @@
                 left: 0;
                 right: 0;
                 background: rgba(47, 92, 105, 0.8);
-                color: #f3a446;
+                color: var(--e-accent);
                 padding: 10px;
             }
 
@@ -402,23 +402,23 @@
         }
 
         .btn-primary {
-            background-color: #2f5c69;
+            background-color: var(--e-primary);
             border: none;
             transition: all 0.3s ease;
         }
 
         .btn-primary:hover {
-            background-color: #f3a446;
-            color: #2f5c69;
+            background-color: var(--e-accent);
+            color: var(--e-primary);
         }
 
         .btn-outline-primary {
-            border-color: #2f5c69;
-            color: #2f5c69;
+            border-color: var(--e-primary);
+            color: var(--e-primary);
         }
 
         .btn-outline-primary:hover {
-            background-color: #2f5c69;
+            background-color: var(--e-primary);
             color: #fff;
         }
 
@@ -445,20 +445,20 @@
 
         /* ======= الألوان والباجز ======= */
         .badge.bg-primary {
-            background-color: #2f5c69 !important;
+            background-color: var(--e-primary) !important;
         }
 
         .badge.bg-secondary {
-            background-color: #f3a446 !important;
-            color: #2f5c69 !important;
+            background-color: var(--e-accent) !important;
+            color: var(--e-primary) !important;
         }
 
         .text-primary {
-            color: #2f5c69 !important;
+            color: var(--e-primary) !important;
         }
 
         .text-success {
-            color: #f3a446 !important;
+            color: var(--e-accent) !important;
         }
 
         /* ======= ريسبونسيف ======= */
@@ -476,7 +476,7 @@
 
     <style>
         .category-header-section {
-            background: linear-gradient(120deg, #2f5c69, #3b7d8a);
+            background: linear-gradient(120deg, var(--e-primary), var(--e-primary-light));
             color: #fff;
             border-radius: 0 0 25px 25px;
             padding-top: 3rem;
@@ -490,7 +490,7 @@
         .category-main-image {
             max-height: 200px;
             object-fit: cover;
-            border: 2px solid #f3a446;
+            border: 2px solid var(--e-accent);
             border-radius: 15px;
             transition: transform 0.4s ease;
         }
@@ -500,7 +500,7 @@
         }
 
         .section-title {
-            color: #2f5c69;
+            color: var(--e-primary);
             font-weight: 700;
         }
 
@@ -559,7 +559,7 @@
 
         .info-box {
             background: rgba(255, 255, 255, 0.15);
-            border: 1px solid #f3a446;
+            border: 1px solid var(--e-accent);
             color: #fff;
         }
 

@@ -104,7 +104,7 @@ class AuthController extends Controller
                 'name' => 'required|string|max:255',
                 'email' => 'required|string|email|max:255|unique:users',
                 'phone' => 'required|string|max:20|unique:users',
-                'password' => 'required|string',
+                'password' => 'required|string|min:8',
                 'user_type' => 'required|in:customer,provider',
                 'terms' => 'required|accepted',
             ]);
@@ -119,23 +119,29 @@ class AuthController extends Controller
                 'terms_accepted_at' => now(),
             ]);
 
-            // Send email verification notification (wrap in try-catch to prevent registration failure if email fails)
+            // Login user temporarily to show verification notice
+            Auth::login($user);
+
+            // Send email verification notification directly (not queued)
+            $emailSent = false;
             try {
-                event(new Registered($user));
+                $user->sendEmailVerificationNotification();
+                $emailSent = true;
             } catch (Exception $emailException) {
-                // Log email error but don't fail registration
-                Log::warning('Email verification failed during registration', [
+                Log::error('Email verification failed during registration', [
                     'user_id' => $user->id,
                     'error' => $emailException->getMessage()
                 ]);
             }
 
-            // Login user temporarily to show verification notice
-            Auth::login($user);
+            Log::info('User registered', ['user_id' => $user->id, 'user_type' => $user->user_type, 'email_sent' => $emailSent]);
 
-            Log::info('User registered', ['user_id' => $user->id, 'user_type' => $user->user_type]);
+            $message = 'تم إنشاء الحساب بنجاح! يرجى التحقق من الإيميل لإكمال التسجيل.';
+            if (!$emailSent) {
+                $message = 'تم إنشاء الحساب بنجاح! لكن حدث خطأ في إرسال رابط التحقق. يرجى الضغط على "إعادة إرسال" في الصفحة التالية.';
+            }
 
-            return redirect()->route('verification.notice')->with('success', 'تم إنشاء الحساب بنجاح! يرجى التحقق من الإيميل لإكمال التسجيل.');
+            return redirect()->route('verification.notice')->with($emailSent ? 'success' : 'warning', $message);
         } catch (\Illuminate\Validation\ValidationException $e) {
             return back()->withErrors($e->errors())->withInput();
         } catch (Exception $e) {
@@ -359,7 +365,7 @@ class AuthController extends Controller
             if ($request->expectsJson() || $request->ajax()) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'حدث خطأ أثناء حفظ البيانات: ' . $e->getMessage()
+                    'message' => 'حدث خطأ أثناء حفظ البيانات. يرجى المحاولة مرة أخرى.'
                 ], 500);
             }
 
@@ -369,6 +375,27 @@ class AuthController extends Controller
         }
     }
 
+
+    /**
+     * عرض صفحة تعديل الملف الشخصي
+     */
+    public function editProfile()
+    {
+        try {
+            $user = Auth::user();
+
+            if (!$user) {
+                return redirect()->route('login')->with('error', 'يجب تسجيل الدخول');
+            }
+
+            return view('profile-edit', compact('user'));
+        } catch (Exception $e) {
+            Log::error('Error in AuthController@editProfile: ' . $e->getMessage(), [
+                'exception' => $e
+            ]);
+            return redirect()->route('profile')->with('error', 'حدث خطأ أثناء تحميل صفحة التعديل');
+        }
+    }
 
     /**
      * تحديث الملف الشخصي
@@ -384,13 +411,12 @@ class AuthController extends Controller
 
             $validated = $request->validate([
                 'name' => 'required|string|max:255',
-                'email' => 'required|email|unique:users,email,' . $user->id,
                 'phone' => 'nullable|string|max:20|unique:users,phone,' . $user->id,
                 'bio' => 'nullable|string|max:1000',
                 'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             ]);
 
-            $data = $request->only(['name', 'email', 'phone', 'bio']);
+            $data = $request->only(['name', 'phone', 'bio']);
 
             // رفع الصورة الشخصية
             if ($request->hasFile('image')) {
@@ -406,7 +432,7 @@ class AuthController extends Controller
 
             Log::info('User profile updated', ['user_id' => $user->id]);
 
-            return back()->with('success', 'تم تحديث الملف الشخصي بنجاح');
+            return redirect()->route('profile')->with('success', 'تم تحديث الملف الشخصي بنجاح');
         } catch (\Illuminate\Validation\ValidationException $e) {
             return back()->withErrors($e->errors())->withInput();
         } catch (Exception $e) {

@@ -127,9 +127,7 @@
                                 <div class="card-body">
                                     <div class="row align-items-center mb-3">
                                         <div class="col-md-2 text-center">
-                                            <img src="{{ $customer->avatar_url }}" alt="{{ $customer->name }}"
-                                                class="rounded-circle"
-                                                style="width: 80px; height: 80px; object-fit: cover;">
+                                            @include('partials.user-avatar', ['user' => $customer, 'size' => 80])
                                         </div>
                                         <div class="col-md-7">
                                             <h5 class="fw-bold text-dark mb-1">{{ $customer->name }}</h5>
@@ -171,9 +169,7 @@
                                 <div class="card-body">
                                     <div class="row align-items-center mb-3">
                                         <div class="col-md-2 text-center">
-                                            <img src="{{ $provider->avatar_url }}" alt="{{ $provider->name }}"
-                                                class="rounded-circle"
-                                                style="width: 80px; height: 80px; object-fit: cover;">
+                                            @include('partials.user-avatar', ['user' => $provider, 'size' => 80])
                                         </div>
                                         <div class="col-md-7">
                                             <h5 class="fw-bold text-dark mb-1">{{ $provider->name }}</h5>
@@ -407,11 +403,11 @@
 
         .offer-card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 10px 40px rgba(47, 92, 105, 0.15);
+            box-shadow: 0 10px 40px var(--e-primary-200);
         }
 
         .offer-header {
-            background: linear-gradient(135deg, #2f5c69, #3c7d8b);
+            background: linear-gradient(135deg, var(--e-primary), var(--e-primary-light));
         }
 
         .card-header {
@@ -433,17 +429,17 @@
         }
 
         .btn-outline-primary {
-            border-color: #3c7d8b;
-            color: #3c7d8b;
+            border-color: var(--e-primary-light);
+            color: var(--e-primary-light);
         }
 
         .btn-outline-primary:hover {
-            background-color: #3c7d8b;
+            background-color: var(--e-primary-light);
             color: #fff;
         }
 
         .text-primary {
-            color: #2f5c69 !important;
+            color: var(--e-primary) !important;
         }
 
         .text-success {

@@ -105,10 +105,14 @@ class MessageController extends Controller
                 ->orderBy('created_at', 'asc')
                 ->get();
 
-            // تحديد الرسائل كمقروءة
-            $messages->where('receiver_id', $user->id)->each(function ($message) {
-                $message->markAsRead();
-            });
+            // تحديد الرسائل كمقروءة (bulk update)
+            Message::where('conversation_id', $conversationId)
+                ->where('receiver_id', $user->id)
+                ->where('is_read', false)
+                ->update([
+                    'is_read' => true,
+                    'read_at' => now(),
+                ]);
 
             // الحصول على جميع المحادثات للمستخدم (للعرض في الشريط الجانبي)
             $conversations = Message::where(function ($query) use ($user) {
@@ -411,14 +415,25 @@ class MessageController extends Controller
         $user = Auth::user();
         $service = Service::with('user')->findOrFail($serviceId);
 
-        // التحقق من أن المستخدم إما صاحب الخدمة أو طالبها
-        if ($service->user_id !== $user->id && $service->requested_by !== $user->id) {
+        // التحقق من أن المستخدم صاحب الخدمة أو لديه عرض مقبول عليها
+        $acceptedOffer = ServiceOffer::where('service_id', $service->id)
+            ->where('status', 'accepted')
+            ->first();
+
+        $isServiceOwner = $service->user_id === $user->id;
+        $isAcceptedProvider = $acceptedOffer && $acceptedOffer->provider_id === $user->id;
+
+        if (!$isServiceOwner && !$isAcceptedProvider) {
             return redirect()->back()->with('error', 'لا يمكنك الوصول لهذه المحادثة');
         }
 
-        $otherUser = $service->user_id === $user->id ?
-            User::find($service->requested_by) :
-            $service->user;
+        $otherUser = $isServiceOwner
+            ? ($acceptedOffer ? User::find($acceptedOffer->provider_id) : null)
+            : $service->user;
+
+        if (!$otherUser) {
+            return redirect()->back()->with('error', 'لا يوجد طرف آخر في هذه المحادثة');
+        }
 
         return $this->show($otherUser->id);
     }

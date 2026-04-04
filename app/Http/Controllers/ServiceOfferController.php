@@ -7,6 +7,7 @@ use App\Models\ServiceOffer;
 use App\Models\Notification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Exception;
 
@@ -164,12 +165,15 @@ class ServiceOfferController extends Controller
                 return redirect()->back()->with('error', 'غير مصرح لك بقبول هذا العرض');
             }
 
-            $offer->markAsAccepted();
+            DB::transaction(function () use ($offer) {
+                $offer->markAsAccepted();
 
-            // رفض باقي العروض
-            ServiceOffer::where('service_id', $offer->service_id)
-                ->where('id', '!=', $offer->id)
-                ->update(['status' => 'rejected']);
+                // رفض باقي العروض
+                ServiceOffer::where('service_id', $offer->service_id)
+                    ->where('id', '!=', $offer->id)
+                    ->where('status', 'pending')
+                    ->update(['status' => 'rejected']);
+            });
 
             // إرسال إشعار لمزود الخدمة بقبول العرض
             Notification::createOfferAcceptedNotification($offer);
@@ -198,6 +202,11 @@ class ServiceOfferController extends Controller
             // التأكد من أن المستخدم صاحب الخدمة
             if (!Auth::check() || Auth::id() !== $offer->service->user_id) {
                 return redirect()->back()->with('error', 'غير مصرح لك برفض هذا العرض');
+            }
+
+            // التأكد من أن العرض في حالة تسمح بالرفض
+            if (in_array($offer->status, ['accepted', 'delivered', 'rejected'])) {
+                return redirect()->back()->with('error', 'لا يمكن رفض هذا العرض في حالته الحالية');
             }
 
             $offer->update(['status' => 'rejected']);
@@ -345,10 +354,10 @@ class ServiceOfferController extends Controller
                 return redirect()->route('services.index')->with('error', 'غير مصرح لك بتعديل هذا العرض');
             }
 
-            // التحقق من أن العرض لم يتم قبوله أو تسليمه
-            if (in_array($offer->status, ['accepted', 'delivered'])) {
+            // التحقق من أن العرض في حالة تسمح بالتعديل (pending فقط)
+            if ($offer->status !== 'pending') {
                 return redirect()->route('service-offers.my-offers')
-                    ->with('error', 'لا يمكن تعديل العرض بعد قبوله أو تسليمه');
+                    ->with('error', 'لا يمكن تعديل العرض إلا وهو في حالة انتظار');
             }
 
             return view('service-offers.edit', compact('offer'));
@@ -372,10 +381,10 @@ class ServiceOfferController extends Controller
                 return redirect()->route('services.index')->with('error', 'غير مصرح لك بتعديل هذا العرض');
             }
 
-            // التحقق من أن العرض لم يتم قبوله أو تسليمه
-            if (in_array($offer->status, ['accepted', 'delivered'])) {
+            // التحقق من أن العرض في حالة تسمح بالتعديل (pending فقط)
+            if ($offer->status !== 'pending') {
                 return redirect()->route('service-offers.my-offers')
-                    ->with('error', 'لا يمكن تعديل العرض بعد قبوله أو تسليمه');
+                    ->with('error', 'لا يمكن تعديل العرض إلا وهو في حالة انتظار');
             }
 
             $validated = $request->validate([
@@ -446,8 +455,8 @@ class ServiceOfferController extends Controller
     public function markAsDelivered(ServiceOffer $offer)
     {
         try {
-            // التأكد من أن المستخدم هو صاحب الخدمة
-            if (Auth::id() !== $offer->service->user_id) {
+            // التأكد من أن المستخدم هو صاحب الخدمة أو مزود الخدمة (صاحب العرض)
+            if (Auth::id() !== $offer->service->user_id && Auth::id() !== $offer->provider_id) {
                 return back()->with('error', 'غير مصرح لك بتسليم هذه الخدمة');
             }
 
@@ -459,13 +468,7 @@ class ServiceOfferController extends Controller
             $offer->markAsDelivered();
 
             // إرسال إشعار لمزود الخدمة
-            Notification::create([
-                'user_id' => $offer->provider_id,
-                'title' => 'تم تسليم الخدمة',
-                'message' => 'تم تسليم الخدمة: ' . $offer->service->title,
-                'type' => 'service_delivered',
-                'data' => json_encode(['offer_id' => $offer->id, 'service_id' => $offer->service_id])
-            ]);
+            Notification::createServiceDeliveredNotification($offer);
 
             Log::info('Service marked as delivered', [
                 'offer_id' => $offer->id,
@@ -506,13 +509,7 @@ class ServiceOfferController extends Controller
             $offer->addReview($validated['rating'], $validated['review'] ?? null);
 
             // إرسال إشعار لمزود الخدمة
-            Notification::create([
-                'user_id' => $offer->provider_id,
-                'title' => 'تم تقييمك',
-                'message' => 'تم تقييمك على الخدمة: ' . $offer->service->title,
-                'type' => 'provider_reviewed',
-                'data' => json_encode(['offer_id' => $offer->id, 'service_id' => $offer->service_id])
-            ]);
+            Notification::createProviderReviewedNotification($offer);
 
             Log::info('Service offer reviewed', [
                 'offer_id' => $offer->id,

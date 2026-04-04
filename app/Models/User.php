@@ -21,7 +21,6 @@ class User extends Authenticatable implements MustVerifyEmail
         'name',
         'email',
         'password',
-        'is_admin',
         'user_type',
         'phone',
         'phone_verified_at',
@@ -194,10 +193,13 @@ class User extends Authenticatable implements MustVerifyEmail
     // الحصول على الصورة الشخصية
     public function getAvatarUrlAttribute()
     {
-        if ($this->avatar) {
-            return asset('storage/' . $this->avatar);
+        if ($this->image && file_exists(public_path('storage/' . $this->image))) {
+            return asset('storage/' . $this->image);
         }
-        return "https://ui-avatars.com/api/?name=" . urlencode($this->name) . "&background=667eea&color=fff";
+        if ($this->avatar) {
+            return $this->avatar;
+        }
+        return null;
     }
 
     // التحقق من كون المستخدم متصل

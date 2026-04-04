@@ -141,14 +141,9 @@ class Category extends Model
     public function getImageUrlAttribute()
     {
         if ($this->image) {
-            // التحقق من وجود الملف في التخزين
-            $filePath = 'public/' . $this->image;
-            if (Storage::exists($filePath)) {
-                return asset('storage/' . $this->image);
-            }
+            return asset('storage/' . $this->image);
         }
-        // استخدام صورة افتراضية أو placeholder
-        return asset('images/default-service.svg') ?: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgZmlsbD0iI2U1ZTdlYiIvPjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMTQiIGZpbGw9IiM5OTkiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGR5PSIuM2VtIj7Yp9mE2YXYp9ivINmE2YXYp9ivPC90ZXh0Pjwvc3ZnPg==';
+        return asset('images/default-service.svg');
     }
 
     // استخدام slug كـ route key

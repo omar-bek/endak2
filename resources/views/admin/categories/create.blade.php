@@ -168,7 +168,7 @@
             <h6 class="mb-0">معاينة الأيقونة</h6>
         </div>
         <div class="card-body text-center">
-            <div id="icon-preview" style="font-size: 3rem; color: #667eea;">
+            <div id="icon-preview" style="font-size: 3rem; color: var(--e-primary);">
                 <i class="fas fa-folder"></i>
             </div>
             <p class="text-muted mt-2">ستظهر الأيقونة المختارة هنا</p>

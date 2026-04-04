@@ -6,6 +6,7 @@ use App\Models\Notification;
 use App\Models\Service;
 use App\Models\ServiceOffer;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Exception;
 
@@ -103,7 +104,15 @@ class ServiceOfferController extends BaseApiController
                 return $this->error('لا يمكنك قبول هذا العرض. هذا العرض ليس لخدمتك', 403);
             }
 
-            $offer->markAsAccepted();
+            DB::transaction(function () use ($offer) {
+                $offer->markAsAccepted();
+
+                // رفض باقي العروض
+                ServiceOffer::where('service_id', $offer->service_id)
+                    ->where('id', '!=', $offer->id)
+                    ->where('status', 'pending')
+                    ->update(['status' => 'rejected']);
+            });
 
             // إرسال إشعار للمزود
             try {
@@ -141,6 +150,11 @@ class ServiceOfferController extends BaseApiController
                     'user_id' => $user->id,
                 ]);
                 return $this->error('لا يمكنك رفض هذا العرض. هذا العرض ليس لخدمتك', 403);
+            }
+
+            // التأكد من أن العرض في حالة تسمح بالرفض
+            if (in_array($offer->status, ['accepted', 'delivered', 'rejected'])) {
+                return $this->error('لا يمكن رفض هذا العرض في حالته الحالية', 422);
             }
 
             $offer->update([
@@ -184,14 +198,14 @@ class ServiceOfferController extends BaseApiController
                 'user_id' => $user->id,
             ]);
 
-            // التحقق من أن المستخدم هو صاحب الخدمة (service owner)
-            if ($serviceOwnerId !== $user->id) {
+            // التحقق من أن المستخدم هو صاحب الخدمة أو مزود الخدمة (صاحب العرض)
+            if ($serviceOwnerId !== $user->id && $offer->provider_id !== $user->id) {
                 Log::warning('Unauthorized deliver attempt', [
                     'offer_id' => $offer->id,
                     'service_owner_id' => $serviceOwnerId,
                     'user_id' => $user->id,
                 ]);
-                return $this->error('لا يمكنك تسليم هذا العرض. هذا العرض ليس لخدمتك', 403);
+                return $this->error('لا يمكنك تسليم هذا العرض. غير مصرح لك', 403);
             }
 
             // التحقق من إمكانية التسليم
@@ -200,6 +214,16 @@ class ServiceOfferController extends BaseApiController
             }
 
             $offer->markAsDelivered();
+
+            // إرسال إشعار لمزود الخدمة
+            try {
+                Notification::createServiceDeliveredNotification($offer);
+            } catch (\Exception $e) {
+                Log::error('API Failed to send delivery notification', [
+                    'offer_id' => $offer->id,
+                    'error' => $e->getMessage()
+                ]);
+            }
 
             Log::info('API Service offer delivered', [
                 'offer_id' => $offer->id,
@@ -229,6 +253,16 @@ class ServiceOfferController extends BaseApiController
             }
 
             $offer->addReview($data['rating'], $data['review'] ?? null);
+
+            // إرسال إشعار لمزود الخدمة
+            try {
+                Notification::createProviderReviewedNotification($offer);
+            } catch (\Exception $e) {
+                Log::error('API Failed to send review notification', [
+                    'offer_id' => $offer->id,
+                    'error' => $e->getMessage()
+                ]);
+            }
 
             Log::info('API Service offer reviewed', [
                 'offer_id' => $offer->id,

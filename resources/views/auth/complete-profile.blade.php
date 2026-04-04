@@ -66,70 +66,7 @@
                             </div>
 
                             <!-- Terms Modal -->
-                            <div class="modal fade" id="termsModal" tabindex="-1" aria-labelledby="termsModalLabel"
-                                aria-hidden="true">
-                                <div class="modal-dialog modal-dialog-centered modal-lg">
-                                    <div class="modal-content border-0 shadow-lg">
-                                        <div class="modal-header"
-                                            style="background: linear-gradient(135deg, #2f5c69, #3c7d8b); color: #fff;">
-                                            <h5 class="modal-title" id="termsModalLabel">الشروط والأحكام - موقع Endak</h5>
-                                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
-                                                aria-label="Close"></button>
-                                        </div>
-                                        <div class="modal-body p-4"
-                                            style="max-height: 70vh; overflow-y: auto; background-color: #f9fbfc;">
-                                            <h6 class="fw-bold mb-2 text-primary">مرحباً بك في Endak!</h6>
-                                            <p class="text-muted mb-4">باستخدامك لموقع Endak فإنك توافق على الشروط والأحكام التالية.
-                                                نرجو قراءتها بعناية قبل البدء في استخدام خدماتنا.</p>
-
-                                            <h6 class="fw-bold">1. قبول الشروط</h6>
-                                            <p class="text-muted">يعتبر دخولك أو استخدامك لموقع Endak بمثابة موافقة كاملة منك على
-                                                الالتزام بجميع الشروط والسياسات الخاصة بالموقع.</p>
-
-                                            <h6 class="fw-bold mt-4">2. استخدام الموقع</h6>
-                                            <p class="text-muted">يُسمح باستخدام الموقع فقط للأغراض القانونية والمشروعة، ويُمنع
-                                                استخدامه في أي أنشطة مخالفة للقانون أو تسبب ضررًا للآخرين.</p>
-
-                                            <h6 class="fw-bold mt-4">3. الحسابات والمسؤولية</h6>
-                                            <p class="text-muted">أنت مسؤول عن سرية بيانات تسجيل الدخول الخاصة بك، وعن جميع الأنشطة
-                                                التي تتم عبر حسابك. يحتفظ الموقع بحق إيقاف أي حساب يخالف القواعد.</p>
-
-                                            <h6 class="fw-bold mt-4">4. الخدمات والضمانات</h6>
-                                            <p class="text-muted">يُقدم موقع Endak خدماته بأعلى جودة ممكنة، ولكننا لا نضمن أن تكون
-                                                الخدمة خالية من الأخطاء أو الانقطاعات التقنية.</p>
-
-                                            <h6 class="fw-bold mt-4">5. سياسة الخصوصية</h6>
-                                            <p class="text-muted">نحترم خصوصيتك ونحافظ على بياناتك الشخصية. يتم استخدام المعلومات
-                                                فقط لتحسين تجربتك وتقديم خدمات أفضل.</p>
-
-                                            <h6 class="fw-bold mt-4">6. حقوق الملكية الفكرية</h6>
-                                            <p class="text-muted">جميع الحقوق محفوظة لموقع Endak. لا يجوز نسخ أو إعادة استخدام أي
-                                                محتوى دون إذن خطي مسبق من إدارة الموقع.</p>
-
-                                            <h6 class="fw-bold mt-4">7. التعديلات على الشروط</h6>
-                                            <p class="text-muted">يحتفظ الموقع بحق تعديل هذه الشروط في أي وقت. سيتم إخطار
-                                                المستخدمين بالتحديثات عبر الموقع أو البريد الإلكتروني.</p>
-
-                                            <h6 class="fw-bold mt-4">8. إخلاء المسؤولية</h6>
-                                            <p class="text-muted">Endak غير مسؤول عن أي خسائر أو أضرار مباشرة أو غير مباشرة ناتجة
-                                                عن استخدام خدمات الموقع.</p>
-
-                                            <h6 class="fw-bold mt-4">9. التواصل معنا</h6>
-                                            <p class="text-muted">لأي استفسارات أو شكاوى يمكنك التواصل معنا عبر البريد الإلكتروني
-                                                الرسمي للموقع.</p>
-
-                                            <p class="fw-semibold mt-4 text-center text-primary">باستخدامك للموقع، فإنك تقر بأنك
-                                                قرأت وفهمت ووافقت على هذه الشروط والأحكام.</p>
-                                        </div>
-                                        <div class="modal-footer border-0 d-flex justify-content-center"
-                                            style="background: #f9fbfc;">
-                                            <button type="button" class="btn text-white px-4"
-                                                style="background: linear-gradient(135deg, #2f5c69, #3c7d8b);"
-                                                data-bs-dismiss="modal">موافق</button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
+                            @include('partials.terms-modal')
 
                             <div class="d-grid gap-2">
                                 <button type="submit" class="btn btn-primary btn-lg">
@@ -197,7 +134,7 @@
     }
 
     .form-control:focus {
-        border-color: #2f5c69;
+        border-color: var(--e-primary);
         box-shadow: 0 0 5px rgba(47, 92, 105, 0.3);
         outline: none;
     }

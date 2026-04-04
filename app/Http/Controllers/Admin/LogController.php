@@ -40,6 +40,7 @@ class LogController extends Controller
      */
     public function show($filename)
     {
+        $filename = basename($filename);
         $logPath = storage_path('logs/' . $filename);
 
         if (!File::exists($logPath)) {
@@ -57,6 +58,7 @@ class LogController extends Controller
      */
     public function destroy($filename)
     {
+        $filename = basename($filename);
         $logPath = storage_path('logs/' . $filename);
 
         if (File::exists($logPath)) {

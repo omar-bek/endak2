@@ -126,8 +126,7 @@
                                 <tr>
                                     <td>
                                         <div class="d-flex align-items-center">
-                                            <img src="https://ui-avatars.com/api/?name={{ $offer->provider->name }}&background=667eea&color=fff"
-                                                 alt="Avatar" class="rounded-circle me-2" width="30" height="30">
+                                            @include('partials.user-avatar', ['user' => $offer->provider, 'size' => 30])
                                             <div>
                                                 <div class="fw-bold">{{ $offer->provider->name }}</div>
                                                 <small class="text-muted">{{ $offer->provider->email }}</small>
@@ -175,8 +174,7 @@
                 </div>
                 <div class="card-body">
                     <div class="text-center mb-3">
-                        <img src="https://ui-avatars.com/api/?name={{ $service->user->name }}&background=667eea&color=fff"
-                             alt="Avatar" class="rounded-circle" width="80" height="80">
+                        @include('partials.user-avatar', ['user' => $service->user, 'size' => 80])
                         <h5 class="mt-2 mb-1">{{ $service->user->name }}</h5>
                         <p class="text-muted mb-2">{{ $service->user->email }}</p>
                         <span class="badge bg-primary">{{ $service->user->role_name }}</span>

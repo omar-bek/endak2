@@ -16,6 +16,11 @@ class NotificationController extends Controller
     public function index()
     {
         try {
+            // تحديد جميع الإشعارات غير المقروءة كمقروءة تلقائياً عند دخول الصفحة
+            CustomNotification::where('user_id', Auth::id())
+                ->whereNull('read_at')
+                ->update(['read_at' => now()]);
+
             $notifications = CustomNotification::where('user_id', Auth::id())
                 ->orderBy('created_at', 'desc')
                 ->paginate(20);

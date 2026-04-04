@@ -41,7 +41,7 @@
 
             <!-- العروض -->
             <div class="card shadow-sm border-0 rounded-3">
-    <div class="card-header bg-gradient text-center" style="background: linear-gradient(90deg, #007d7b, #009688);">
+    <div class="card-header bg-gradient text-center" style="background: linear-gradient(90deg, var(--e-primary-dark), var(--e-primary));">
         <h5 class="mb-0"><i class="fas fa-handshake me-2 text-black"></i> العروض المقدمة ({{ $offers->count() }})</h5>
     </div>
 
@@ -53,7 +53,7 @@
                         <div class="row">
                             <div class="col-md-8">
                                 <div class="d-flex align-items-center mb-2">
-                                    <img src="{{ $offer->provider->avatar_url }}" alt="{{ $offer->provider->name }}" class="rounded-circle me-3 shadow-sm" width="50" height="50">
+                                    @include('partials.user-avatar', ['user' => $offer->provider, 'size' => 50, 'class' => 'me-3'])
                                     <div>
                                         <h6 class="mb-0 fw-bold text-teal">{{ $offer->provider->name }}</h6>
                                         <small class="text-muted"><i class="fas fa-clock me-1"></i>{{ $offer->created_at }}</small>
@@ -209,19 +209,19 @@
 
 @push('styles')
 <style>
-.text-teal { color: #009688 !important; }
-.bg-teal { background-color: #009688 !important; }
+.text-teal { color: var(--e-primary) !important; }
+.bg-teal { background-color: var(--e-primary) !important; }
 .btn-outline-teal {
-    border-color: #009688;
-    color: #009688;
+    border-color: var(--e-primary);
+    color: var(--e-primary);
 }
 .btn-outline-teal:hover {
-    background-color: #009688;
+    background-color: var(--e-primary);
     color: #fff;
 }
 .text-gold { color: #f7d354 !important; }
 .bg-gradient {
-    background: linear-gradient(90deg, #007d7b, #009688);
+    background: linear-gradient(90deg, var(--e-primary-dark), var(--e-primary));
 }
 
 </style>
@@ -354,19 +354,19 @@ document.addEventListener('DOMContentLoaded', function() {
 
 @push('styles')
 <style>
-.text-teal { color: #009688 !important; }
-.bg-teal { background-color: #009688 !important; }
-.btn-teal { background-color: #009688; color: #fff; }
-.btn-teal:hover { background-color: #007d7b; color: #fff; }
+.text-teal { color: var(--e-primary) !important; }
+.bg-teal { background-color: var(--e-primary) !important; }
+.btn-teal { background-color: var(--e-primary); color: #fff; }
+.btn-teal:hover { background-color: var(--e-primary-dark); color: #fff; }
 .text-gold { color: #d4af37 !important; }
 .bg-gold { background-color: #f7e08b !important; }
 
 .btn-outline-teal {
-    border-color: #009688;
-    color: #009688;
+    border-color: var(--e-primary);
+    color: var(--e-primary);
 }
 .btn-outline-teal:hover {
-    background-color: #009688;
+    background-color: var(--e-primary);
     color: #fff;
 }
 

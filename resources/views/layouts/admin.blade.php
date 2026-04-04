@@ -13,6 +13,8 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <!-- Endak Design System -->
+    <link rel="stylesheet" href="{{ asset('css/endak.css') }}">
 
     <style>
         * {
@@ -34,7 +36,7 @@
             right: 0;
             width: 280px;
             height: 100vh;
-            background: linear-gradient(135deg, #685C84 0%, #675B83 100%);
+            background: linear-gradient(135deg, var(--e-primary), var(--e-primary-dark));
             color: white;
             z-index: 1000;
             transition: all 0.3s ease;
@@ -62,7 +64,7 @@
 
         .sidebar-logo i {
             font-size: 1.5rem;
-            color: #3498db;
+            color: var(--e-primary-light, #3d7a8a);
         }
 
         .sidebar-logo h5 {
@@ -137,8 +139,8 @@
 
         .menu-item.active {
             background-color: rgba(52, 152, 219, 0.2);
-            color: #3498db;
-            border-right: 3px solid #3498db;
+            color: var(--e-primary-light, #3d7a8a);
+            border-right: 3px solid var(--e-primary-light, #3d7a8a);
         }
 
         .menu-item i {
@@ -200,7 +202,7 @@
             width: 40px;
             height: 40px;
             border-radius: 50%;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, var(--e-primary), var(--e-primary-light));
             display: flex;
             align-items: center;
             justify-content: center;

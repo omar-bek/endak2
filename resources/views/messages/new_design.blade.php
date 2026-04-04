@@ -108,9 +108,9 @@
     @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700&display=swap');
 
     :root {
-        --bg-dark: #2f5c69;
+        --bg-dark: var(--e-primary);
         --bg-dark-transparent: rgba(47, 92, 105, 0.9);
-        --accent: #f3a446;
+        --accent: var(--e-accent);
         --accent-hover: #ffb861;
         --text-light: #ffffff;
         --text-muted: #d1e0e4;

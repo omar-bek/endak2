@@ -80,6 +80,12 @@ class UserController extends Controller
     public function toggleRole(User $user)
     {
         $newRole = $user->user_type === 'admin' ? 'customer' : 'admin';
+
+        // حماية ضد حذف آخر admin
+        if ($newRole === 'customer' && User::where('user_type', 'admin')->count() <= 1) {
+            return back()->with('error', 'لا يمكن إزالة صلاحيات آخر مدير في النظام');
+        }
+
         $user->update(['user_type' => $newRole]);
 
         $role = $newRole === 'admin' ? 'مدير' : 'مستخدم عادي';

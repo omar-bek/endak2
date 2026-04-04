@@ -94,8 +94,7 @@
                             </td>
                             <td>
                                 <div class="d-flex align-items-center">
-                                    <img src="https://ui-avatars.com/api/?name={{ $service->user->name }}&background=667eea&color=fff"
-                                         alt="Avatar" class="rounded-circle me-2" width="30" height="30">
+                                    @include('partials.user-avatar', ['user' => $service->user, 'size' => 30])
                                     <div>
                                         <div class="fw-bold">{{ $service->user->name }}</div>
                                         <small class="text-muted">{{ $service->user->email }}</small>

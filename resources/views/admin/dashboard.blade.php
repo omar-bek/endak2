@@ -224,8 +224,7 @@
             <div class="card-body">
                 @forelse($recentUsers as $user)
                 <div class="d-flex align-items-center mb-3">
-                    <img src="https://ui-avatars.com/api/?name={{ $user->name }}&background=667eea&color=fff"
-                         alt="Avatar" class="rounded-circle me-3" width="40" height="40">
+                    @include('partials.user-avatar', ['user' => $user, 'size' => 40])
                     <div>
                         <h6 class="mb-0">{{ $user->name }}</h6>
                         <small class="text-muted">{{ $user->email }}</small>

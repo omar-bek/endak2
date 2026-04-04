@@ -103,7 +103,7 @@
 
         .side-panel {
             width: 45%;
-            background: linear-gradient(135deg, #2f5c69, #3c7d8b);
+            background: linear-gradient(135deg, var(--e-primary), var(--e-primary-light));
             color: #fff;
             display: flex;
             align-items: center;
@@ -121,8 +121,8 @@
         }
 
         .side-panel .btn:hover {
-            background: #f3a446;
-            border-color: #f3a446;
+            background: var(--e-accent);
+            border-color: var(--e-accent);
         }
 
         .form-section {
@@ -154,14 +154,14 @@
         }
 
         .form-control:focus {
-            border-color: #3c7d8b;
+            border-color: var(--e-primary-light);
             box-shadow: 0 0 6px rgba(47, 92, 105, 0.3);
             outline: none;
         }
 
         /* ========== زر تسجيل الدخول ========== */
         .btn-login {
-            background: linear-gradient(90deg, #2f5c69, #3c7d8b);
+            background: linear-gradient(90deg, var(--e-primary), var(--e-primary-light));
             border: none;
             border-radius: 30px;
             padding: 0.75rem;
@@ -172,7 +172,7 @@
 
         .btn-login:hover {
             transform: translateY(-3px);
-            background: #f3a446;
+            background: var(--e-accent);
         }
 
         /* Social Login Buttons */

@@ -101,7 +101,7 @@
             height: 100vh;
             display: flex;
             flex-direction: column;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, var(--e-primary) 0%, var(--e-primary-light) 100%);
         }
 
         .chat-layout {
@@ -112,7 +112,7 @@
 
         .conversations-sidebar {
             width: 300px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, var(--e-primary) 0%, var(--e-primary-light) 100%);
             border-right: 1px solid rgba(255, 255, 255, 0.1);
             display: flex;
             flex-direction: column;
@@ -215,7 +215,7 @@
             width: 12px;
             height: 12px;
             border-radius: 50%;
-            border: 2px solid #667eea;
+            border: 2px solid var(--e-primary);
             background-color: #28a745;
         }
 
@@ -277,7 +277,7 @@
         }
 
         .chat-header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, var(--e-primary) 0%, var(--e-primary-light) 100%);
             color: white;
             padding: 15px 20px;
             border-bottom: 1px solid rgba(255, 255, 255, 0.1);
@@ -315,7 +315,7 @@
 
         .welcome-icon {
             font-size: 64px;
-            color: #667eea;
+            color: var(--e-primary);
             margin-bottom: 20px;
         }
 
@@ -438,7 +438,7 @@
                 position: sticky;
                 top: 0;
                 z-index: 10;
-                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                background: linear-gradient(135deg, var(--e-primary) 0%, var(--e-primary-light) 100%);
             }
 
             .sidebar-header h5 {
