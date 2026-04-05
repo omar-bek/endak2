@@ -297,9 +297,9 @@
                         <span class="footer-nav-text">{{ __('messages.my_offers') }}</span>
                     </a>
                 @else
-                    <a href="{{ route('categories.index') }}" class="footer-nav-item footer-nav-center">
-                        <div class="footer-nav-icon-center"><i class="fas fa-plus"></i></div>
-                        <span class="footer-nav-text">{{ __('messages.ad_pup') }}</span>
+                    <a href="{{ route('service-offers.received') }}" class="footer-nav-item footer-nav-center {{ request()->routeIs('service-offers.received') ? 'active' : '' }}">
+                        <div class="footer-nav-icon-center"><i class="fas fa-handshake"></i></div>
+                        <span class="footer-nav-text">{{ __('messages.received_offers') }}</span>
                     </a>
                 @endif
             @else

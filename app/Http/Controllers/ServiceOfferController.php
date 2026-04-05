@@ -309,13 +309,13 @@ class ServiceOfferController extends Controller
                 return redirect()->route('login')->with('error', 'يجب أن تكون مزود خدمة');
             }
 
-            $offers = Auth::user()->offers()
+            $completedOffers = Auth::user()->offers()
                 ->where('status', 'delivered')
                 ->with(['service', 'service.category', 'service.user'])
                 ->latest()
                 ->paginate(10);
 
-            return view('service-offers.completed-services', compact('offers'));
+            return view('service-offers.completed-services', compact('completedOffers'));
         } catch (Exception $e) {
             Log::error('Error in ServiceOfferController@completedServices: ' . $e->getMessage(), [
                 'exception' => $e
