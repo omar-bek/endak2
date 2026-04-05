@@ -9,9 +9,9 @@
     RewriteCond %{HTTP:Authorization} .
     RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
 
-    # Allow API routes without trailing slash redirect
-    RewriteCond %{REQUEST_URI} ^/api/
-    RewriteRule ^ - [L]
+    # Handle OPTIONS (CORS preflight) for API
+    RewriteCond %{REQUEST_METHOD} OPTIONS
+    RewriteRule ^(.*)$ index.php [L]
 
     # Redirect Trailing Slashes If Not A Folder (skip for API routes)...
     RewriteCond %{REQUEST_FILENAME} !-d
