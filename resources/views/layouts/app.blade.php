@@ -107,6 +107,13 @@
                                 </a></li>
                                 <li><hr class="dropdown-divider"></li>
                                 <li><a class="dropdown-item" href="{{ route('services.my-services') }}"><i class="fas fa-list"></i> {{ __('messages.my_services') }}</a></li>
+                                <li><a class="dropdown-item" href="{{ route('service-offers.received') }}">
+                                    <i class="fas fa-inbox"></i> العروض المقدمة
+                                    @php $pendingCount = \App\Models\ServiceOffer::whereHas('service', fn($q) => $q->where('user_id', Auth::id()))->where('status', 'pending')->count(); @endphp
+                                    @if($pendingCount > 0)
+                                        <span class="notification-count-badge-inline">{{ $pendingCount }}</span>
+                                    @endif
+                                </a></li>
                                 @if (Auth::user()->isProvider())
                                     <li><a class="dropdown-item" href="{{ route('service-offers.my-offers') }}"><i class="fas fa-handshake"></i> {{ __('messages.my_offers') }}</a></li>
                                 @endif

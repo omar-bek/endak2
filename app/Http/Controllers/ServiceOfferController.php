@@ -251,6 +251,55 @@ class ServiceOfferController extends Controller
     }
 
     /**
+     * عرض كل العروض المقدمة على خدمات المستخدم (العروض اللي استقبلها)
+     */
+    public function receivedOffers(Request $request)
+    {
+        try {
+            if (!Auth::check()) {
+                return redirect()->route('login');
+            }
+
+            $user = Auth::user();
+
+            $query = ServiceOffer::whereHas('service', function ($q) use ($user) {
+                $q->where('user_id', $user->id);
+            })->with(['service', 'service.category', 'service.city', 'provider']);
+
+            // فلترة حسب الحالة
+            if ($request->filled('status') && $request->status !== 'all') {
+                $query->where('status', $request->status);
+            }
+
+            // فلترة حسب الخدمة
+            if ($request->filled('service_id')) {
+                $query->where('service_id', $request->service_id);
+            }
+
+            $offers = $query->latest()->paginate(15);
+
+            // جلب خدمات المستخدم للفلتر
+            $myServices = Service::where('user_id', $user->id)->where('is_active', true)->get(['id', 'title']);
+
+            // إحصائيات
+            $stats = [
+                'total' => ServiceOffer::whereHas('service', fn($q) => $q->where('user_id', $user->id))->count(),
+                'pending' => ServiceOffer::whereHas('service', fn($q) => $q->where('user_id', $user->id))->where('status', 'pending')->count(),
+                'accepted' => ServiceOffer::whereHas('service', fn($q) => $q->where('user_id', $user->id))->where('status', 'accepted')->count(),
+                'delivered' => ServiceOffer::whereHas('service', fn($q) => $q->where('user_id', $user->id))->where('status', 'delivered')->count(),
+                'rejected' => ServiceOffer::whereHas('service', fn($q) => $q->where('user_id', $user->id))->where('status', 'rejected')->count(),
+            ];
+
+            return view('service-offers.received', compact('offers', 'myServices', 'stats'));
+        } catch (Exception $e) {
+            Log::error('Error in ServiceOfferController@receivedOffers: ' . $e->getMessage(), [
+                'exception' => $e
+            ]);
+            return redirect()->route('home')->with('error', 'حدث خطأ أثناء تحميل العروض');
+        }
+    }
+
+    /**
      * عرض الخدمات المكتملة لمزود الخدمة
      */
     public function completedServices()

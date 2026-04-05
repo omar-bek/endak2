@@ -284,51 +284,6 @@
                             </div>
                         </div>
 
-                        {{-- Accept Modal --}}
-                        @if($offer->status === 'pending')
-                        <div class="modal fade of-modal" id="acceptModal{{ $offer->id }}" tabindex="-1" aria-hidden="true">
-                            <div class="modal-dialog modal-dialog-centered modal-sm">
-                                <div class="modal-content">
-                                    <div class="modal-header">
-                                        <h6 class="modal-title"><i class="fas fa-check-circle text-success me-2"></i> تأكيد القبول</h6>
-                                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                                    </div>
-                                    <div class="modal-body text-center">
-                                        <p style="font-size:0.88rem;">قبول عرض <strong>{{ $offer->provider->name }}</strong> بسعر <strong style="color:var(--e-primary);">{{ $offer->formatted_price }}</strong>؟</p>
-                                    </div>
-                                    <div class="modal-footer">
-                                        <button type="button" class="btn btn-sm btn-light" data-bs-dismiss="modal">إلغاء</button>
-                                        <form method="POST" action="{{ route('service-offers.accept', $offer) }}">
-                                            @csrf
-                                            <button type="submit" class="of-btn of-btn--accept"><i class="fas fa-check"></i> تأكيد القبول</button>
-                                        </form>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        {{-- Reject Modal --}}
-                        <div class="modal fade of-modal" id="rejectModal{{ $offer->id }}" tabindex="-1" aria-hidden="true">
-                            <div class="modal-dialog modal-dialog-centered modal-sm">
-                                <div class="modal-content">
-                                    <div class="modal-header">
-                                        <h6 class="modal-title"><i class="fas fa-times-circle text-danger me-2"></i> تأكيد الرفض</h6>
-                                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                                    </div>
-                                    <div class="modal-body text-center">
-                                        <p style="font-size:0.88rem;">رفض عرض <strong>{{ $offer->provider->name }}</strong>؟</p>
-                                    </div>
-                                    <div class="modal-footer">
-                                        <button type="button" class="btn btn-sm btn-light" data-bs-dismiss="modal">إلغاء</button>
-                                        <form method="POST" action="{{ route('service-offers.reject', $offer) }}">
-                                            @csrf
-                                            <button type="submit" class="of-btn of-btn--reject"><i class="fas fa-times"></i> تأكيد الرفض</button>
-                                        </form>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        @endif
                     @endforeach
                 @else
                     <div class="of-card">
@@ -387,15 +342,70 @@
     </div>
 </div>
 
-{{-- Delivery + Rating Modals --}}
+{{-- ==================== ALL MODALS (outside cards, at page root) ==================== --}}
 @foreach($offers as $offer)
-    @if($offer->status === 'accepted' && auth()->id() === $service->user_id && !$offer->delivered_at)
-        <div class="modal fade of-modal" id="deliverModal{{ $offer->id }}" tabindex="-1" aria-hidden="true">
+    {{-- Accept Modal --}}
+    @if($offer->status === 'pending' && auth()->id() === $service->user_id)
+        <div class="modal fade of-modal" id="acceptModal{{ $offer->id }}" tabindex="-1" aria-labelledby="acceptLabel{{ $offer->id }}">
             <div class="modal-dialog modal-dialog-centered">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h6 class="modal-title"><i class="fas fa-check-double me-2" style="color:var(--e-accent);"></i> تسليم الخدمة وتقييم المزود</h6>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                        <h6 class="modal-title" id="acceptLabel{{ $offer->id }}"><i class="fas fa-check-circle text-success me-2"></i> تأكيد القبول</h6>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="إغلاق"></button>
+                    </div>
+                    <div class="modal-body text-center py-4">
+                        <div style="width:60px;height:60px;border-radius:50%;background:var(--e-success-light);display:inline-flex;align-items:center;justify-content:center;margin-bottom:1rem;">
+                            <i class="fas fa-check" style="font-size:1.5rem;color:var(--e-success);"></i>
+                        </div>
+                        <p style="font-size:0.92rem; margin-bottom:0.25rem;">هل تريد <strong class="text-success">قبول</strong> عرض</p>
+                        <p style="font-size:1rem; font-weight:700; color:var(--e-gray-800);">{{ $offer->provider->name }}</p>
+                        <p style="font-size:1.3rem; font-weight:800; color:var(--e-primary);">{{ $offer->formatted_price }}</p>
+                    </div>
+                    <div class="modal-footer justify-content-center" style="gap:0.5rem;">
+                        <button type="button" class="of-btn of-btn--msg" data-bs-dismiss="modal" style="min-width:100px;">إلغاء</button>
+                        <form method="POST" action="{{ route('service-offers.accept', $offer) }}">
+                            @csrf
+                            <button type="submit" class="of-btn of-btn--accept" style="min-width:140px;"><i class="fas fa-check"></i> تأكيد القبول</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {{-- Reject Modal --}}
+        <div class="modal fade of-modal" id="rejectModal{{ $offer->id }}" tabindex="-1" aria-labelledby="rejectLabel{{ $offer->id }}">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h6 class="modal-title" id="rejectLabel{{ $offer->id }}"><i class="fas fa-times-circle text-danger me-2"></i> تأكيد الرفض</h6>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="إغلاق"></button>
+                    </div>
+                    <div class="modal-body text-center py-4">
+                        <div style="width:60px;height:60px;border-radius:50%;background:var(--e-danger-light);display:inline-flex;align-items:center;justify-content:center;margin-bottom:1rem;">
+                            <i class="fas fa-times" style="font-size:1.5rem;color:var(--e-danger);"></i>
+                        </div>
+                        <p style="font-size:0.92rem;">هل تريد <strong class="text-danger">رفض</strong> عرض <strong>{{ $offer->provider->name }}</strong>؟</p>
+                    </div>
+                    <div class="modal-footer justify-content-center" style="gap:0.5rem;">
+                        <button type="button" class="of-btn of-btn--msg" data-bs-dismiss="modal" style="min-width:100px;">إلغاء</button>
+                        <form method="POST" action="{{ route('service-offers.reject', $offer) }}">
+                            @csrf
+                            <button type="submit" class="of-btn of-btn--reject" style="min-width:140px;"><i class="fas fa-times"></i> تأكيد الرفض</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endif
+
+    {{-- Deliver + Rate Modal --}}
+    @if($offer->status === 'accepted' && auth()->id() === $service->user_id && !$offer->delivered_at)
+        <div class="modal fade of-modal" id="deliverModal{{ $offer->id }}" tabindex="-1" aria-labelledby="deliverLabel{{ $offer->id }}">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h6 class="modal-title" id="deliverLabel{{ $offer->id }}"><i class="fas fa-check-double me-2" style="color:var(--e-accent);"></i> تسليم الخدمة وتقييم المزود</h6>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="إغلاق"></button>
                     </div>
                     <form method="POST" action="{{ route('service-offers.deliver', $offer) }}" id="deliverForm{{ $offer->id }}">
                         @csrf
@@ -405,7 +415,7 @@
                                 يجب تقييم المزود قبل تأكيد التسليم. التقييم إلزامي.
                             </div>
                             <div class="text-center mb-3">
-                                <label class="ss-label mb-2">التقييم <span style="color:var(--e-danger);">*</span></label>
+                                <label style="font-size:0.85rem;font-weight:600;color:var(--e-gray-700);display:block;margin-bottom:0.5rem;">التقييم <span style="color:var(--e-danger);">*</span></label>
                                 <div class="of-rating-input">
                                     @for($i = 5; $i >= 1; $i--)
                                         <input type="radio" name="rating" value="{{ $i }}" id="dr{{ $i }}_{{ $offer->id }}" required>
@@ -415,13 +425,13 @@
                                 <small id="ratingError{{ $offer->id }}" style="display:none; color:var(--e-danger); font-size:0.78rem;">يجب اختيار التقييم</small>
                             </div>
                             <div class="mb-2">
-                                <label class="ss-label">تعليق (اختياري)</label>
+                                <label style="font-size:0.85rem;font-weight:600;color:var(--e-gray-700);display:block;margin-bottom:0.35rem;">تعليق (اختياري)</label>
                                 <textarea class="form-control" name="review" rows="3" placeholder="اكتب تعليقك عن الخدمة..." style="border-radius:var(--e-radius); border:1.5px solid var(--e-gray-200); font-size:0.88rem;"></textarea>
                             </div>
                         </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-sm btn-light" data-bs-dismiss="modal">إلغاء</button>
-                            <button type="submit" class="of-btn of-btn--deliver"><i class="fas fa-check-double"></i> تسليم وتقييم</button>
+                        <div class="modal-footer justify-content-center" style="gap:0.5rem;">
+                            <button type="button" class="of-btn of-btn--msg" data-bs-dismiss="modal" style="min-width:100px;">إلغاء</button>
+                            <button type="submit" class="of-btn of-btn--deliver" style="min-width:160px;"><i class="fas fa-check-double"></i> تسليم وتقييم</button>
                         </div>
                     </form>
                 </div>
@@ -433,6 +443,7 @@
 @push('scripts')
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+    // Delivery form validation
     @foreach($offers as $offer)
         @if($offer->status === 'accepted' && auth()->id() === $service->user_id && !$offer->delivered_at)
             var f{{ $offer->id }} = document.getElementById('deliverForm{{ $offer->id }}');
