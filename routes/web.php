@@ -49,10 +49,38 @@ Route::get('/email/verify', function () {
     return view('auth.verify-email');
 })->middleware('auth')->name('verification.notice');
 
-Route::get('/email/verify/{id}/{hash}', function (Illuminate\Foundation\Auth\EmailVerificationRequest $request) {
-    $request->fulfill();
-    return redirect('/')->with('success', 'تم التحقق من الإيميل بنجاح!');
-})->middleware(['auth', 'signed'])->name('verification.verify');
+Route::get('/email/verify/{id}/{hash}', function (Request $request, $id, $hash) {
+    // التحقق من توقيع الرابط
+    if (!$request->hasValidSignature()) {
+        return redirect()->route('login')->with('error', 'رابط التحقق منتهي الصلاحية أو غير صحيح. يرجى تسجيل الدخول وطلب رابط جديد.');
+    }
+
+    $user = \App\Models\User::find($id);
+
+    if (!$user) {
+        return redirect()->route('login')->with('error', 'الحساب غير موجود.');
+    }
+
+    // التحقق من تطابق الهاش مع الإيميل
+    if (!hash_equals((string) $hash, sha1($user->getEmailForVerification()))) {
+        return redirect()->route('login')->with('error', 'رابط التحقق غير صحيح.');
+    }
+
+    // لو الإيميل متحقق بالفعل
+    if ($user->hasVerifiedEmail()) {
+        \Illuminate\Support\Facades\Auth::login($user);
+        return redirect('/')->with('success', 'البريد الإلكتروني محقق بالفعل. مرحباً بك!');
+    }
+
+    // تفعيل الإيميل
+    $user->markEmailAsVerified();
+    event(new \Illuminate\Auth\Events\Verified($user));
+
+    // تسجيل الدخول تلقائياً
+    \Illuminate\Support\Facades\Auth::login($user);
+
+    return redirect('/')->with('success', 'تم التحقق من الإيميل بنجاح! مرحباً بك في إنداك');
+})->middleware('signed')->name('verification.verify');
 
 Route::post('/email/verification-notification', function (Request $request) {
     if ($request->user()->hasVerifiedEmail()) {

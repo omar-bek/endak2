@@ -1392,7 +1392,47 @@
                                                     </div>
                                                 </div>
 
-                                            @elseif($field->type !== 'image')
+                                            @elseif($field->type === 'video')
+                                                <div class="col-12 mb-3">
+                                                    <label for="custom_fields_{{ $field->name }}_0" class="form-label" style="font-size:0.85rem;font-weight:600;color:var(--e-gray-700);">
+                                                        <i class="fas fa-video me-1" style="color:var(--e-gray-400);"></i>
+                                                        {{ $fieldName }}
+                                                        @if ($field->is_required) <span class="ef-required">*</span> @endif
+                                                    </label>
+
+                                                    <div class="video-upload-container" data-field-name="{{ $field->name }}">
+                                                        <div class="upload-zone upload-area" style="min-height: 120px;">
+                                                            <div class="upload-content">
+                                                                <div class="upload-zone-icon">
+                                                                    <i class="fas fa-video"></i>
+                                                                </div>
+                                                                <p class="upload-zone-text">
+                                                                    {{ __('messages.image_upload_drag_drop') }}
+                                                                </p>
+                                                                <p class="small text-muted mb-2">MP4, MOV, AVI, WEBM</p>
+
+                                                                <input type="file"
+                                                                    name="custom_fields[{{ $field->name }}][0]"
+                                                                    id="custom_fields_{{ $field->name }}_0"
+                                                                    class="form-control d-none video-file-input"
+                                                                    accept="video/*"
+                                                                    data-field-name="{{ $field->name }}"
+                                                                    {{ $field->is_required ? 'required' : '' }}>
+
+                                                                <button type="button" class="upload-zone-btn"
+                                                                    onclick="document.getElementById('custom_fields_{{ $field->name }}_0').click()">
+                                                                    <i class="fas fa-plus"></i>
+                                                                    {{ __('messages.choose_images') }}
+                                                                </button>
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="video-preview-container mt-2"
+                                                             id="video_preview_{{ $field->name }}_0"></div>
+                                                    </div>
+                                                </div>
+
+                                            @elseif($field->type !== 'image' && $field->type !== 'video')
                                                 <div class="col-12 mb-3">
                                                     <div class="ef-field ef-field--icon">
                                                         <i class="fas fa-{{ $fieldIcon }} ef-icon"></i>
@@ -1776,6 +1816,59 @@
                 });
             };
 
+            // Handle video upload preview
+            function handleVideoUpload(input) {
+                const fieldName = input.dataset.fieldName || (input.getAttribute('name') || '').match(/custom_fields\[([^\]]+)\]/)?.[1];
+                if (!fieldName) return;
+
+                const previewContainer = document.getElementById('video_preview_' + fieldName + '_0');
+                if (!previewContainer) return;
+
+                previewContainer.innerHTML = '';
+
+                const file = input.files && input.files[0];
+                if (!file) return;
+
+                if (!file.type.startsWith('video/')) {
+                    alert('{{ __('messages.requiredField') ?? 'الملف يجب أن يكون فيديو' }}');
+                    input.value = '';
+                    return;
+                }
+
+                const url = URL.createObjectURL(file);
+                const wrapper = document.createElement('div');
+                wrapper.className = 'mt-2 position-relative d-inline-block';
+                wrapper.innerHTML = `
+                    <video src="${url}" controls style="max-width:100%; max-height:240px; border-radius:8px; border:1px solid #e5e7eb;"></video>
+                    <button type="button" class="btn btn-sm btn-danger position-absolute" style="top:6px; inset-inline-end:6px;" aria-label="remove">
+                        <i class="fas fa-times"></i>
+                    </button>
+                `;
+                wrapper.querySelector('button').addEventListener('click', function() {
+                    input.value = '';
+                    previewContainer.innerHTML = '';
+                    URL.revokeObjectURL(url);
+                });
+
+                previewContainer.appendChild(wrapper);
+
+                // Hide upload zone after selecting a file
+                const container = input.closest('.video-upload-container');
+                const uploadZone = container && container.querySelector('.upload-zone');
+                if (uploadZone) uploadZone.style.display = 'none';
+            }
+
+            // Setup video upload listeners
+            window.bindVideoInputs = function() {
+                document.querySelectorAll('input.video-file-input').forEach(function(input) {
+                    if (input.dataset.vnBound) return;
+                    input.dataset.vnBound = '1';
+                    input.addEventListener('change', function(e) {
+                        handleVideoUpload(e.target);
+                    });
+                });
+            };
+
             // Drag and drop
             window.bindDragDrop = function() {
                 document.querySelectorAll('.upload-area, .upload-zone').forEach(function(area) {
@@ -1799,7 +1892,11 @@
                         const input = this.querySelector('input[type="file"]');
                         if (input) {
                             input.files = files;
-                            handleImageUpload(input);
+                            if (input.classList.contains('video-file-input')) {
+                                handleVideoUpload(input);
+                            } else {
+                                handleImageUpload(input);
+                            }
                         }
                     });
 
@@ -1813,6 +1910,7 @@
             };
 
             bindImageInputs();
+            bindVideoInputs();
             bindDragDrop();
 
             function showUploadArea(fieldName) {
@@ -2056,6 +2154,10 @@
                                     if ((input.files && input.files.length > 0) || (previewContainer && previewContainer.children.length > 0)) {
                                         hasValidValue = true;
                                     }
+                                }
+                            } else if (fieldType === 'video') {
+                                if (input.files && input.files.length > 0) {
+                                    hasValidValue = true;
                                 }
                             } else if (fieldType === 'checkbox') {
                                 if (input.checked) hasValidValue = true;

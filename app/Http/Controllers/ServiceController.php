@@ -436,6 +436,28 @@ class ServiceController extends Controller
                     // Checkbox يمكن أن يكون null أو 1 - لا حاجة للتحقق الإضافي
                     break;
 
+                case 'video':
+                    // التحقق من ملف الفيديو
+                    if ($fieldValue !== null && $fieldValue !== '') {
+                        $videoFile = is_array($fieldValue) ? reset($fieldValue) : $fieldValue;
+                        if ($videoFile instanceof \Illuminate\Http\UploadedFile) {
+                            $fieldLabel = app()->getLocale() == 'ar' ? $field->name_ar : $field->name_en;
+                            $maxVideoSize = 50 * 1024 * 1024; // 50MB
+                            $allowedVideoMimes = ['video/mp4', 'video/quicktime', 'video/x-msvideo', 'video/webm', 'video/x-matroska'];
+
+                            if (!$videoFile->isValid()) {
+                                $errors["custom_fields.{$fieldName}"] = "ملف غير صالح تم رفعه لحقل '{$fieldLabel}'";
+                            } elseif (!in_array($videoFile->getMimeType(), $allowedVideoMimes)) {
+                                $errors["custom_fields.{$fieldName}"] = "نوع الملف غير مدعوم لحقل '{$fieldLabel}'. يجب أن يكون فيديو (mp4, mov, avi, webm, mkv)";
+                            } elseif ($videoFile->getSize() > $maxVideoSize) {
+                                $maxSizeMB = round($maxVideoSize / (1024 * 1024), 1);
+                                $fileSizeMB = round($videoFile->getSize() / (1024 * 1024), 1);
+                                $errors["custom_fields.{$fieldName}"] = "حجم الفيديو كبير جداً لحقل '{$fieldLabel}'. الحد الأقصى: {$maxSizeMB}MB (الحجم الحالي: {$fileSizeMB}MB)";
+                            }
+                        }
+                    }
+                    break;
+
                 case 'date':
                 case 'time':
                     // للتاريخ والوقت، التحقق الأساسي كافٍ
@@ -592,12 +614,22 @@ class ServiceController extends Controller
                         if (!empty($imagePaths)) {
                             $processedValues[] = $imagePaths;
                         }
+                    } elseif ($value instanceof \Illuminate\Http\UploadedFile) {
+                        // معالجة ملف فردي (فيديو/صورة فردية)
+                        if ($value->isValid()) {
+                            $path = $value->store('custom_fields/' . $fieldName, 'public');
+                            $processedValues[] = $path;
+                        }
                     } elseif ($value !== null && $value !== '') {
                         $processedValues[] = $value;
                     }
                 }
                 if (!empty($processedValues)) {
                     $processedFields[$fieldName] = $processedValues;
+                }
+            } elseif ($fieldValues instanceof \Illuminate\Http\UploadedFile) {
+                if ($fieldValues->isValid()) {
+                    $processedFields[$fieldName] = $fieldValues->store('custom_fields/' . $fieldName, 'public');
                 }
             } elseif ($fieldValues !== null && $fieldValues !== '') {
                 $processedFields[$fieldName] = $fieldValues;
