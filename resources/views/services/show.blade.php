@@ -58,7 +58,9 @@
                         @if($service->city)
                             <span class="svc-show-city"><i class="fas fa-map-marker-alt"></i> {{ $service->city->name_ar ?? $service->city->name }}</span>
                         @endif
-                        <span class="svc-show-price">{{ $service->formatted_price }}</span>
+                        @if($service->price > 0)
+                            <span class="svc-show-price">{{ $service->formatted_price }}</span>
+                        @endif
                     </div>
                 @endif
 
@@ -145,18 +147,113 @@
                     {{-- Custom Fields --}}
                     @if ($service->custom_fields && is_array($service->custom_fields))
                         @php
-                            $groupedFields = \App\Models\CategoryField::where('category_id', $service->category_id)
+                            $allFields = \App\Models\CategoryField::where('category_id', $service->category_id)
                                 ->whereIn('name', array_keys($service->custom_fields))
-                                ->get()
-                                ->groupBy('input_group');
+                                ->orderBy('sort_order')
+                                ->get();
+
+                            // فصل حقول الميديا (صور/فيديوهات) لعرضها كـ gallery منفصل
+                            $mediaFields = $allFields->whereIn('type', ['image', 'video']);
+                            $nonMediaFields = $allFields->whereNotIn('type', ['image', 'video']);
+                            $groupedFields = $nonMediaFields->groupBy('input_group');
+
+                            // دالة helper لتطبيع قيمة الملف (path string)
+                            $normalizeFilePath = function ($val) {
+                                if (is_array($val)) {
+                                    return is_array($val[0] ?? null) ? ($val[0][0] ?? null) : ($val[0] ?? null);
+                                }
+                                return $val;
+                            };
                         @endphp
 
-                        @foreach ($groupedFields as $groupName => $fields)
+                        {{-- معرض الصور --}}
+                        @php
+                            $imageFields = $mediaFields->where('type', 'image');
+                            $allImages = [];
+                            foreach ($imageFields as $imgField) {
+                                $vals = $service->custom_fields[$imgField->name] ?? [];
+                                if (!is_array($vals)) { $vals = [$vals]; }
+                                foreach ($vals as $v) {
+                                    if (is_array($v)) {
+                                        foreach ($v as $vv) {
+                                            if (is_array($vv)) {
+                                                foreach ($vv as $vvv) { if ($vvv) $allImages[] = $vvv; }
+                                            } elseif ($vv) {
+                                                $allImages[] = $vv;
+                                            }
+                                        }
+                                    } elseif ($v) {
+                                        $allImages[] = $v;
+                                    }
+                                }
+                            }
+                        @endphp
+
+                        @if (count($allImages) > 0)
                             <div class="svc-section">
-                                <h5 class="svc-section-title"><i class="fas fa-table"></i> {{ $groupName ?: __('messages.custom_field_group_default') }}</h5>
-                                @php
-                                    $hasRepeatableFields = $fields->where('is_repeatable', true)->count() > 0;
-                                @endphp
+                                <h5 class="svc-section-title">
+                                    <i class="fas fa-images"></i>
+                                    {{ __('messages.upload_images') }}
+                                    <span class="svc-count-badge">{{ count($allImages) }}</span>
+                                </h5>
+                                <div class="svc-gallery">
+                                    @foreach ($allImages as $img)
+                                        <div class="svc-gallery-item" onclick="showImageModal('{{ asset('storage/' . $img) }}')" data-bs-toggle="modal" data-bs-target="#imageModal">
+                                            <img src="{{ asset('storage/' . $img) }}" alt="" loading="lazy">
+                                            <div class="svc-gallery-overlay"><i class="fas fa-search-plus"></i></div>
+                                        </div>
+                                    @endforeach
+                                </div>
+                            </div>
+                        @endif
+
+                        {{-- معرض الفيديوهات --}}
+                        @php
+                            $videoFields = $mediaFields->where('type', 'video');
+                            $allVideos = [];
+                            foreach ($videoFields as $vidField) {
+                                $vals = $service->custom_fields[$vidField->name] ?? null;
+                                if (is_array($vals)) {
+                                    foreach ($vals as $v) {
+                                        if (is_string($v) && $v !== '') $allVideos[] = $v;
+                                    }
+                                } elseif (is_string($vals) && $vals !== '') {
+                                    $allVideos[] = $vals;
+                                }
+                            }
+                        @endphp
+
+                        @if (count($allVideos) > 0)
+                            <div class="svc-section">
+                                <h5 class="svc-section-title">
+                                    <i class="fas fa-video"></i>
+                                    {{ __('messages.video_section_title', [], 'الفيديوهات') }}
+                                    <span class="svc-count-badge">{{ count($allVideos) }}</span>
+                                </h5>
+                                <div class="svc-video-grid">
+                                    @foreach ($allVideos as $vid)
+                                        <div class="svc-video-item">
+                                            <video controls preload="metadata" playsinline>
+                                                <source src="{{ asset('storage/' . $vid) }}">
+                                                {{ __('messages.audio_not_supported') }}
+                                            </video>
+                                        </div>
+                                    @endforeach
+                                </div>
+                            </div>
+                        @endif
+
+                        {{-- باقي الحقول مجمّعة --}}
+                        @foreach ($groupedFields as $groupName => $fields)
+                            @php
+                                $hasRepeatableFields = $fields->where('is_repeatable', true)->count() > 0;
+                            @endphp
+
+                            <div class="svc-section">
+                                <h5 class="svc-section-title">
+                                    <i class="fas fa-{{ $hasRepeatableFields ? 'table' : 'list-alt' }}"></i>
+                                    {{ $groupName ?: __('messages.custom_field_group_default') }}
+                                </h5>
 
                                 @if ($hasRepeatableFields)
                                     @php
@@ -181,9 +278,9 @@
                                             <table class="table svc-table mb-0">
                                                 <thead>
                                                     <tr>
-                                                        <th>#</th>
+                                                        <th style="width:50px;">#</th>
                                                         @foreach ($sortedFields as $f)
-                                                            <th>{{ $f->name_ar }}</th>
+                                                            <th>{{ app()->getLocale() == 'ar' ? $f->name_ar : $f->name_en }}</th>
                                                         @endforeach
                                                     </tr>
                                                 </thead>
@@ -198,13 +295,19 @@
                                                                         @if(in_array($val, ['1',1,true,'true','on']))
                                                                             <span class="badge bg-success"><i class="fas fa-check"></i></span>
                                                                         @else
-                                                                            <span class="badge bg-danger"><i class="fas fa-times"></i></span>
+                                                                            <span class="badge bg-light text-muted"><i class="fas fa-times"></i></span>
                                                                         @endif
-                                                                    @elseif($f->type === 'image')
-                                                                        @if(is_array($val) && count($val) > 0)
-                                                                            @foreach($val as $img)
-                                                                                <img src="{{ asset('storage/' . (is_array($img)?$img[0]:$img)) }}" class="svc-thumb" onclick="showImageModal('{{ asset('storage/' . (is_array($img)?$img[0]:$img)) }}')" data-bs-toggle="modal" data-bs-target="#imageModal">
-                                                                            @endforeach
+                                                                    @elseif($f->type === 'select')
+                                                                        @if($val)
+                                                                            <span class="badge svc-badge-select">{{ $val }}</span>
+                                                                        @else <span class="text-muted">-</span> @endif
+                                                                    @elseif($f->type === 'date')
+                                                                        @if($val)
+                                                                            <i class="fas fa-calendar-alt text-muted me-1"></i>{{ \Carbon\Carbon::parse($val)->translatedFormat('d M Y') }}
+                                                                        @else <span class="text-muted">-</span> @endif
+                                                                    @elseif($f->type === 'time')
+                                                                        @if($val)
+                                                                            <i class="fas fa-clock text-muted me-1"></i>{{ $val }}
                                                                         @else <span class="text-muted">-</span> @endif
                                                                     @else
                                                                         <strong>{{ is_array($val) ? implode(', ', array_filter($val)) : ($val ?: '-') }}</strong>
@@ -220,26 +323,53 @@
                                 @else
                                     <div class="svc-fields-list">
                                         @foreach ($fields as $f)
-                                            @php $val = $service->custom_fields[$f->name] ?? null; @endphp
-                                            @if ($val && $val !== '')
-                                                <div class="svc-field-row">
-                                                    <span class="svc-field-label">{{ app()->getLocale() == 'ar' ? $f->name_ar : $f->name_en }}</span>
+                                            @php
+                                                $val = $service->custom_fields[$f->name] ?? null;
+                                                $displayVal = is_array($val) ? ($val[0] ?? null) : $val;
+                                                $isLongText = $f->type === 'textarea' || (is_string($displayVal) && mb_strlen($displayVal) > 80);
+                                            @endphp
+                                            @if ($val !== null && $val !== '' && $val !== [])
+                                                <div class="svc-field-row {{ $isLongText ? 'svc-field-row--block' : '' }}">
+                                                    <span class="svc-field-label">
+                                                        @if($f->type === 'title')
+                                                            <i class="fas fa-heading me-1"></i>
+                                                        @elseif($f->type === 'select')
+                                                            <i class="fas fa-list me-1"></i>
+                                                        @elseif($f->type === 'date')
+                                                            <i class="fas fa-calendar-alt me-1"></i>
+                                                        @elseif($f->type === 'time')
+                                                            <i class="fas fa-clock me-1"></i>
+                                                        @elseif($f->type === 'number')
+                                                            <i class="fas fa-hashtag me-1"></i>
+                                                        @elseif($f->type === 'textarea')
+                                                            <i class="fas fa-align-right me-1"></i>
+                                                        @elseif($f->type === 'checkbox')
+                                                            <i class="fas fa-check-square me-1"></i>
+                                                        @endif
+                                                        {{ app()->getLocale() == 'ar' ? $f->name_ar : $f->name_en }}
+                                                    </span>
                                                     <span class="svc-field-value">
                                                         @if ($f->type === 'checkbox')
-                                                            @php $cv = is_array($val) ? $val[0] : $val; @endphp
+                                                            @php $cv = is_array($val) ? ($val[0] ?? null) : $val; @endphp
                                                             @if(in_array($cv, ['1',1,true,'true','on']))
                                                                 <span class="badge bg-success"><i class="fas fa-check me-1"></i>{{ __('messages.yes_checkbox') }}</span>
                                                             @else
-                                                                <span class="badge bg-danger"><i class="fas fa-times me-1"></i>{{ __('messages.no_checkbox') }}</span>
+                                                                <span class="badge bg-light text-muted"><i class="fas fa-times me-1"></i>{{ __('messages.no_checkbox') }}</span>
                                                             @endif
-                                                        @elseif($f->type === 'image')
-                                                            @if(is_array($val))
-                                                                @foreach($val as $img)
-                                                                    <img src="{{ asset('storage/' . (is_array($img)?$img[0]:$img)) }}" class="svc-thumb" onclick="showImageModal('{{ asset('storage/' . (is_array($img)?$img[0]:$img)) }}')" data-bs-toggle="modal" data-bs-target="#imageModal">
-                                                                @endforeach
-                                                            @endif
+                                                        @elseif($f->type === 'select')
+                                                            <span class="badge svc-badge-select">{{ $displayVal }}</span>
+                                                        @elseif($f->type === 'date')
+                                                            {{ \Carbon\Carbon::parse($displayVal)->translatedFormat('d M Y') }}
+                                                        @elseif($f->type === 'time')
+                                                            {{ $displayVal }}
+                                                        @elseif($f->type === 'number')
+                                                            <strong>{{ number_format((float)$displayVal) }}</strong>
+                                                        @elseif($f->type === 'textarea')
+                                                            <span class="svc-field-text">{{ $displayVal }}</span>
+                                                        @elseif($f->type === 'title')
+                                                            <strong>{{ $displayVal }}</strong>
                                                         @else
-                                                            {{ is_array($val) ? implode(', ', array_filter($val)) : $val }}
+                                                            {{ is_array($val) ? implode(', ', array_filter((array)$val)) : $val }}
                                                         @endif
                                                     </span>
                                                 </div>
@@ -423,7 +553,22 @@
     .svc-section { margin-bottom: 1.5rem; }
     .svc-section-title { font-size: 1rem; font-weight: 700; color: var(--e-gray-800); margin-bottom: 0.75rem; display: flex; align-items: center; gap: 0.5rem; }
     .svc-section-title i { color: var(--e-primary); font-size: 0.85rem; }
+    .svc-count-badge { display: inline-flex; align-items: center; justify-content: center; min-width: 22px; height: 22px; padding: 0 0.5rem; background: var(--e-primary); color: #fff; border-radius: 11px; font-size: 0.7rem; font-weight: 700; }
     .svc-description { color: var(--e-gray-600); line-height: 1.8; white-space: pre-line; font-size: 0.92rem; }
+
+    /* Image Gallery */
+    .svc-gallery { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 0.6rem; }
+    .svc-gallery-item { position: relative; aspect-ratio: 1/1; border-radius: 12px; overflow: hidden; cursor: pointer; border: 2px solid var(--e-gray-200); transition: 0.25s; }
+    .svc-gallery-item img { width: 100%; height: 100%; object-fit: cover; transition: 0.3s; }
+    .svc-gallery-item:hover { border-color: var(--e-primary); transform: translateY(-2px); box-shadow: 0 6px 16px rgba(47,92,105,0.18); }
+    .svc-gallery-item:hover img { transform: scale(1.08); }
+    .svc-gallery-overlay { position: absolute; inset: 0; background: rgba(47,92,105,0); display: flex; align-items: center; justify-content: center; color: #fff; font-size: 1.4rem; opacity: 0; transition: 0.25s; }
+    .svc-gallery-item:hover .svc-gallery-overlay { background: rgba(47,92,105,0.45); opacity: 1; }
+
+    /* Video Grid */
+    .svc-video-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 0.85rem; }
+    .svc-video-item { background: #000; border-radius: 12px; overflow: hidden; border: 1px solid var(--e-gray-200); box-shadow: 0 1px 4px rgba(0,0,0,0.06); }
+    .svc-video-item video { width: 100%; max-height: 320px; display: block; background: #000; }
 
     /* Voice Player */
     .svc-voice-player { background: var(--e-gray-50); border: 1px solid var(--e-gray-200); border-radius: 12px; padding: 1rem; }
@@ -440,22 +585,32 @@
     .svc-thumb:hover { transform: scale(1.1); border-color: var(--e-primary); }
 
     /* Fields List */
-    .svc-fields-list { border: 1px solid var(--e-gray-200); border-radius: 12px; overflow: hidden; }
-    .svc-field-row { display: flex; justify-content: space-between; align-items: center; padding: 0.7rem 1rem; border-bottom: 1px solid var(--e-gray-100); }
+    .svc-fields-list { border: 1px solid var(--e-gray-200); border-radius: 12px; overflow: hidden; background: #fff; }
+    .svc-field-row { display: flex; justify-content: space-between; align-items: center; gap: 1rem; padding: 0.8rem 1rem; border-bottom: 1px solid var(--e-gray-100); }
     .svc-field-row:last-child { border-bottom: none; }
     .svc-field-row:nth-child(even) { background: var(--e-gray-50); }
-    .svc-field-label { font-weight: 600; color: var(--e-primary); font-size: 0.85rem; }
-    .svc-field-value { font-weight: 600; color: var(--e-gray-700); font-size: 0.85rem; }
+    .svc-field-row--block { flex-direction: column; align-items: flex-start; gap: 0.4rem; }
+    .svc-field-row--block .svc-field-value { width: 100%; text-align: start; }
+    .svc-field-label { font-weight: 600; color: var(--e-primary); font-size: 0.85rem; display: inline-flex; align-items: center; gap: 0.25rem; flex-shrink: 0; }
+    .svc-field-value { font-weight: 600; color: var(--e-gray-700); font-size: 0.85rem; text-align: end; word-break: break-word; }
+    .svc-field-text { display: block; font-weight: 500; color: var(--e-gray-600); line-height: 1.7; white-space: pre-line; padding: 0.5rem 0.75rem; background: var(--e-gray-50); border-inline-start: 3px solid var(--e-primary); border-radius: 0 8px 8px 0; }
+    .svc-field-row--block .svc-field-text { background: #fff; }
+    .svc-badge-select { background: rgba(47,92,105,0.1); color: var(--e-primary); padding: 0.35rem 0.75rem; font-weight: 600; font-size: 0.78rem; border-radius: 12px; }
 
     @media (max-width: 768px) {
         .svc-show-hero { padding: 1rem 0 4rem; }
         .svc-show-img img { height: 250px; }
         .svc-show-title { font-size: 1.15rem; }
         .svc-info-grid { grid-template-columns: 1fr 1fr; }
+        .svc-gallery { grid-template-columns: repeat(3, 1fr); gap: 0.5rem; }
+        .svc-video-grid { grid-template-columns: 1fr; }
+        .svc-field-row { flex-direction: column; align-items: flex-start; gap: 0.3rem; }
+        .svc-field-value { text-align: start; }
     }
 
     @media (max-width: 576px) {
         .svc-info-grid { grid-template-columns: 1fr; }
+        .svc-gallery { grid-template-columns: repeat(2, 1fr); }
     }
 </style>
 @endpush
