@@ -392,9 +392,7 @@
                 <p class="eh-desc">{{ __('messages.hero_description') }}</p>
 
                 <div class="eh-btns">
-                    <a href="{{ route('categories.index') }}" class="eh-btn eh-btn-accent">
-                        <i class="fas fa-th-large"></i> {{ __('messages.hero_explore_categories') }}
-                    </a>
+                   
                     <a href="{{ route('services.index') }}" class="eh-btn eh-btn-outline">
                         <i class="fas fa-search"></i> {{ __('messages.hero_explore_services') }}
                     </a>
@@ -474,7 +472,7 @@
                     </a>
                 @endguest
                 <a href="{{ \App\Helpers\WhatsAppHelper::getWhatsAppUrl() }}" target="_blank" rel="noopener noreferrer" class="eh-btn eh-btn-outline">
-                    <i class="fab fa-whatsapp"></i> تواصل واتساب: {{ \App\Helpers\WhatsAppHelper::getWhatsAppNumber() }}
+                    <i class="fab fa-whatsapp"></i> تواصل علي الواتساب
                 </a>
             </div>
         </div>
