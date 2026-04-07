@@ -57,54 +57,7 @@
 </section>
 
 <!-- Features Section -->
-<section class="py-5">
-    <div class="container">
-        <div class="row text-center mb-5">
-            <div class="col-12">
-                <h2 class="text-gradient fw-bold mb-3">{{ __('messages.why_choose_us') }}</h2>
-                <p class="text-muted fs-5">اكتشف المميزات التي تجعلنا الخيار الأفضل لك</p>
-            </div>
-        </div>
 
-        <div class="row g-4">
-            <div class="col-md-4 fade-in-up">
-                <div class="card h-100 text-center border-0 shadow-custom">
-                    <div class="card-body p-4">
-                        <div class="bg-primary rounded-circle d-inline-flex align-items-center justify-content-center mb-4" style="width: 80px; height: 80px;">
-                            <i class="fas fa-shield-alt fa-2x text-white"></i>
-                        </div>
-                        <h4 class="fw-bold mb-3">{{ __('messages.trusted_providers') }}</h4>
-                        <p class="text-muted">نختار بعناية مزودي الخدمات لضمان الجودة والموثوقية</p>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-md-4 fade-in-up" style="animation-delay: 0.2s;">
-                <div class="card h-100 text-center border-0 shadow-custom">
-                    <div class="card-body p-4">
-                        <div class="bg-success rounded-circle d-inline-flex align-items-center justify-content-center mb-4" style="width: 80px; height: 80px;">
-                            <i class="fas fa-award fa-2x text-white"></i>
-                        </div>
-                        <h4 class="fw-bold mb-3">{{ __('messages.quality_services') }}</h4>
-                        <p class="text-muted">خدمات عالية الجودة مع ضمان الرضا التام للعملاء</p>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-md-4 fade-in-up" style="animation-delay: 0.4s;">
-                <div class="card h-100 text-center border-0 shadow-custom">
-                    <div class="card-body p-4">
-                        <div class="bg-warning rounded-circle d-inline-flex align-items-center justify-content-center mb-4" style="width: 80px; height: 80px;">
-                            <i class="fas fa-lock fa-2x text-white"></i>
-                        </div>
-                        <h4 class="fw-bold mb-3">{{ __('messages.secure_payments') }}</h4>
-                        <p class="text-muted">مدفوعات آمنة ومشفرة لحماية معلوماتك المالية</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
 
 <!-- Categories Section -->
 <section class="py-5 bg-light">

@@ -128,6 +128,9 @@
                         <option value="image" @selected(old('type', $field->type ?? '') == 'image')>
                             <i class="fas fa-image"></i> صورة
                         </option>
+                        <option value="video" @selected(old('type', $field->type ?? '') == 'video')>
+                            <i class="fas fa-video"></i> فيديو
+                        </option>
                         <option value="date" @selected(old('type', $field->type ?? '') == 'date')>
                             <i class="fas fa-calendar"></i> تاريخ
                         </option>
@@ -385,6 +388,19 @@ document.addEventListener('DOMContentLoaded', function() {
                             <i class="fas fa-info-circle"></i> هذه الصورة ستظهر كقيمة افتراضية في النموذج
                         </small>
                         ${value ? `<div class='mt-2'><img src='${value}' class='img-thumbnail' style='max-width:120px;'></div>` : ''}
+                    </div>
+                </div>`;
+
+        } else if(type === 'video') {
+            html = `
+                <div class="card">
+                    <div class="card-body">
+                        <label class="form-label"><i class="fas fa-star"></i> القيمة الافتراضية:</label>
+                        <input type="file" name="value" class="form-control" accept="video/*">
+                        <small class="text-muted">
+                            <i class="fas fa-info-circle"></i> هذا الفيديو سيظهر كقيمة افتراضية في النموذج
+                        </small>
+                        ${value ? `<div class='mt-2'><video src='/storage/${value}' controls style='max-width:240px;' class='img-thumbnail'></video></div>` : ''}
                     </div>
                 </div>`;
 

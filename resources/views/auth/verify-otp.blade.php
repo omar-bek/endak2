@@ -81,7 +81,7 @@
                         <div class="text-center mt-4">
                             <a href="{{ route('register') }}" class="text-decoration-none">
                                 <i class="fas fa-arrow-right me-1"></i>
-                                العودة إلى التسجيل
+                                العودة إلى إنشاء الحساب
                             </a>
                         </div>
                     </div>

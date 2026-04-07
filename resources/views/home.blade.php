@@ -464,7 +464,7 @@
             <div class="eh-btns" style="justify-content:center;">
                 @guest
                     <a href="{{ route('register') }}" class="eh-btn eh-btn-accent">
-                        <i class="fas fa-user-plus"></i> سجّل الآن مجاناً
+                        <i class="fas fa-user-plus"></i> أنشئ حسابك الآن مجاناً
                     </a>
                 @else
                     <a href="{{ route('categories.index') }}" class="eh-btn eh-btn-accent">
