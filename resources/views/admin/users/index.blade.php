@@ -15,21 +15,28 @@
                 <div class="col-md-2">
                     <select name="role" class="form-select">
                         <option value="">جميع الأدوار</option>
-                        <option value="1" {{ request('role') == '1' ? 'selected' : '' }}>مدير</option>
-                        <option value="2" {{ request('role') == '2' ? 'selected' : '' }}>مستخدم عادي</option>
-                        <option value="3" {{ request('role') == '3' ? 'selected' : '' }}>مزود خدمة</option>
+                        <option value="admin" {{ request('role') == 'admin' ? 'selected' : '' }}>مدير</option>
+                        <option value="customer" {{ request('role') == 'customer' ? 'selected' : '' }}>مستخدم عادي</option>
+                        <option value="provider" {{ request('role') == 'provider' ? 'selected' : '' }}>مزود خدمة</option>
                     </select>
                 </div>
                 <div class="col-md-2">
                     <select name="status" class="form-select">
                         <option value="">جميع الحالات</option>
-                        <option value="1" {{ request('status') == '1' ? 'selected' : '' }}>نشط</option>
+                        <option value="1" {{ request('status') == '1' ? 'selected' : '' }}>مفعل</option>
                         <option value="0" {{ request('status') == '0' ? 'selected' : '' }}>معطل</option>
                     </select>
                 </div>
-                <div class="col-md-3">
+                <div class="col-md-2">
+                    <select name="verified" class="form-select">
+                        <option value="">جميع التحققات</option>
+                        <option value="1" {{ request('verified') == '1' ? 'selected' : '' }}>محقق</option>
+                        <option value="0" {{ request('verified') == '0' ? 'selected' : '' }}>غير محقق</option>
+                    </select>
+                </div>
+                <div class="col-md-1">
                     <button type="submit" class="btn btn-primary w-100">
-                        <i class="fas fa-search"></i> بحث
+                        <i class="fas fa-search"></i>
                     </button>
                 </div>
             </form>
@@ -55,6 +62,7 @@
                             <th>البريد الإلكتروني</th>
                             <th>الدور</th>
                             <th>الحالة</th>
+                            <th>التحقق</th>
                             <th>تاريخ التسجيل</th>
                             <th>الإجراءات</th>
                         </tr>
@@ -84,9 +92,20 @@
                             </td>
                             <td>
                                 @if($user->is_active)
-                                    <span class="badge bg-success">نشط</span>
+                                    <span class="badge bg-success"><i class="fas fa-check"></i> مفعل</span>
                                 @else
-                                    <span class="badge bg-danger">معطل</span>
+                                    <span class="badge bg-danger"><i class="fas fa-ban"></i> معطل</span>
+                                @endif
+                            </td>
+                            <td>
+                                @if($user->hasVerifiedEmail())
+                                    <span class="badge bg-success" title="تم التحقق في {{ $user->email_verified_at->format('Y-m-d H:i') }}">
+                                        <i class="fas fa-check-circle"></i> محقق
+                                    </span>
+                                @else
+                                    <span class="badge bg-warning text-dark">
+                                        <i class="fas fa-exclamation-circle"></i> غير محقق
+                                    </span>
                                 @endif
                             </td>
                             <td>
@@ -100,8 +119,15 @@
                                     <form action="{{ route('admin.users.toggle-status', $user->id) }}" method="POST" style="display:inline-block">
                                         @csrf
                                         @method('PATCH')
-                                        <button type="submit" class="btn btn-warning" title="{{ $user->is_active ? 'تعطيل' : 'تفعيل' }}">
+                                        <button type="submit" class="btn btn-warning" title="{{ $user->is_active ? 'تعطيل الحساب' : 'تفعيل الحساب' }}">
                                             <i class="fas fa-{{ $user->is_active ? 'pause' : 'play' }}"></i>
+                                        </button>
+                                    </form>
+                                    <form action="{{ route('admin.users.toggle-verification', $user->id) }}" method="POST" style="display:inline-block" onsubmit="return confirm('{{ $user->hasVerifiedEmail() ? 'هل تريد إلغاء توثيق هذا الحساب؟' : 'هل تريد توثيق هذا الحساب يدوياً؟' }}');">
+                                        @csrf
+                                        @method('PATCH')
+                                        <button type="submit" class="btn {{ $user->hasVerifiedEmail() ? 'btn-outline-danger' : 'btn-success' }}" title="{{ $user->hasVerifiedEmail() ? 'إلغاء التوثيق' : 'توثيق الحساب' }}">
+                                            <i class="fas fa-{{ $user->hasVerifiedEmail() ? 'times-circle' : 'check-circle' }}"></i>
                                         </button>
                                     </form>
                                     @if($user->id !== auth()->id())
@@ -118,7 +144,7 @@
                         </tr>
                         @empty
                         <tr>
-                            <td colspan="8" class="text-center py-4">
+                            <td colspan="9" class="text-center py-4">
                                 <i class="fas fa-users text-muted" style="font-size: 3rem;"></i>
                                 <h5 class="mt-3 text-muted">لا يوجد مستخدمين</h5>
                                 <p class="text-muted">لم يتم تسجيل أي مستخدمين بعد</p>

@@ -52,7 +52,7 @@ class AuthController extends Controller
                 // التحقق من تحقق الإيميل
                 if (!$user->hasVerifiedEmail()) {
                     return back()->withErrors([
-                        'email' => 'يجب التحقق من الإيميل أولاً. تحقق من بريدك الإلكتروني للحصول على رابط التحقق.'
+                        'email' => 'لا يمكنك الدخول إلى الموقع قبل توثيق البريد الإلكتروني. إذا كان البريد الذي سجلت به خاطئاً فلن يتم توثيق حسابك.'
                     ])->onlyInput('email');
                 }
 
@@ -102,11 +102,14 @@ class AuthController extends Controller
         try {
             $validated = $request->validate([
                 'name' => 'required|string|max:255',
-                'email' => 'required|string|email|max:255|unique:users',
+                'email' => 'required|string|email:rfc,dns|max:255|unique:users',
                 'phone' => 'required|string|max:20|unique:users',
                 'password' => 'required|string|min:8',
                 'user_type' => 'required|in:customer,provider',
                 'terms' => 'required|accepted',
+            ], [
+                'email.email' => 'البريد الإلكتروني غير صحيح. الحساب الخاطئ لن يتم توثيقه ولن يستطيع الدخول إلى الموقع.',
+                'email.unique' => 'هذا البريد الإلكتروني مسجل بالفعل.',
             ]);
 
             // Create user account
@@ -136,9 +139,9 @@ class AuthController extends Controller
 
             Log::info('User registered', ['user_id' => $user->id, 'user_type' => $user->user_type, 'email_sent' => $emailSent]);
 
-            $message = 'تم إنشاء الحساب بنجاح! يرجى التحقق من الإيميل لإكمال التسجيل.';
+            $message = 'تم إنشاء الحساب بنجاح! يرجى التحقق من الإيميل لإكمال التسجيل. إذا كان البريد الإلكتروني خاطئاً فلن يتم توثيق حسابك ولن تستطيع الدخول إلى الموقع.';
             if (!$emailSent) {
-                $message = 'تم إنشاء الحساب بنجاح! لكن حدث خطأ في إرسال رابط التحقق. يرجى الضغط على "إعادة إرسال" في الصفحة التالية.';
+                $message = 'تم إنشاء الحساب بنجاح! لكن حدث خطأ في إرسال رابط التحقق. تأكد من صحة بريدك الإلكتروني، فالحساب الخاطئ لن يتم توثيقه ولن يدخل الموقع. يرجى الضغط على "إعادة إرسال" في الصفحة التالية.';
             }
 
             return redirect()->route('verification.notice')->with($emailSent ? 'success' : 'warning', $message);

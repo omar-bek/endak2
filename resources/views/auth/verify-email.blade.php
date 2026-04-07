@@ -46,6 +46,12 @@
                             إذا لم تستلم البريد الإلكتروني، اضغط على الزر أدناه لإعادة الإرسال.
                         </div>
 
+                        <!-- Wrong Email Warning -->
+                        <div class="alert alert-danger">
+                            <i class="fas fa-exclamation-triangle me-2"></i>
+                            <strong>تنبيه:</strong> إذا كان البريد الإلكتروني الذي سجلت به خاطئاً أو لا تملكه، فلن يتم توثيق حسابك ولن تستطيع الدخول إلى الموقع. يرجى تسجيل الخروج وإعادة التسجيل ببريد إلكتروني صحيح.
+                        </div>
+
                         <!-- Resend Form -->
                         <form method="POST" action="{{ route('verification.send') }}" id="resendForm">
                             @csrf

@@ -33,6 +33,15 @@ class UserController extends Controller
             $query->where('is_active', $request->status);
         }
 
+        // فلترة حسب حالة التحقق من الإيميل
+        if ($request->has('verified') && $request->verified !== '') {
+            if ($request->verified == '1') {
+                $query->whereNotNull('email_verified_at');
+            } else {
+                $query->whereNull('email_verified_at');
+            }
+        }
+
         $users = $query->latest()->paginate(20);
 
         return view('admin.users.index', compact('users'));
@@ -72,6 +81,22 @@ class UserController extends Controller
         $status = $user->is_active ? 'تفعيل' : 'تعطيل';
 
         return back()->with('success', "تم $status المستخدم بنجاح");
+    }
+
+    /**
+     * تبديل حالة التحقق من البريد الإلكتروني
+     */
+    public function toggleVerification(User $user)
+    {
+        if ($user->hasVerifiedEmail()) {
+            $user->forceFill(['email_verified_at' => null])->save();
+            $message = 'تم إلغاء توثيق البريد الإلكتروني بنجاح';
+        } else {
+            $user->forceFill(['email_verified_at' => now()])->save();
+            $message = 'تم توثيق البريد الإلكتروني بنجاح';
+        }
+
+        return back()->with('success', $message);
     }
 
     /**
