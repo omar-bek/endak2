@@ -275,7 +275,7 @@
             {{-- Home --}}
             <a href="{{ route('home') }}" class="footer-nav-item {{ request()->routeIs('home') ? 'active' : '' }}">
                 <div class="footer-nav-icon"><i class="fas fa-home"></i></div>
-                <span class="footer-nav-text">{{ __('messages.home') }}</span>
+                <span class="footer-nav-text">طلب خدمة</span>
                 <span class="fnav-dot"></span>
             </a>
 

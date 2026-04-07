@@ -455,38 +455,7 @@
     </div>
 </section>
 
-{{-- Features --}}
-<section class="eh-features">
-    <div class="container">
-        <div class="eh-section-head eh-anim">
-            <div class="eh-section-tag"><i class="fas fa-sparkles"></i> لماذا إنداك؟</div>
-            <h2 class="eh-section-title">نوفر لك تجربة سلسة وآمنة</h2>
-        </div>
 
-        <div class="eh-feat-grid">
-            <div class="eh-feat-card eh-anim">
-                <div class="eh-feat-icon i1"><i class="fas fa-shield-alt"></i></div>
-                <div class="eh-feat-title">خدمات موثوقة</div>
-                <div class="eh-feat-desc">جميع مزودي الخدمات يتم التحقق منهم لضمان جودة العمل</div>
-            </div>
-            <div class="eh-feat-card eh-anim">
-                <div class="eh-feat-icon i2"><i class="fas fa-bolt"></i></div>
-                <div class="eh-feat-title">استجابة سريعة</div>
-                <div class="eh-feat-desc">احصل على عروض من مزودي الخدمات في دقائق معدودة</div>
-            </div>
-            <div class="eh-feat-card eh-anim">
-                <div class="eh-feat-icon i3"><i class="fas fa-comments"></i></div>
-                <div class="eh-feat-title">تواصل مباشر</div>
-                <div class="eh-feat-desc">تواصل مع مزود الخدمة مباشرة عبر نظام الرسائل المدمج</div>
-            </div>
-            <div class="eh-feat-card eh-anim">
-                <div class="eh-feat-icon i4"><i class="fas fa-star"></i></div>
-                <div class="eh-feat-title">تقييمات حقيقية</div>
-                <div class="eh-feat-desc">اطلع على تقييمات العملاء السابقين قبل اختيار مزود الخدمة</div>
-            </div>
-        </div>
-    </div>
-</section>
 
 {{-- CTA --}}
 <section class="eh-cta">
@@ -504,8 +473,8 @@
                         <i class="fas fa-rocket"></i> ابدأ الآن
                     </a>
                 @endguest
-                <a href="{{ route('contact') }}" class="eh-btn eh-btn-outline">
-                    <i class="fas fa-envelope"></i> تواصل معنا
+                <a href="{{ \App\Helpers\WhatsAppHelper::getWhatsAppUrl() }}" target="_blank" rel="noopener noreferrer" class="eh-btn eh-btn-outline">
+                    <i class="fab fa-whatsapp"></i> تواصل واتساب: {{ \App\Helpers\WhatsAppHelper::getWhatsAppNumber() }}
                 </a>
             </div>
         </div>
