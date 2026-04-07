@@ -400,17 +400,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 </div>`;
 
         } else if(type === 'video') {
-            html = `
-                <div class="card">
-                    <div class="card-body">
-                        <label class="form-label"><i class="fas fa-star"></i> القيمة الافتراضية:</label>
-                        <input type="file" name="value" class="form-control" accept="video/*" ${value ? '' : 'required'}>
-                        <small class="text-muted">
-                            <i class="fas fa-info-circle"></i> هذا الفيديو سيظهر كقيمة افتراضية في النموذج
-                        </small>
-                        ${value ? `<div class='mt-2'><video src='/storage/${value}' controls style='max-width:240px;' class='img-thumbnail'></video></div>` : ''}
-                    </div>
-                </div>`;
+            html = ``;
 
         } else if(type === 'date') {
             html = `

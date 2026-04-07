@@ -193,15 +193,11 @@ class CategoryFieldController extends Controller
                 return $field ? $field->value : null;
 
             case 'video':
-                if ($request->hasFile('value')) {
-                    // حذف الفيديو القديم إذا كان موجود
-                    if ($field && $field->value) {
-                        Storage::disk('public')->delete($field->value);
-                    }
-
-                    return $request->file('value')->store('field-defaults', 'public');
+                // لا يوجد قيمة افتراضية للفيديو
+                if ($field && $field->value) {
+                    Storage::disk('public')->delete($field->value);
                 }
-                return $field ? $field->value : null;
+                return null;
 
             case 'checkbox':
                 return $request->has('value') ? 1 : 0;
