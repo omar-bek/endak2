@@ -19,7 +19,7 @@
                         <div class="auth-card__form">
                             {{-- Logo --}}
                             <a href="{{ route('home') }}" class="auth-logo">
-                                <img src="{{ asset(\App\Models\SystemSetting::get('site_logo', 'home.png')) }}"
+                                <img src="{{ media_site_logo_url(\App\Models\SystemSetting::get('site_logo', 'home.png')) }}"
                                     alt="Endak">
                             </a>
 

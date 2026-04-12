@@ -35,7 +35,7 @@ class SubCategoryController extends Controller
         ]);
 
         if($request->hasFile('image')) {
-            $data['image'] = $request->file('image')->store('sub_categories', 'public');
+            $data['image'] = media_public_url_from_path($request->file('image')->store('sub_categories', 'public'));
         }
 
         SubCategory::create($data);
@@ -63,7 +63,7 @@ class SubCategoryController extends Controller
         ]);
 
         if($request->hasFile('image')) {
-            $data['image'] = $request->file('image')->store('sub_categories', 'public');
+            $data['image'] = media_public_url_from_path($request->file('image')->store('sub_categories', 'public'));
         }
 
         $subCategory->update($data);
@@ -100,7 +100,7 @@ class SubCategoryController extends Controller
 
         // نسخ الصورة إذا كانت موجودة
         if($request->hasFile('image')) {
-            $data['image'] = $request->file('image')->store('sub_categories', 'public');
+            $data['image'] = media_public_url_from_path($request->file('image')->store('sub_categories', 'public'));
         } else {
             // نسخ الصورة الأصلية إذا لم يتم رفع صورة جديدة
             $data['image'] = $originalSubCategory->image;

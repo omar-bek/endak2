@@ -33,8 +33,8 @@
                     <div class="col-md-6">
                         <h6>المرسل:</h6>
                         <div class="d-flex align-items-center mb-3">
-                            @if($participants['sender']->avatar)
-                                <img src="{{ asset('storage/' . $participants['sender']->avatar) }}" 
+                            @if($participants['sender']->avatar_url)
+                                <img src="{{ $participants['sender']->avatar_url }}" 
                                      alt="{{ $participants['sender']->name }}" 
                                      class="rounded-circle me-2" 
                                      style="width: 50px; height: 50px; object-fit: cover;">
@@ -53,8 +53,8 @@
                     <div class="col-md-6">
                         <h6>المستقبل:</h6>
                         <div class="d-flex align-items-center mb-3">
-                            @if($participants['receiver']->avatar)
-                                <img src="{{ asset('storage/' . $participants['receiver']->avatar) }}" 
+                            @if($participants['receiver']->avatar_url)
+                                <img src="{{ $participants['receiver']->avatar_url }}" 
                                      alt="{{ $participants['receiver']->name }}" 
                                      class="rounded-circle me-2" 
                                      style="width: 50px; height: 50px; object-fit: cover;">
@@ -88,8 +88,8 @@
                     <div class="message-content" style="max-width: 70%;">
                         <div class="d-flex align-items-center mb-2 {{ $message->sender_id == $participants['sender']->id ? 'justify-content-end' : 'justify-content-start' }}">
                             @if($message->sender_id != $participants['sender']->id)
-                                @if($message->sender->avatar)
-                                    <img src="{{ asset('storage/' . $message->sender->avatar) }}" 
+                                @if($message->sender->avatar_url)
+                                    <img src="{{ $message->sender->avatar_url }}" 
                                          alt="{{ $message->sender->name }}" 
                                          class="rounded-circle me-2" 
                                          style="width: 35px; height: 35px; object-fit: cover;">
@@ -105,8 +105,8 @@
                                 <small class="text-muted">{{ $message->created_at->format('Y-m-d H:i') }}</small>
                             </div>
                             @if($message->sender_id == $participants['sender']->id)
-                                @if($message->sender->avatar)
-                                    <img src="{{ asset('storage/' . $message->sender->avatar) }}" 
+                                @if($message->sender->avatar_url)
+                                    <img src="{{ $message->sender->avatar_url }}" 
                                          alt="{{ $message->sender->name }}" 
                                          class="rounded-circle ms-2" 
                                          style="width: 35px; height: 35px; object-fit: cover;">
@@ -129,7 +129,7 @@
                                         <span>صورة</span>
                                         @if($message->media_path)
                                             <br>
-                                            <img src="{{ asset('storage/' . $message->media_path) }}" 
+                                            <img src="{{ $message->media_url }}" 
                                                  alt="صورة" 
                                                  class="img-thumbnail mt-2" 
                                                  style="max-width: 200px;">
@@ -142,7 +142,7 @@
                                         @if($message->voice_note_path)
                                             <br>
                                             <audio controls class="mt-2">
-                                                <source src="{{ asset('storage/' . $message->voice_note_path) }}" type="audio/wav">
+                                                <source src="{{ $message->voice_note_url }}" type="audio/wav">
                                                 المتصفح لا يدعم تشغيل الصوت
                                             </audio>
                                         @endif
@@ -153,7 +153,7 @@
                                         <span>ملف: {{ $message->file_name ?? 'ملف' }}</span>
                                         @if($message->media_path)
                                             <br>
-                                            <a href="{{ asset('storage/' . $message->media_path) }}" 
+                                            <a href="{{ $message->media_url }}" 
                                                download 
                                                class="btn btn-sm btn-outline-primary mt-2">
                                                 <i class="fas fa-download"></i> تحميل

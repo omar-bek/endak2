@@ -465,7 +465,7 @@
                 <div class="user-info d-flex align-items-center">
                     <span class="me-3">مرحباً، {{ Auth::user()->name }}</span>
                     @if(Auth::user()->image && file_exists(public_path('storage/' . Auth::user()->image)))
-                        <img src="{{ asset('storage/' . Auth::user()->image) }}"
+                        <img src="{{ Auth::user()->image_url ?? asset('images/default-avatar.png') }}"
                              alt="{{ Auth::user()->name }}"
                              class="rounded-circle"
                              style="width: 40px; height: 40px; object-fit: cover;"

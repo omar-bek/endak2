@@ -28,7 +28,7 @@
                 <div class="ac-card-header">
                     <div class="ac-card-img">
                         @if($category->image)
-                            <img src="{{ asset('storage/' . $category->image) }}" alt="{{ $category->name }}">
+                            <img src="{{ $category->image_url }}" alt="{{ $category->name }}">
                         @else
                             <div class="ac-card-img-placeholder"><i class="{{ $category->icon ?? 'fas fa-folder' }}"></i></div>
                         @endif

@@ -31,7 +31,7 @@
     <nav class="navbar navbar-expand-lg fixed-top custom-navbar d-none d-lg-block">
         <div class="container">
             <a class="navbar-brand d-flex align-items-center" href="{{ route('home') }}">
-                <img src="{{ asset(\App\Models\SystemSetting::get('site_logo', 'home.png')) }}"
+                <img src="{{ media_site_logo_url(\App\Models\SystemSetting::get('site_logo', 'home.png')) }}"
                     alt="{{ \App\Models\SystemSetting::get('site_name_ar', 'إنداك') }}"
                     style="height: 40px; width: auto;">
             </a>
@@ -167,7 +167,7 @@
             <div class="row text-center text-md-start">
                 <div class="col-md-4 mb-4">
                     <h5 class="footer-title d-flex align-items-center justify-content-center justify-content-md-start">
-                        <img src="{{ asset(\App\Models\SystemSetting::get('site_logo', 'home.png')) }}" alt="Endak" style="height: 50px; width: auto;" class="me-2">
+                        <img src="{{ media_site_logo_url(\App\Models\SystemSetting::get('site_logo', 'home.png')) }}" alt="Endak" style="height: 50px; width: auto;" class="me-2">
                         Endak
                     </h5>
                     <p class="footer-text">{{ __('messages.welcome_subtitle') }}</p>

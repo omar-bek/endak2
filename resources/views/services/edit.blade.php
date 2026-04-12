@@ -326,7 +326,7 @@
                         </div>
 
                         @if ($service->image)
-                            <img src="{{ asset('storage/' . $service->image) }}" alt="{{ $service->title }}"
+                            <img src="{{ $service->image_url }}" alt="{{ $service->title }}"
                                 class="img-fluid mb-3" style="max-width: 200px; border-radius: 10px;">
                         @endif
 
@@ -532,7 +532,7 @@
                                                                     <div class="col-md-3 mb-2 existing-image-item"
                                                                         data-image-path="{{ $imagePath }}">
                                                                         <div class="card">
-                                                                            <img src="{{ asset('storage/' . $imagePath) }}"
+                                                                            <img src="{{ media_resolve_url($imagePath) }}"
                                                                                 class="card-img-top"
                                                                                 style="height: 100px; object-fit: cover;"
                                                                                 alt="صورة {{ $index + 1 }}">

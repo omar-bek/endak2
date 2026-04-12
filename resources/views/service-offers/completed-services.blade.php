@@ -80,7 +80,7 @@
                     <div class="col-md-6 col-lg-4 mb-4">
                         <div class="card service-card border-0 shadow-sm h-100 rounded-4 overflow-hidden">
                             @if($offer->service && $offer->service->image)
-                                <img src="{{ asset('storage/' . $offer->service->image) }}"
+                                <img src="{{ $offer->service->image_url }}"
                                      alt="{{ $offer->service->title }}"
                                      class="card-img-top"
                                      style="height: 220px; object-fit: cover;">

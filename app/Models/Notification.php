@@ -137,10 +137,10 @@ class Notification extends Model
     private static function getUserAvatar($user)
     {
         if ($user->image) {
-            return 'storage/' . $user->image;
+            return media_resolve_url($user->image);
         }
         if ($user->avatar) {
-            return $user->avatar;
+            return media_resolve_url($user->avatar) ?? $user->avatar;
         }
         return null;
     }

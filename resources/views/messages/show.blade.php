@@ -32,7 +32,7 @@
                        data-name="{{ strtolower($otherUserInList->name) }}">
                         <div class="ec-conv-avatar">
                             @if ($otherUserInList->image && file_exists(public_path('storage/' . $otherUserInList->image)))
-                                <img src="{{ asset('storage/' . $otherUserInList->image) }}" alt="{{ $otherUserInList->name }}">
+                                <img src="{{ $otherUserInList->image_url ?? asset('images/default-avatar.png') }}" alt="{{ $otherUserInList->name }}">
                             @else
                                 <div class="ec-avatar-letter">{{ strtoupper(mb_substr($otherUserInList->name, 0, 1)) }}</div>
                             @endif
@@ -76,7 +76,7 @@
                 <div class="ec-header-user">
                     <div class="ec-header-avatar">
                         @if ($otherUser->image && file_exists(public_path('storage/' . $otherUser->image)))
-                            <img src="{{ asset('storage/' . $otherUser->image) }}" alt="{{ $otherUser->name }}">
+                            <img src="{{ $otherUser->image_url ?? asset('images/default-avatar.png') }}" alt="{{ $otherUser->name }}">
                         @else
                             <div class="ec-avatar-letter sm">{{ strtoupper(mb_substr($otherUser->name, 0, 1)) }}</div>
                         @endif

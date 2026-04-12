@@ -31,7 +31,7 @@
             <div class="conversation-item" onclick="window.location.href='{{ route('messages.show', $otherUser->id) }}'" data-name="{{ strtolower($otherUser->name) }}">
                 <div class="conversation-avatar">
                     @if($otherUser->image && file_exists(public_path('storage/' . $otherUser->image)))
-                    <img src="{{ asset('storage/' . $otherUser->image) }}" alt="{{ $otherUser->name }}" onerror="this.onerror=null;this.src='{{ asset('images/default-avatar.png') }}';">
+                    <img src="{{ $otherUser->image_url ?? asset('images/default-avatar.png') }}" alt="{{ $otherUser->name }}" onerror="this.onerror=null;this.src='{{ asset('images/default-avatar.png') }}';">
                     @else
                     <div class="default-avatar">
                         {{ strtoupper(substr($otherUser->name, 0, 1)) }}

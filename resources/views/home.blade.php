@@ -415,7 +415,7 @@
             </div>
 
             <div class="eh-hero-visual">
-                <img src="{{ asset(\App\Models\SystemSetting::get('site_logo', 'home.png')) }}"
+                <img src="{{ media_site_logo_url(\App\Models\SystemSetting::get('site_logo', 'home.png')) }}"
                      alt="{{ \App\Models\SystemSetting::get('site_name_ar', 'إنداك') }}"
                      onerror="this.onerror=null;this.src='{{ asset('home.png') }}';">
             </div>

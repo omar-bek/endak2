@@ -103,7 +103,7 @@
                             <label for="image" class="form-label">صورة القسم</label>
                             @if ($category->image)
                                 <div class="mb-2">
-                                    <img src="{{ asset('storage/' . $category->image) }}"
+                                    <img src="{{ $category->image_url }}"
                                         alt="{{ $category->name_ar ?? $category->name }}" class="img-thumbnail"
                                         style="max-width: 200px;">
                                 </div>

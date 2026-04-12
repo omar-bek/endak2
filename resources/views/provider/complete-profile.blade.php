@@ -137,7 +137,7 @@
                     <div class="e-card-body text-center">
                         <div class="mb-3">
                             @if (Auth::user()->image)
-                                <img src="{{ asset('storage/' . Auth::user()->image) }}" class="avatar-preview" id="avatarPreview">
+                                <img src="{{ Auth::user()->image_url ?? asset('images/default-avatar.png') }}" class="avatar-preview" id="avatarPreview">
                             @else
                                 <div class="avatar-preview-placeholder" id="avatarPreview"><i class="fas fa-user fa-3x"></i></div>
                             @endif

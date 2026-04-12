@@ -608,7 +608,7 @@ class ServiceController extends Controller
                         foreach ($value as $file) {
                             if ($file && $file->isValid()) {
                                 $path = $file->store('custom_fields/' . $fieldName, 'public');
-                                $imagePaths[] = $path;
+                                $imagePaths[] = media_public_url_from_path($path);
                             }
                         }
                         if (!empty($imagePaths)) {
@@ -618,7 +618,7 @@ class ServiceController extends Controller
                         // معالجة ملف فردي (فيديو/صورة فردية)
                         if ($value->isValid()) {
                             $path = $value->store('custom_fields/' . $fieldName, 'public');
-                            $processedValues[] = $path;
+                            $processedValues[] = media_public_url_from_path($path);
                         }
                     } elseif ($value !== null && $value !== '') {
                         $processedValues[] = $value;
@@ -629,7 +629,8 @@ class ServiceController extends Controller
                 }
             } elseif ($fieldValues instanceof \Illuminate\Http\UploadedFile) {
                 if ($fieldValues->isValid()) {
-                    $processedFields[$fieldName] = $fieldValues->store('custom_fields/' . $fieldName, 'public');
+                    $path = $fieldValues->store('custom_fields/' . $fieldName, 'public');
+                    $processedFields[$fieldName] = media_public_url_from_path($path);
                 }
             } elseif ($fieldValues !== null && $fieldValues !== '') {
                 $processedFields[$fieldName] = $fieldValues;
@@ -864,8 +865,9 @@ class ServiceController extends Controller
     {
         foreach ($deleteImages as $fieldName => $imagePaths) {
             foreach ($imagePaths as $imagePath) {
-                if (Storage::disk('public')->exists($imagePath)) {
-                    Storage::disk('public')->delete($imagePath);
+                $diskPath = media_public_disk_path($imagePath);
+                if ($diskPath && Storage::disk('public')->exists($diskPath)) {
+                    Storage::disk('public')->delete($diskPath);
                 }
             }
 
@@ -931,8 +933,11 @@ class ServiceController extends Controller
             $serviceId = $service->id;
 
             // حذف الصورة إذا كانت موجودة
-            if ($service->image && Storage::disk('public')->exists($service->image)) {
-                Storage::disk('public')->delete($service->image);
+            if ($service->image) {
+                $imgPath = media_public_disk_path($service->image);
+                if ($imgPath && Storage::disk('public')->exists($imgPath)) {
+                    Storage::disk('public')->delete($imgPath);
+                }
             }
 
             // حذف الخدمة

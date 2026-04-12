@@ -14,7 +14,7 @@
 @php
     $siteName   = \App\Models\SystemSetting::get('site_name_ar', config('app.name', 'Endak'));
     $siteNameEn = \App\Models\SystemSetting::get('site_name_en', 'Endak');
-    $siteLogo   = asset(\App\Models\SystemSetting::get('site_logo', 'home.png'));
+    $siteLogo   = media_site_logo_url(\App\Models\SystemSetting::get('site_logo', 'home.png'));
     $locale     = app()->getLocale();
     $altLocale  = $locale === 'ar' ? 'en' : 'ar';
 

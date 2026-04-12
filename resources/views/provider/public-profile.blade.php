@@ -15,8 +15,8 @@
                     <div class="card-body">
                         <div class="row align-items-center mb-4">
                             <div class="col-md-3 text-center">
-                                @if ($provider->image && file_exists(public_path('storage/' . $provider->image)))
-                                    <img src="{{ asset('storage/' . $provider->image) }}" alt="{{ $provider->name }}"
+                                @if ($provider->image)
+                                    <img src="{{ $provider->image_url }}" alt="{{ $provider->name }}"
                                         class="rounded-circle mb-3" width="120" height="120"
                                         style="object-fit: cover;">
                                 @else

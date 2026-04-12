@@ -1006,7 +1006,7 @@
 
             <div class="hero-category">
                 @if ($category->image)
-                    <img src="{{ asset('storage/' . $category->image) }}"
+                    <img src="{{ $category->image_url }}"
                         alt="{{ app()->getLocale() == 'ar' ? $category->name : $category->name_en }}"
                         class="hero-category-img">
                 @endif
@@ -1484,7 +1484,7 @@
                     <div class="sidebar-info-card">
                         <div class="sidebar-info-header">
                             @if ($category->image)
-                                <img src="{{ asset('storage/' . $category->image) }}"
+                                <img src="{{ $category->image_url }}"
                                     alt="{{ app()->getLocale() == 'ar' ? $category->name : $category->name_en }}">
                             @endif
                             <h3>{{ app()->getLocale() == 'ar' ? $category->name : $category->name_en }}</h3>

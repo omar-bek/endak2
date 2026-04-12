@@ -377,7 +377,7 @@ class AuthController extends BaseApiController
                     'name_en' => $providerCategory->category->name_en,
                     'slug' => $providerCategory->category->slug,
                     'icon' => $providerCategory->category->icon,
-                    'image' => $providerCategory->category->image ? asset('storage/' . $providerCategory->category->image) : null,
+                    'image' => $providerCategory->category->image ? media_resolve_url($providerCategory->category->image) : null,
                 ];
             });
 
@@ -447,7 +447,7 @@ class AuthController extends BaseApiController
                         'name_en' => $providerCategory->category->name_en,
                         'slug' => $providerCategory->category->slug,
                         'icon' => $providerCategory->category->icon,
-                        'image' => $providerCategory->category->image ? asset('storage/' . $providerCategory->category->image) : null,
+                        'image' => $providerCategory->category->image ? media_resolve_url($providerCategory->category->image) : null,
                     ];
                 });
 
@@ -527,7 +527,7 @@ class AuthController extends BaseApiController
                     'name_en' => $category->name_en,
                     'slug' => $category->slug,
                     'icon' => $category->icon,
-                    'image' => $category->image ? asset('storage/' . $category->image) : null,
+                    'image' => $category->image ? media_resolve_url($category->image) : null,
                     'sort_order' => $category->sort_order ?? 0,
                     'children' => $category->children->map(function ($child) {
                         return [
@@ -536,7 +536,7 @@ class AuthController extends BaseApiController
                             'name_en' => $child->name_en,
                             'slug' => $child->slug,
                             'icon' => $child->icon,
-                            'image' => $child->image ? asset('storage/' . $child->image) : null,
+                            'image' => $child->image ? media_resolve_url($child->image) : null,
                             'sort_order' => $child->sort_order ?? 0,
                         ];
                     }),
@@ -602,11 +602,12 @@ class AuthController extends BaseApiController
 
         // Handle avatar upload
         if ($request->hasFile('avatar')) {
-            if ($user->avatar && Storage::disk('public')->exists($user->avatar)) {
-                Storage::disk('public')->delete($user->avatar);
+            $old = $user->avatar ? media_public_disk_path($user->avatar) : null;
+            if ($old && Storage::disk('public')->exists($old)) {
+                Storage::disk('public')->delete($old);
             }
             $avatarPath = $request->file('avatar')->store('avatars', 'public');
-            $user->update(['avatar' => $avatarPath]);
+            $user->update(['avatar' => media_public_url_from_path($avatarPath)]);
         }
 
         // Update user phone if provided
@@ -983,11 +984,12 @@ class AuthController extends BaseApiController
                     throw new Exception('الملف المرفوع غير صالح');
                 }
 
-                if ($user->avatar && Storage::disk('public')->exists($user->avatar)) {
-                    Storage::disk('public')->delete($user->avatar);
+                $old = $user->avatar ? media_public_disk_path($user->avatar) : null;
+                if ($old && Storage::disk('public')->exists($old)) {
+                    Storage::disk('public')->delete($old);
                 }
 
-                return $file->store('avatars', 'public');
+                return media_public_url_from_path($file->store('avatars', 'public'));
             }
 
             // 2. Base64 image
@@ -1017,8 +1019,9 @@ class AuthController extends BaseApiController
 
             // 5. Delete avatar
             if ($avatarInput === null || $avatarInput === '') {
-                if ($user->avatar && Storage::disk('public')->exists($user->avatar)) {
-                    Storage::disk('public')->delete($user->avatar);
+                $old = $user->avatar ? media_public_disk_path($user->avatar) : null;
+                if ($old && Storage::disk('public')->exists($old)) {
+                    Storage::disk('public')->delete($old);
                 }
                 return null;
             }
@@ -1055,15 +1058,16 @@ class AuthController extends BaseApiController
             throw new Exception('البيانات المرسلة ليست صورة صالحة');
         }
 
-        if ($user->avatar && Storage::disk('public')->exists($user->avatar)) {
-            Storage::disk('public')->delete($user->avatar);
+        $old = $user->avatar ? media_public_disk_path($user->avatar) : null;
+        if ($old && Storage::disk('public')->exists($old)) {
+            Storage::disk('public')->delete($old);
         }
 
         $fileName = Str::random(40) . '.' . $extension;
         $path = 'avatars/' . $fileName;
         Storage::disk('public')->put($path, $decoded);
 
-        return $path;
+        return media_public_url_from_path($path);
     }
 
     /**
@@ -1087,15 +1091,16 @@ class AuthController extends BaseApiController
 
         $extension = $this->getImageExtensionFromUrl($url, $imageInfo['mime']);
 
-        if ($user->avatar && Storage::disk('public')->exists($user->avatar)) {
-            Storage::disk('public')->delete($user->avatar);
+        $old = $user->avatar ? media_public_disk_path($user->avatar) : null;
+        if ($old && Storage::disk('public')->exists($old)) {
+            Storage::disk('public')->delete($old);
         }
 
         $fileName = Str::random(40) . '.' . $extension;
         $path = 'avatars/' . $fileName;
         Storage::disk('public')->put($path, $imageContent);
 
-        return $path;
+        return media_public_url_from_path($path);
     }
 
     /**
@@ -1134,8 +1139,9 @@ class AuthController extends BaseApiController
                 throw new Exception('نوع الملف غير مدعوم. يجب أن يكون: ' . implode(', ', $allowedExtensions));
             }
 
-            if ($user->avatar && Storage::disk('public')->exists($user->avatar)) {
-                Storage::disk('public')->delete($user->avatar);
+            $old = $user->avatar ? media_public_disk_path($user->avatar) : null;
+            if ($old && Storage::disk('public')->exists($old)) {
+                Storage::disk('public')->delete($old);
             }
 
             $fileName = Str::random(40) . '.' . $extension;
@@ -1143,7 +1149,7 @@ class AuthController extends BaseApiController
             $fileContent = file_get_contents($filePath);
             Storage::disk('public')->put($path, $fileContent);
 
-            return $path;
+            return media_public_url_from_path($path);
         }
 
         if (preg_match('/^[A-Z]:|^\/[A-Z]:|^\/C:\//i', $avatarInput)) {
@@ -1225,15 +1231,16 @@ class AuthController extends BaseApiController
 
             $extension = $mimeToExtension[$imageInfo['mime']] ?? 'jpg';
 
-            if ($user->avatar && Storage::disk('public')->exists($user->avatar)) {
-                Storage::disk('public')->delete($user->avatar);
+            $old = $user->avatar ? media_public_disk_path($user->avatar) : null;
+            if ($old && Storage::disk('public')->exists($old)) {
+                Storage::disk('public')->delete($old);
             }
 
             $fileName = Str::random(40) . '.' . $extension;
             $path = 'avatars/' . $fileName;
             Storage::disk('public')->put($path, $imageContent);
 
-            return $path;
+            return media_public_url_from_path($path);
         } catch (Exception $e) {
             Log::error('Error downloading avatar from Google', [
                 'url' => $avatarUrl,

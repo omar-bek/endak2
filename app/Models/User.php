@@ -193,13 +193,23 @@ class User extends Authenticatable implements MustVerifyEmail
     // الحصول على الصورة الشخصية
     public function getAvatarUrlAttribute()
     {
-        if ($this->image && file_exists(public_path('storage/' . $this->image))) {
-            return asset('storage/' . $this->image);
+        if ($this->image) {
+            return media_resolve_url($this->image);
         }
         if ($this->avatar) {
-            return $this->avatar;
+            return media_resolve_url($this->avatar) ?? $this->avatar;
         }
         return null;
+    }
+
+    /** رابط صورة الملف الشخصي المحفوظة في حقل image */
+    public function getImageUrlAttribute(): ?string
+    {
+        if (!$this->image) {
+            return null;
+        }
+
+        return media_resolve_url($this->image);
     }
 
     // التحقق من كون المستخدم متصل

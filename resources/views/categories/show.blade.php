@@ -5,7 +5,7 @@
 @php
     $seoDescription = $category->meta_description ?: (app()->getLocale() === 'ar' ? $category->description : $category->description_en);
     $seoKeywords = $category->name . ', ' . ($category->name_en ?? '') . ', ' . __('messages.seo_default_keywords');
-    $seoImage = $category->image ? asset('storage/' . $category->image) : null;
+    $seoImage = $category->image ? $category->image_url : null;
     $seoUrl = route('categories.show', $category->slug);
     $seoBreadcrumbs = [
         ['name' => __('messages.home'), 'url' => route('home')],
@@ -153,7 +153,7 @@
                                         <div class="card sub-category-card h-100 text-center clickable-card">
                                             <div class="subcategory-image-container">
                                                 @if ($subCategory->image)
-                                                    <img src="{{ asset('storage/' . $subCategory->image) }}"
+                                                    <img src="{{ $subCategory->image_url }}"
                                                         class="subcategory-image"
                                                         alt="{{ $subCategory->name_ar ?? $subCategory->name_en }}">
                                                 @else

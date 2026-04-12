@@ -71,7 +71,7 @@
                                 <td>
                                     <div class="d-flex align-items-center">
                                         @if($offer->service->image)
-                                            <img src="{{ asset('storage/' . $offer->service->image) }}" alt="{{ $offer->service->title }}"
+                                            <img src="{{ $offer->service->image_url }}" alt="{{ $offer->service->title }}"
                                                  class="img-thumbnail me-2" style="width: 40px; height: 40px; object-fit: cover;">
                                         @else
                                             <div class="bg-light text-center rounded me-2" style="width: 40px; height: 40px; line-height: 40px;">

@@ -127,7 +127,7 @@
                 @endphp
                 <div class="svc-card">
                     <div class="svc-card-img">
-                        <img src="{{ $service->image ? asset('storage/' . $service->image) : $service->category->image_url }}"
+                        <img src="{{ $service->image ? $service->image_url : $service->category->image_url }}"
                              alt="{{ $service->title }}"
                              onerror="this.onerror=null; this.src='{{ asset('images/default-service.svg') }}';">
 

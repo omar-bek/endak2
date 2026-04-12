@@ -62,7 +62,7 @@ class CategoryController extends Controller
         // رفع الصورة
         if ($request->hasFile('image')) {
             $imagePath = $request->file('image')->store('categories', 'public');
-            $data['image'] = $imagePath;
+            $data['image'] = media_public_url_from_path($imagePath);
         }
 
         Category::create($data);
@@ -115,11 +115,14 @@ class CategoryController extends Controller
         if ($request->hasFile('image')) {
             // حذف الصورة القديمة
             if ($category->image) {
-                Storage::disk('public')->delete($category->image);
+                $old = media_public_disk_path($category->image);
+                if ($old) {
+                    Storage::disk('public')->delete($old);
+                }
             }
 
             $imagePath = $request->file('image')->store('categories', 'public');
-            $data['image'] = $imagePath;
+            $data['image'] = media_public_url_from_path($imagePath);
         }
 
         $category->update($data);
@@ -135,7 +138,10 @@ class CategoryController extends Controller
     {
         // حذف الصورة
         if ($category->image) {
-            Storage::disk('public')->delete($category->image);
+            $old = media_public_disk_path($category->image);
+            if ($old) {
+                Storage::disk('public')->delete($old);
+            }
         }
 
         $category->delete();

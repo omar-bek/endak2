@@ -136,7 +136,7 @@ class Service extends Model
     public function getImageUrlAttribute()
     {
         if ($this->image) {
-            return asset('storage/' . $this->image);
+            return media_resolve_url($this->image);
         }
 
         // استخدام الصورة الافتراضية من إعدادات النظام

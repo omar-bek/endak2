@@ -424,11 +424,14 @@ class AuthController extends Controller
             // رفع الصورة الشخصية
             if ($request->hasFile('image')) {
                 // حذف الصورة القديمة
-                if ($user->image && Storage::disk('public')->exists($user->image)) {
-                    Storage::disk('public')->delete($user->image);
+                if ($user->image) {
+                    $old = media_public_disk_path($user->image);
+                    if ($old && Storage::disk('public')->exists($old)) {
+                        Storage::disk('public')->delete($old);
+                    }
                 }
 
-                $data['image'] = $request->file('image')->store('users', 'public');
+                $data['image'] = media_public_url_from_path($request->file('image')->store('users', 'public'));
             }
 
             $user->update($data);

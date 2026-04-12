@@ -943,6 +943,7 @@ class ServiceController extends BaseApiController
             'date' => $this->validateDateField($field, $value),
             'time' => $this->validateTimeField($field, $value),
             'image' => $this->validateImageFieldValue($field, $value),
+            'video' => $this->validateVideoFieldValue($field, $value),
             'text', 'textarea', 'title' => !is_string($value) ? "حقل {$field->name_ar} يجب أن يكون نصاً" : null,
             default => null,
         };
@@ -1079,6 +1080,61 @@ class ServiceController extends BaseApiController
         $extension = strtolower(pathinfo($value, PATHINFO_EXTENSION));
         if (!in_array($extension, $allowedExtensions)) {
             return "حقل {$field->name_ar}: اسم الملف يجب أن ينتهي بامتداد صورة صالح: " . implode(', ', $allowedExtensions);
+        }
+
+        return null;
+    }
+
+    /**
+     * التحقق من قيمة حقل الفيديو في custom_fields
+     */
+    private function validateVideoFieldValue(CategoryField $field, $value): ?string
+    {
+        $allowedExtensions = ['mp4', 'webm', 'mov', 'mkv', 'avi'];
+        $maxSize = 50 * 1024 * 1024;
+
+        if (is_object($value) && method_exists($value, 'isValid')) {
+            if (!$value->isValid()) {
+                return "حقل {$field->name_ar}: الفيديو المرفوع غير صالح";
+            }
+            $allowedMimes = ['video/mp4', 'video/quicktime', 'video/x-msvideo', 'video/webm', 'video/x-matroska'];
+            if (!in_array($value->getMimeType(), $allowedMimes)) {
+                return 'حقل ' . $field->name_ar . ': نوع الفيديو غير مدعوم';
+            }
+            if ($value->getSize() > $maxSize) {
+                return "حقل {$field->name_ar}: حجم الفيديو كبير جداً. الحد الأقصى 50MB";
+            }
+
+            return null;
+        }
+
+        if (!is_string($value)) {
+            return "حقل {$field->name_ar} يجب أن يكون فيديو (ملف أو رابط أو base64)";
+        }
+
+        if (preg_match('/^data:video\/[^;]+;base64,/', $value)) {
+            $raw = preg_replace('/^data:video\/[^;]+;base64,/', '', $value);
+            $decoded = base64_decode($raw, true);
+            if ($decoded === false || strlen($decoded) > $maxSize) {
+                return "حقل {$field->name_ar}: بيانات الفيديو غير صالحة أو الحجم أكبر من 50MB";
+            }
+
+            return null;
+        }
+
+        if (filter_var($value, FILTER_VALIDATE_URL)) {
+            $urlPath = parse_url($value, PHP_URL_PATH);
+            $extension = strtolower(pathinfo((string) $urlPath, PATHINFO_EXTENSION));
+            if (!in_array($extension, $allowedExtensions)) {
+                return 'حقل ' . $field->name_ar . ': رابط الفيديو يجب أن ينتهي بامتداد مدعوم: ' . implode(', ', $allowedExtensions);
+            }
+
+            return null;
+        }
+
+        $extension = strtolower(pathinfo($value, PATHINFO_EXTENSION));
+        if (!in_array($extension, $allowedExtensions)) {
+            return 'حقل ' . $field->name_ar . ': امتداد الملف يجب أن يكون: ' . implode(', ', $allowedExtensions);
         }
 
         return null;
@@ -1358,25 +1414,26 @@ class ServiceController extends BaseApiController
             return $customFields;
         }
 
-        // جلب جميع الحقول من نوع image
-        $imageFields = $this->getCategoryFields($categoryId, $subCategoryId)
-            ->where('type', 'image');
+        // جلب حقول الوسائط (صورة / فيديو)
+        $fileFields = $this->getCategoryFields($categoryId, $subCategoryId)
+            ->whereIn('type', ['image', 'video']);
 
-        if ($imageFields->isEmpty()) {
+        if ($fileFields->isEmpty()) {
             return $customFields;
         }
 
         $processedFields = $customFields;
 
         // Log جميع الملفات المرفوعة للتشخيص
-        Log::info('Processing image fields', [
+        Log::info('Processing media fields', [
             'all_files' => array_keys($request->allFiles()),
             'custom_fields' => $customFields,
-            'image_fields' => $imageFields->pluck('name')->toArray(),
+            'media_fields' => $fileFields->pluck('name')->toArray(),
         ]);
 
-        foreach ($imageFields as $field) {
+        foreach ($fileFields as $field) {
             $fieldName = $field->name;
+            $isVideo = $field->type === 'video';
 
             // البحث عن القيمة باستخدام name أو name_en
             $fieldValue = $processedFields[$fieldName]
@@ -1451,8 +1508,8 @@ class ServiceController extends BaseApiController
             // إذا وجدنا ملف مرفوع، نحفظه
             if ($uploadedFile && $uploadedFile->isValid()) {
                 $path = $uploadedFile->store("services/custom_fields/{$categoryId}", 'public');
-                $processedFields[$fieldName] = $path;
-                Log::info('Image file saved', [
+                $processedFields[$fieldName] = media_public_url_from_path($path);
+                Log::info('Media file saved', [
                     'field_name' => $fieldName,
                     'path' => $path,
                     'original_name' => $uploadedFile->getClientOriginalName(),
@@ -1472,8 +1529,8 @@ class ServiceController extends BaseApiController
                 continue;
             }
 
-            // إذا كانت القيمة base64
-            if (is_string($fieldValue) && preg_match('/^data:image\/(jpeg|jpg|png|gif|webp);base64,/', $fieldValue)) {
+            // إذا كانت القيمة base64 (صورة)
+            if (!$isVideo && is_string($fieldValue) && preg_match('/^data:image\/(jpeg|jpg|png|gif|webp);base64,/', $fieldValue)) {
                 $extension = $this->getBase64ImageExtension($fieldValue);
                 $imageData = preg_replace('/^data:image\/\w+;base64,/', '', $fieldValue);
                 $decoded = base64_decode($imageData, true);
@@ -1482,21 +1539,37 @@ class ServiceController extends BaseApiController
                     $fileName = Str::random(40) . '.' . $extension;
                     $path = "services/custom_fields/{$categoryId}/{$fileName}";
                     Storage::disk('public')->put($path, $decoded);
-                    $processedFields[$fieldName] = $path;
+                    $processedFields[$fieldName] = media_public_url_from_path($path);
                 }
                 continue;
             }
 
-            // إذا كانت القيمة URL
+            // إذا كانت القيمة base64 (فيديو)
+            if ($isVideo && is_string($fieldValue) && preg_match('/^data:video\/[^;]+;base64,/', $fieldValue)) {
+                $videoData = preg_replace('/^data:video\/[^;]+;base64,/', '', $fieldValue);
+                $decoded = base64_decode($videoData, true);
+
+                if ($decoded !== false) {
+                    $fileName = Str::random(40) . '.mp4';
+                    $path = "services/custom_fields/{$categoryId}/{$fileName}";
+                    Storage::disk('public')->put($path, $decoded);
+                    $processedFields[$fieldName] = media_public_url_from_path($path);
+                }
+                continue;
+            }
+
+            // إذا كانت القيمة URL — نحفظ الرابط كما هو
             if (is_string($fieldValue) && filter_var($fieldValue, FILTER_VALIDATE_URL)) {
-                // يمكن تنزيل الصورة من URL وحفظها
-                // لكن سنتركها كـ URL للآن
+                $processedFields[$fieldName] = $fieldValue;
                 continue;
             }
 
             // إذا كانت القيمة اسم ملف فقط (مثل
             // نحاول البحث عن الملف المرفوع في الطلب
-            if (is_string($fieldValue) && preg_match('/\.(jpg|jpeg|png|gif|webp)$/i', $fieldValue)) {
+            $mediaExtPattern = $isVideo
+                ? '/\.(mp4|webm|mov|mkv|avi)$/i'
+                : '/\.(jpg|jpeg|png|gif|webp)$/i';
+            if (is_string($fieldValue) && preg_match($mediaExtPattern, $fieldValue)) {
                 // البحث عن الملف في جميع الملفات المرفوعة
                 $allFiles = $request->allFiles();
                 $foundFile = null;
@@ -1519,7 +1592,7 @@ class ServiceController extends BaseApiController
                 // إذا وجدنا الملف، نحفظه
                 if ($foundFile && $foundFile->isValid()) {
                     $path = $foundFile->store("services/custom_fields/{$categoryId}", 'public');
-                    $processedFields[$fieldName] = $path;
+                    $processedFields[$fieldName] = media_public_url_from_path($path);
                 } else {
                     // إذا لم نجد الملف، نحاول البحث عنه في storage
                     // قد يكون الملف موجوداً بالفعل (مثل الصور المحفوظة مسبقاً)
@@ -1532,7 +1605,7 @@ class ServiceController extends BaseApiController
                     $fileExists = false;
                     foreach ($possiblePaths as $possiblePath) {
                         if (Storage::disk('public')->exists($possiblePath)) {
-                            $processedFields[$fieldName] = $possiblePath;
+                            $processedFields[$fieldName] = media_public_url_from_path($possiblePath);
                             $fileExists = true;
                             break;
                         }
@@ -1541,7 +1614,7 @@ class ServiceController extends BaseApiController
                     // إذا لم نجد الملف في storage، نرفض الطلب
                     if (!$fileExists) {
                         throw ValidationException::withMessages([
-                            "custom_fields.{$fieldName}" => "حقل '{$field->name_ar}': الملف '{$fieldValue}' غير موجود. يرجى رفع الملف أو إرسال الصورة كـ base64 أو URL."
+                            "custom_fields.{$fieldName}" => "حقل '{$field->name_ar}': الملف '{$fieldValue}' غير موجود. يرجى رفع الملف أو إرسال الوسائط كـ base64 أو URL."
                         ]);
                     }
                 }

@@ -34,7 +34,7 @@
 
     if (!$appLink) return;
 
-    $siteLogo = asset(\App\Models\SystemSetting::get('site_logo', 'home.png'));
+    $siteLogo = media_site_logo_url(\App\Models\SystemSetting::get('site_logo', 'home.png'));
     $siteName = \App\Models\SystemSetting::get('site_name_ar', 'إنداك');
 @endphp
 

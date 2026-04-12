@@ -5,7 +5,7 @@
 @php
     $seoDescription = $service->meta_description ?: Str::limit(strip_tags($service->description), 160);
     $seoKeywords = $service->category->name . ', ' . ($service->city->name_ar ?? '') . ', ' . __('messages.seo_default_keywords');
-    $seoImage = $service->image ? asset('storage/' . $service->image) : null;
+    $seoImage = $service->image ? $service->image_url : null;
     $seoUrl = route('services.show', $service->slug);
     $seoType = 'article';
     $seoBreadcrumbs = [
@@ -52,7 +52,7 @@
                 {{-- Image --}}
                 @if ($service->image || $service->category->image_url)
                     <div class="svc-show-img">
-                        <img src="{{ $service->image ? asset('storage/' . $service->image) : $service->category->image_url }}"
+                        <img src="{{ $service->image ? $service->image_url : $service->category->image_url }}"
                              alt="{{ $service->title }}"
                              onerror="this.onerror=null; this.src='{{ asset('images/default-service.svg') }}';">
                         @if($service->city)
@@ -198,8 +198,8 @@
                                 </h5>
                                 <div class="svc-gallery">
                                     @foreach ($allImages as $img)
-                                        <div class="svc-gallery-item" onclick="showImageModal('{{ asset('storage/' . $img) }}')" data-bs-toggle="modal" data-bs-target="#imageModal">
-                                            <img src="{{ asset('storage/' . $img) }}" alt="" loading="lazy">
+                                        <div class="svc-gallery-item" onclick="showImageModal({{ json_encode(media_resolve_url($img)) }})" data-bs-toggle="modal" data-bs-target="#imageModal">
+                                            <img src="{{ media_resolve_url($img) }}" alt="" loading="lazy">
                                             <div class="svc-gallery-overlay"><i class="fas fa-search-plus"></i></div>
                                         </div>
                                     @endforeach
@@ -234,7 +234,7 @@
                                     @foreach ($allVideos as $vid)
                                         <div class="svc-video-item">
                                             <video controls preload="metadata" playsinline>
-                                                <source src="{{ asset('storage/' . $vid) }}">
+                                                <source src="{{ media_resolve_url($vid) }}">
                                                 {{ __('messages.audio_not_supported') }}
                                             </video>
                                         </div>

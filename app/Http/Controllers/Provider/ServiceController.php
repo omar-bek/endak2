@@ -77,7 +77,7 @@ class ServiceController extends Controller
 
             // رفع الصورة
             if ($request->hasFile('image')) {
-                $data['image'] = $request->file('image')->store('services', 'public');
+                $data['image'] = media_public_url_from_path($request->file('image')->store('services', 'public'));
             }
 
             $service = Service::create($data);
@@ -173,10 +173,13 @@ class ServiceController extends Controller
             if ($request->hasFile('image')) {
                 // حذف الصورة القديمة
                 if ($service->image) {
-                    Storage::disk('public')->delete($service->image);
+                    $old = media_public_disk_path($service->image);
+                    if ($old) {
+                        Storage::disk('public')->delete($old);
+                    }
                 }
 
-                $data['image'] = $request->file('image')->store('services', 'public');
+                $data['image'] = media_public_url_from_path($request->file('image')->store('services', 'public'));
             }
 
             $service->update($data);
@@ -228,8 +231,9 @@ class ServiceController extends Controller
             }
 
             // حذف الصورة
-            if ($service->image && Storage::disk('public')->exists($service->image)) {
-                Storage::disk('public')->delete($service->image);
+            $imgPath = $service->image ? media_public_disk_path($service->image) : null;
+            if ($imgPath && Storage::disk('public')->exists($imgPath)) {
+                Storage::disk('public')->delete($imgPath);
             }
 
             $serviceId = $service->id;

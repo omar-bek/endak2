@@ -336,7 +336,7 @@
         <div class="ep-avatar-section ep-animate">
             <div class="ep-avatar-wrap">
                 @if($user->image && file_exists(public_path('storage/' . $user->image)))
-                    <img src="{{ asset('storage/' . $user->image) }}" alt="{{ $user->name }}" class="ep-avatar-img">
+                    <img src="{{ $user->image_url ?? asset('images/default-avatar.png') }}" alt="{{ $user->name }}" class="ep-avatar-img">
                 @else
                     <div class="ep-avatar-fallback">{{ strtoupper(mb_substr($user->name, 0, 1)) }}</div>
                 @endif

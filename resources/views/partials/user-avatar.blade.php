@@ -11,7 +11,7 @@
     $class = $class ?? '';
     $fontSize = max(round($size * 0.4), 10);
 
-    $hasImage = $user && $user->image && file_exists(public_path('storage/' . $user->image));
+    $hasImage = $user && $user->image;
     $hasAvatar = $user && $user->avatar && !$hasImage;
     $initial = $user ? mb_strtoupper(mb_substr($user->name, 0, 1)) : '?';
     $name = $user ? $user->name : '';
@@ -24,7 +24,7 @@
 @endif
 
 @if($hasImage)
-    <img src="{{ asset('storage/' . $user->image) }}"
+    <img src="{{ $user->image_url }}"
          alt="{{ $name }}"
          class="rounded-circle"
          style="width: {{ $size }}px; height: {{ $size }}px; object-fit: cover; border: 2px solid #e9ecef;"
@@ -34,7 +34,7 @@
         {{ $initial }}
     </span>
 @elseif($hasAvatar)
-    <img src="{{ $user->avatar }}"
+    <img src="{{ $user->avatar_url }}"
          alt="{{ $name }}"
          class="rounded-circle"
          style="width: {{ $size }}px; height: {{ $size }}px; object-fit: cover; border: 2px solid #e9ecef;"

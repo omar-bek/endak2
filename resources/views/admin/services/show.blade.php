@@ -25,7 +25,7 @@
                     <div class="row">
                         <div class="col-md-4 text-center mb-3">
                             @if($service->image)
-                                <img src="{{ asset('storage/' . $service->image) }}" alt="{{ $service->title }}"
+                                <img src="{{ $service->image_url }}" alt="{{ $service->title }}"
                                      class="img-fluid rounded" style="max-width: 200px;">
                             @else
                                 <div class="bg-light rounded d-flex align-items-center justify-content-center"

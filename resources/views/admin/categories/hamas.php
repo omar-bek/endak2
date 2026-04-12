@@ -64,7 +64,7 @@
                         <td>{{ $category->id }}</td>
                         <td>
                             @if($category->image)
-                                <img src="{{ asset('storage/' . $category->image) }}" alt="{{ $category->name }}" class="category-image">
+                                <img src="{{ $category->image_url }}" alt="{{ $category->name }}" class="category-image">
                             @else
                                 <span class="text-muted">لا توجد صورة</span>
                             @endif

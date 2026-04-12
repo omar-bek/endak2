@@ -139,7 +139,7 @@
                             <td>
                                 <div class="d-flex align-items-center">
                                     @if($message->sender->avatar)
-                                        <img src="{{ asset('storage/' . $message->sender->avatar) }}" 
+                                        <img src="{{ $message->sender->avatar_url ?? asset('images/default-avatar.png') }}" 
                                              alt="{{ $message->sender->name }}" 
                                              class="rounded-circle me-2" 
                                              style="width: 35px; height: 35px; object-fit: cover;">
@@ -158,7 +158,7 @@
                             <td>
                                 <div class="d-flex align-items-center">
                                     @if($message->receiver->avatar)
-                                        <img src="{{ asset('storage/' . $message->receiver->avatar) }}" 
+                                        <img src="{{ $message->receiver->avatar_url ?? asset('images/default-avatar.png') }}" 
                                              alt="{{ $message->receiver->name }}" 
                                              class="rounded-circle me-2" 
                                              style="width: 35px; height: 35px; object-fit: cover;">

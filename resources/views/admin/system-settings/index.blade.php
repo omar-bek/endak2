@@ -140,7 +140,7 @@
                                     <label class="ss-label">لوجو الموقع</label>
                                     @if (\App\Models\SystemSetting::get('site_logo', 'home.png'))
                                         <div class="mb-2 d-flex align-items-center gap-2">
-                                            <img id="current-logo" src="{{ asset(\App\Models\SystemSetting::get('site_logo', 'home.png')) }}" alt="اللوجو" class="img-thumbnail" style="height: 50px; width: auto;">
+                                            <img id="current-logo" src="{{ media_site_logo_url(\App\Models\SystemSetting::get('site_logo', 'home.png')) }}" alt="اللوجو" class="img-thumbnail" style="height: 50px; width: auto;">
                                             @if (\App\Models\SystemSetting::get('site_logo', 'home.png') !== 'home.png')
                                                 <button type="button" class="btn btn-sm btn-outline-danger" onclick="removeCurrentLogo()" title="حذف"><i class="fas fa-trash-alt"></i></button>
                                             @endif
@@ -152,7 +152,7 @@
                                     <div class="ss-hint">PNG, JPG, SVG - الحد 2MB</div>
                                 </div>
                                 <div class="col-md-6 d-flex align-items-center justify-content-center">
-                                    <img id="logo-preview" src="{{ asset(\App\Models\SystemSetting::get('site_logo', 'home.png')) }}" alt="معاينة" style="max-height: 60px; max-width: 180px;">
+                                    <img id="logo-preview" src="{{ media_site_logo_url(\App\Models\SystemSetting::get('site_logo', 'home.png')) }}" alt="معاينة" style="max-height: 60px; max-width: 180px;">
                                 </div>
                                 <div class="col-md-6">
                                     <label class="ss-label">اسم الموقع (إنجليزي)</label>
@@ -442,7 +442,7 @@
                                 <div class="mt-3 d-flex align-items-end gap-3">
                                     <div>
                                         <label class="ss-label">الصورة الحالية</label>
-                                        <img src="{{ asset('storage/' . $currentImage) }}" alt="الصورة الافتراضية" class="img-thumbnail" style="max-width: 180px; max-height: 120px;">
+                                        <img src="{{ media_resolve_url($currentImage) }}" alt="الصورة الافتراضية" class="img-thumbnail" style="max-width: 180px; max-height: 120px;">
                                     </div>
                                     <button type="button" class="btn btn-sm btn-outline-danger" onclick="removeCurrentImage()"><i class="fas fa-trash-alt"></i> حذف</button>
                                 </div>

@@ -185,17 +185,25 @@ class CategoryFieldController extends Controller
                 if ($request->hasFile('value')) {
                     // حذف الصورة القديمة إذا كانت موجودة
                     if ($field && $field->value) {
-                        Storage::disk('public')->delete($field->value);
+                        $old = media_public_disk_path($field->value);
+                        if ($old) {
+                            Storage::disk('public')->delete($old);
+                        }
                     }
 
-                    return $request->file('value')->store('field-defaults', 'public');
+                    $path = $request->file('value')->store('field-defaults', 'public');
+
+                    return media_public_url_from_path($path);
                 }
                 return $field ? $field->value : null;
 
             case 'video':
                 // لا يوجد قيمة افتراضية للفيديو
                 if ($field && $field->value) {
-                    Storage::disk('public')->delete($field->value);
+                    $old = media_public_disk_path($field->value);
+                    if ($old) {
+                        Storage::disk('public')->delete($old);
+                    }
                 }
                 return null;
 

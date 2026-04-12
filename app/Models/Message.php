@@ -142,7 +142,7 @@ class Message extends Model
     public function getMediaUrlAttribute(): ?string
     {
         if ($this->media_path) {
-            return asset('storage/' . $this->media_path);
+            return media_resolve_url($this->media_path);
         }
         return null;
     }
@@ -153,7 +153,7 @@ class Message extends Model
     public function getVoiceNoteUrlAttribute(): ?string
     {
         if ($this->voice_note_path) {
-            return asset('storage/' . $this->voice_note_path);
+            return media_resolve_url($this->voice_note_path);
         }
         return null;
     }

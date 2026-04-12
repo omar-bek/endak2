@@ -328,7 +328,7 @@ textarea.ep-form-control { resize: vertical; min-height: 100px; }
                 <div class="ep-avatar-upload">
                     <div class="ep-avatar-edit-wrap">
                         @if($user->image && file_exists(public_path('storage/' . $user->image)))
-                            <img src="{{ asset('storage/' . $user->image) }}" alt="{{ $user->name }}"
+                            <img src="{{ $user->image_url ?? asset('images/default-avatar.png') }}" alt="{{ $user->name }}"
                                  class="ep-avatar-edit-img" id="currentAvatar">
                         @else
                             <div class="ep-avatar-edit-fallback" id="currentAvatar">

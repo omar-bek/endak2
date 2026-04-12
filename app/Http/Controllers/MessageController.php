@@ -194,7 +194,7 @@ class MessageController extends Controller
             if ($request->hasFile('media')) {
                 $file = $request->file('media');
                 $path = $file->store('messages/media', 'public');
-                $messageData['media_path'] = $path;
+                $messageData['media_path'] = media_public_url_from_path($path);
                 $messageData['message_type'] = $this->getFileType($file->getMimeType());
                 $messageData['file_name'] = $file->getClientOriginalName();
                 $messageData['file_size'] = $file->getSize();
@@ -208,7 +208,7 @@ class MessageController extends Controller
             } elseif ($request->hasFile('voice_note')) {
                 $file = $request->file('voice_note');
                 $path = $file->store('messages/voice', 'public');
-                $messageData['voice_note_path'] = $path;
+                $messageData['voice_note_path'] = media_public_url_from_path($path);
                 $messageData['message_type'] = 'voice';
                 $messageData['file_name'] = $file->getClientOriginalName();
                 $messageData['file_size'] = $file->getSize();
@@ -231,7 +231,7 @@ class MessageController extends Controller
 
                     Storage::disk('public')->put($path, $voiceData);
 
-                    $messageData['voice_note_path'] = $path;
+                    $messageData['voice_note_path'] = media_public_url_from_path($path);
                     $messageData['message_type'] = 'voice';
                     $messageData['file_name'] = $fileName;
                     $messageData['file_size'] = strlen($voiceData);
@@ -393,10 +393,16 @@ class MessageController extends Controller
 
         // حذف الملفات المرتبطة
         if ($message->media_path) {
-            Storage::disk('public')->delete($message->media_path);
+            $p = media_public_disk_path($message->media_path);
+            if ($p) {
+                Storage::disk('public')->delete($p);
+            }
         }
         if ($message->voice_note_path) {
-            Storage::disk('public')->delete($message->voice_note_path);
+            $p = media_public_disk_path($message->voice_note_path);
+            if ($p) {
+                Storage::disk('public')->delete($p);
+            }
         }
 
         $message->softDelete();

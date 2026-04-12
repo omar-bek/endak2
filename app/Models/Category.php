@@ -141,7 +141,7 @@ class Category extends Model
     public function getImageUrlAttribute()
     {
         if ($this->image) {
-            return asset('storage/' . $this->image);
+            return media_resolve_url($this->image);
         }
         return asset('images/default-service.svg');
     }

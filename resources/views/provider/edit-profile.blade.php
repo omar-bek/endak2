@@ -158,7 +158,7 @@
                     <div class="e-card-body text-center">
                         <div class="avatar-upload-area mb-3">
                             @if (Auth::user()->image)
-                                <img src="{{ asset('storage/' . Auth::user()->image) }}" alt="الصورة الحالية"
+                                <img src="{{ Auth::user()->image_url ?? asset('images/default-avatar.png') }}" alt="الصورة الحالية"
                                     class="avatar-preview" id="avatarPreview">
                             @else
                                 <div class="avatar-preview-placeholder" id="avatarPreview">

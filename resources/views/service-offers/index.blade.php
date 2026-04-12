@@ -154,7 +154,7 @@
         </a>
         <div class="of-service-row">
             @if($service->image)
-                <img src="{{ asset('storage/' . $service->image) }}" alt="{{ $service->title }}" class="of-service-img">
+                <img src="{{ $service->image_url }}" alt="{{ $service->title }}" class="of-service-img">
             @endif
             <div class="of-service-info">
                 <h1>{{ $service->title }}</h1>

@@ -147,7 +147,7 @@
         </a>
         <div class="oc-service">
             @if($service->image)
-                <img src="{{ asset('storage/' . $service->image) }}" alt="{{ $service->title }}" class="oc-service-img">
+                <img src="{{ $service->image_url }}" alt="{{ $service->title }}" class="oc-service-img">
             @endif
             <div>
                 <h2>{{ $service->title }}</h2>

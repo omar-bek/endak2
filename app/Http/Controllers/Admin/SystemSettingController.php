@@ -53,8 +53,8 @@ class SystemSettingController extends Controller
         // معالجة حذف اللوجو
         if ($request->has('remove_logo') && $request->remove_logo) {
             $currentLogo = SystemSetting::get('site_logo', 'home.png');
-            if ($currentLogo && $currentLogo !== 'home.png' && file_exists(public_path($currentLogo))) {
-                unlink(public_path($currentLogo));
+            if ($currentLogo && $currentLogo !== 'home.png') {
+                media_delete_public_file($currentLogo);
             }
             SystemSetting::where('key', 'site_logo')->update(['value' => 'home.png']);
         }
@@ -71,17 +71,16 @@ if ($request->hasFile('logo_upload')) {
 
     // حذف اللوجو القديم إذا كان موجود
     $currentLogo = SystemSetting::get('site_logo', 'home.png');
-    if ($currentLogo && $currentLogo !== 'home.png' && file_exists(public_path($currentLogo))) {
-        unlink(public_path($currentLogo));
+    if ($currentLogo && $currentLogo !== 'home.png') {
+        media_delete_public_file($currentLogo);
     }
 
     // حفظ اللوجو الجديد داخل storage/app/public/logos/
     $filename = 'logo-' . time() . '.' . $file->getClientOriginalExtension();
     $path = $file->storeAs('logos', $filename, 'public');
 
-    // تحديث إعداد اللوجو بالمسار الصحيح القابل للعرض عبر /storage/
     SystemSetting::where('key', 'site_logo')->update([
-        'value' => 'storage/' . $path
+        'value' => media_public_url_from_path($path),
     ]);
 }
 
@@ -199,10 +198,11 @@ if ($request->hasFile('logo_upload')) {
         // إذا تم طلب حذف الصورة
         if ($request->has('remove_image') && $request->remove_image) {
             $currentImage = SystemSetting::get('default_service_image');
-            if ($currentImage && Storage::disk('public')->exists($currentImage)) {
-                Storage::disk('public')->delete($currentImage);
+            $old = $currentImage ? media_public_disk_path($currentImage) : null;
+            if ($old && Storage::disk('public')->exists($old)) {
+                Storage::disk('public')->delete($old);
             }
-            SystemSetting::setDefaultServiceImage('services/default-service.jpg');
+            SystemSetting::setDefaultServiceImage(media_public_url_from_path('services/default-service.jpg'));
         }
 
         // إذا تم رفع صورة جديدة
@@ -211,13 +211,14 @@ if ($request->hasFile('logo_upload')) {
 
             // حذف الصورة القديمة
             $currentImage = SystemSetting::get('default_service_image');
-            if ($currentImage && Storage::disk('public')->exists($currentImage)) {
-                Storage::disk('public')->delete($currentImage);
+            $old = $currentImage ? media_public_disk_path($currentImage) : null;
+            if ($old && Storage::disk('public')->exists($old)) {
+                Storage::disk('public')->delete($old);
             }
 
             // حفظ الصورة الجديدة
             $path = $file->store('services', 'public');
-            SystemSetting::setDefaultServiceImage($path);
+            SystemSetting::setDefaultServiceImage(media_public_url_from_path($path));
         }
 
         // تحديث حالة التفعيل

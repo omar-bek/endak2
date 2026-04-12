@@ -231,10 +231,15 @@ class ProviderProfileController extends Controller
         }
 
         if ($user->image) {
-            Storage::disk('public')->delete($user->image);
+            $old = media_public_disk_path($user->image);
+            if ($old) {
+                Storage::disk('public')->delete($old);
+            }
         }
 
-        return $request->file('image')->store('users', 'public');
+        $path = $request->file('image')->store('users', 'public');
+
+        return media_public_url_from_path($path);
     }
 
     /**

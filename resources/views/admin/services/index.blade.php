@@ -70,7 +70,7 @@
                             <td>{{ $service->id }}</td>
                             <td>
                                 @if($service->image)
-                                    <img src="{{ asset('storage/' . $service->image) }}" alt="{{ $service->title }}"
+                                    <img src="{{ $service->image_url }}" alt="{{ $service->title }}"
                                          class="img-thumbnail" style="width: 50px; height: 50px; object-fit: cover;">
                                 @else
                                     <div class="bg-light text-center rounded" style="width: 50px; height: 50px; line-height: 50px;">

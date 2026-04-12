@@ -36,7 +36,7 @@
                             onclick="window.location.href='{{ route('messages.show', $otherUser->id) }}'"
                             data-name="{{ strtolower($otherUser->name) }}">
                             <div class="conversation-avatar">
-                                <img src="{{ asset('storage/' . ($otherUser->image ?? 'users/user.png')) }}"
+                                <img src="{{ $otherUser->image ? $otherUser->image_url : asset('storage/users/user.png') }}"
                                     alt="{{ $otherUser->name }}"
                                     onerror="this.onerror=null;this.src='{{ asset('storage/users/user.png') }}';">
                                 <div class="online-indicator {{ $otherUser->isOnline() ? 'online' : 'offline' }}"></div>

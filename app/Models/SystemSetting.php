@@ -83,7 +83,7 @@ class SystemSetting extends Model
             return null;
         }
 
-        return asset('storage/' . $imagePath);
+        return media_resolve_url($imagePath);
     }
 
     // التحقق من تفعيل الصورة الافتراضية للخدمات
